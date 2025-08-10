@@ -2,7 +2,8 @@
 
 /* Tailwind base reset + custom base overrides */
 @theme inline {
-  --color-windowsTeal: #008080;
+  /* Windows XP Luna default blue (#3A6EA5 approximated; full gradient could be added later) */
+  --color-xpLunaBlue: #3a6ea5;
 }
 
 @layer base {
@@ -11,7 +12,7 @@
     height: 100%;
   }
   body {
-    background-color: var(--color-windowsTeal);
+    background-color: var(--color-xpLunaBlue);
     @apply text-black antialiased;
     font-family: Arial, Helvetica, sans-serif;
   }
