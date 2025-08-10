@@ -1,50 +1,43 @@
-# Project Build Plan: The Retro Desktop Portfolio
+# Project Build Plan: Retro Desktop Portfolio
 
-This document outlines the development tasks required to build the "Retro Desktop Portfolio" website. The project is broken down into sequential phases and tasks.
-
----
+This document outlines the development tasks required to build the “Retro Desktop Portfolio” website. The project is broken down into sequential phases and tasks.
 
 ## Phase 1: Project Setup & Foundation
 
 Goal: Initialize the project with the correct tools and libraries.
 
-### Task 1.1: Initialize Next.js Project with Bun
-
-_Complete as of 2025-08-10_
+### Task 1.1: Initialize Next.js Project with Bun (Complete as of 2025-08-10)
 
 Purpose: Create the basic Next.js application structure and configure Bun.
 
-Subtasks:
+#### Subtasks
 
 - [x] Initialize a new Next.js project using `bun create next-app@latest`.
 - [x] Verify the development server starts with `bun dev`.
 - [x] Configure `package.json` scripts to use Bun.
 - [x] Set up ESLint and Prettier.
 
-Definition of Done:
+#### Definition of Done
 
 - [x] Project runs locally with `bun dev`.
 - [x] Code compiles without errors (`bun run build`).
 - [x] No linting errors (`bun run lint`).
 
-### Task 1.2: Integrate Core Styling and UI Libraries
+### Task 1.2: Integrate Core Styling and UI Libraries (Complete as of 2025-08-10)
 
 Purpose: Install and configure visual libraries.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Install `tailwindcss` and configure it.
-- [ ] Install `react95` and `styled-components`.
-- [ ] Create a global layout with `ThemeProvider` and global styles.
-- [ ] Set default teal background (Windows 95 style) via Tailwind.
+- [x] Install `tailwindcss` and configure it.
+- [x] Install `98.css` and import it in the root layout.
+- [x] Set default teal background (Windows 95/98 style) via Tailwind.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Blank page renders with react95 theme (font, colors).
-- [ ] Tailwind utilities function.
-- [ ] No build or lint errors.
-
----
+- [x] A blank page renders with the 98.css theme applied (correct font, background color).
+- [x] Tailwind CSS utility classes function correctly.
+- [x] No build or lint errors.
 
 ## Phase 2: Core Desktop Environment
 
@@ -54,53 +47,51 @@ Goal: Build static desktop UI (taskbar, icons).
 
 Purpose: Create the main taskbar component.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Create `Taskbar` component.
-- [ ] Use `AppBar`, `Button`, `Toolbar`.
-- [ ] Add static "Start" button (left).
-- [ ] Add static clock (right) showing current time.
-- [ ] Fix position at bottom via Tailwind.
+- [ ] Create a `Taskbar` React component.
+- [ ] Use standard HTML elements (`div`, `button`) with 98.css classes to structure the taskbar.
+- [ ] Add a static "Start" button to the left.
+- [ ] Add a static clock component to the right that displays the current time.
+- [ ] Fix the component's position to the bottom of the viewport using Tailwind CSS.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Taskbar visible bottom on all screen sizes.
-- [ ] Start button and clock styled with react95.
+- [ ] The taskbar is visible at the bottom of the screen on all screen sizes.
+- [ ] The Start button and clock are styled correctly with 98.css.
 - [ ] No build or lint errors.
 
 ### Task 2.2: Implement the Start Menu
 
 Purpose: Functional Start Menu toggle.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Create `StartMenu` component.
-- [ ] Use `List` and `ListItem` for items: Projects, About Me, Terminal.
-- [ ] Toggle visibility with `useState`.
-- [ ] Clicking outside closes menu.
+- [ ] Create a `StartMenu` component.
+- [ ] Use `ul` and `li` elements with 98.css classes to create the menu items: Projects, About Me, Terminal.
+- [ ] Toggle visibility with `useState` when the Start button is clicked.
+- [ ] Implement logic so that clicking outside the menu closes it.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Menu opens/closes correctly.
-- [ ] Icons/text styled retro.
+- [ ] The menu opens and closes correctly.
+- [ ] Menu items are displayed with the correct retro icons and text.
 - [ ] No build or lint errors.
 
 ### Task 2.3: Create Desktop Icons
 
 Purpose: Display launchable desktop icons.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Create `DesktopIcon` (props: icon, label).
-- [ ] Create `Desktop` container (Flex/Grid).
-- [ ] Add placeholders: `C:\\Projects`, `About_Me.txt`, `Terminal.exe`.
+- [ ] Create a `DesktopIcon` component that accepts icon and label as props.
+- [ ] Create a `Desktop` container component that uses Flexbox or CSS Grid to arrange icons.
+- [ ] Add placeholder icons for `C:\Projects`, `About_Me.txt`, and `Terminal.exe`.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Icons in grid with labels.
+- [ ] Icons are displayed in a grid with labels below them.
 - [ ] No build or lint errors.
-
----
 
 ## Phase 3: Windowing System & State Management
 
@@ -110,56 +101,54 @@ Goal: Functional multi-window system.
 
 Purpose: Centralize window state.
 
-Subtasks:
+#### Subtasks
 
 - [ ] Install `zustand`.
-- [ ] Create `windowStore` (id, title, position, size, isMinimized).
-- [ ] Actions: `openWindow`, `closeWindow`, `minimizeWindow`, etc.
+- [ ] Create a `windowStore` to manage an array of window objects (`id`, `title`, `position`, `size`, `isMinimized`, `zIndex`).
+- [ ] Create actions in the store: `openWindow`, `closeWindow`, `minimizeWindow`, etc.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Store accessible app-wide.
-- [ ] Actions mutate state correctly.
+- [ ] The store is created and accessible from any component.
+- [ ] Store actions correctly manipulate the state.
 - [ ] No build or lint errors.
 
 ### Task 3.2: Implement a Single Draggable & Resizable Window
 
-Purpose: Base window component.
+Purpose: Create the base window component for all applications.
 
-Subtasks:
+#### Subtasks
 
 - [ ] Install `react-rnd`.
-- [ ] Create `AppWindow`.
-- [ ] Wrap react95 `Window` with `Rnd`.
-- [ ] Sync position/size with store on drag/resize.
-- [ ] Close button calls `closeWindow`.
+- [ ] Create a generic `AppWindow` component.
+- [ ] Use `react-rnd` to wrap a `div` styled with 98.css’s `.window` class.
+- [ ] Sync the window's position and size with the Zustand store on drag/resize events.
+- [ ] Connect the window's close button to the `closeWindow` action in the store.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Window opens via desktop icon action.
-- [ ] Draggable & resizable within desktop.
-- [ ] Close removes from UI/store.
+- [ ] A window can be opened by triggering the `openWindow` action.
+- [ ] The window is draggable and resizable within the desktop area.
+- [ ] Closing the window removes it from the UI and the state store.
 - [ ] No build or lint errors.
 
 ### Task 3.3: Manage Multiple Windows & Stacking (z-index)
 
-Purpose: Multi-window management & focus order.
+Purpose: Multi-window management and focus order.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Render list of `AppWindow`s from store in `Desktop`.
-- [ ] Add `bringToFront` action.
-- [ ] `onClick` in window invokes `bringToFront`.
-- [ ] Taskbar shows a button per open window.
+- [ ] Render a list of `AppWindow` components from the Zustand store.
+- [ ] Implement a `bringToFront` action to update a window's `zIndex`.
+- [ ] Add an `onClick` handler to the `AppWindow` that calls `bringToFront`.
+- [ ] Update the taskbar to dynamically show a button for each open window.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Multiple windows coexist.
-- [ ] Click brings window to front.
-- [ ] Taskbar reflects open windows.
+- [ ] Multiple, independent windows can be open simultaneously.
+- [ ] Clicking on a window brings it to the foreground.
+- [ ] The taskbar accurately reflects the set of currently open windows.
 - [ ] No build or lint errors.
-
----
 
 ## Phase 4: Application Development
 
@@ -167,91 +156,87 @@ Goal: Build core application content.
 
 ### Task 4.1: Build the "About Me" Application
 
-Purpose: Text-file style bio.
+Purpose: Create a text-file-like window displaying your professional bio.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Create `AboutMe` component.
-- [ ] Use `WindowContent` + `Frame`.
-- [ ] Add bio text.
-- [ ] Wire to desktop icon and Start Menu.
+- [ ] Create an `AboutMe` component.
+- [ ] Use `div` elements with 98.css classes like `.window-body` and `.sunken-panel` to style the interior.
+- [ ] Add your bio text.
+- [ ] Wire this component to the `About_Me.txt` desktop icon and Start Menu item.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Window opens correctly.
-- [ ] Retro styling applied.
+- [ ] The "About Me" window opens correctly.
+- [ ] The content is displayed with the correct retro styling from 98.css.
 - [ ] No build or lint errors.
 
 ### Task 4.2: Build the "Projects" Application
 
 Purpose: File-explorer view of projects.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Create `Projects` component.
-- [ ] Mock project data array.
-- [ ] Display each as folder icon + label.
-- [ ] (Future) Clicking opens details window.
+- [ ] Create a `Projects` component.
+- [ ] Mock project data as a simple JavaScript array of objects.
+- [ ] Display each project as a folder icon with a label inside the window.
+- [ ] (Future) Clicking a project will eventually open another window with project details.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Projects window opens with folder list.
-- [ ] Layout resembles classic explorer.
+- [ ] The Projects window opens and displays a list of project folders from mock data.
+- [ ] The layout resembles a classic file explorer using 98.css styles.
 - [ ] No build or lint errors.
-
----
 
 ## Phase 5: Backend Integration & Deployment
 
-Goal: Use real-time backend and deploy.
+Goal: Use a real-time backend and deploy the application.
 
 ### Task 5.1: Set Up Convex Backend
 
-Purpose: Initialize Convex & schema.
+Purpose: Initialize Convex and define the database schema.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Install Convex CLI & run `npx convex dev`.
-- [ ] Define `projects` table schema (`convex/schema.ts`).
-- [ ] Add query in `convex/projects.ts`.
-- [ ] Seed database (mutation or dashboard).
+- [ ] Install the Convex CLI and run `npx convex dev`.
+- [ ] Define a `projects` table schema in `convex/schema.ts`.
+- [ ] Write a query function in `convex/projects.ts` to fetch all projects.
+- [ ] Seed the database with your project data.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Local Convex running.
-- [ ] Schema defined.
-- [ ] Project data stored.
+- [ ] The local Convex backend is running.
+- [ ] The database schema is defined and seeded with data.
 - [ ] No build errors.
 
 ### Task 5.2: Integrate Convex with the "Projects" App
 
-Purpose: Replace mock data with live query.
+Purpose: Replace mock data with a live query from Convex.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Wrap app in `ConvexProvider`.
-- [ ] Use `useQuery` in `Projects`.
-- [ ] Render live data with loading state.
+- [ ] Wrap the application in the `ConvexProvider`.
+- [ ] Use the `useQuery` hook in the `Projects` component to fetch data.
+- [ ] Update the UI to render the projects based on the live data, including a loading state.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Projects load dynamically.
-- [ ] Loading state visible.
+- [ ] The "Projects" application dynamically loads and displays data from Convex.
+- [ ] A loading state is visible while data is being fetched.
 - [ ] No build or lint errors.
 
 ### Task 5.3: Deploy to Vercel
 
 Purpose: Public deployment.
 
-Subtasks:
+#### Subtasks
 
-- [ ] Create Vercel project & link repo.
-- [ ] Configure env var `CONVEX_DEPLOYMENT`.
-- [ ] Trigger deployment.
-- [ ] Test live site.
+- [ ] Create a new project on Vercel and link it to your Git repository.
+- [ ] Configure Vercel environment variables for the Convex deployment.
+- [ ] Trigger a deployment and test the live site.
 
-Definition of Done:
+#### Definition of Done
 
-- [ ] Site accessible via Vercel URL.
-- [ ] Features function in production.
-- [ ] Convex integration works live.
+- [ ] The website is successfully deployed and accessible via a Vercel URL.
+- [ ] All features work correctly in the production environment.
+- [ ] The Convex integration is functioning on the live site.
