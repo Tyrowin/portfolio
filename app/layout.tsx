@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import "xp.css"; // Windows XP styles
+import "98.css"; // retro Windows 98 styles
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
