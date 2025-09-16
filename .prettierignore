@@ -1,9 +1,0 @@
-# Build outputs
-.next
-out
-
-# Dependencies
-node_modules
-
-# Misc
-bun.lock
