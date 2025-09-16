@@ -1,38 +1,39 @@
 {
   "name": "portfolio",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
-  "workspaces": [
-    "apps/desktop",
-    "packages/*"
-  ],
   "scripts": {
-    "build": "turbo run build --filter=desktop",
-    "dev": "turbo run dev --filter=desktop",
-    "start": "turbo run start --filter=desktop",
-    "start-clean": "turbo run build --filter=desktop && turbo run start --filter=desktop",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "dev:all": "turbo run dev",
-    "build:all": "turbo run build"
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.2.2",
+    "@xterm/xterm": "^5.5.0",
+    "ansi-colors": "^4.1.3",
+    "ansi-escapes": "^7.0.0",
+    "emulators": "^8.3.0",
+    "emulators-ui": "^0.73.9",
+    "next": "^15.4.3",
+    "next-intl": "^4.3.9",
+    "nodemailer": "^7.0.5",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@types/node": "^22.7.6",
     "@types/nodemailer": "^6.4.17",
-    "eslint-config-custom": "*",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^9.31.0",
     "prettier": "latest",
-    "turbo": "^2.5.5"
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": "22.x"
   },
-  "packageManager": "bun@1.1.0",
-  "dependencies": {
-    "@xterm/xterm": "^5.5.0",
-    "emulators-ui": "^0.73.9",
-    "i18next": "^25.3.2",
-    "next-i18next": "^15.4.2",
-    "nodemailer": "^7.0.5",
-    "react-i18next": "^15.6.1",
-    "zod": "^4.0.5"
-  }
+  "packageManager": "bun@1.1.0"
 }

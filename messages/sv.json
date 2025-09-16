@@ -1,0 +1,136 @@
+{
+  "language": {
+    "tags": {
+      "en": "en",
+      "sv": "sv"
+    },
+    "english": "Engelska",
+    "swedish": "Svenska"
+  },
+  "date": {
+    "weekdays": {
+      "0": "söndag",
+      "1": "måndag",
+      "2": "tisdag",
+      "3": "onsdag",
+      "4": "torsdag",
+      "5": "fredag",
+      "6": "lördag"
+    },
+    "weekdays_short": {
+      "0": "sön",
+      "1": "mån",
+      "2": "tis",
+      "3": "ons",
+      "4": "tor",
+      "5": "fre",
+      "6": "lör"
+    },
+    "months": {
+      "0": "januari",
+      "1": "februari",
+      "2": "mars",
+      "3": "april",
+      "4": "maj",
+      "5": "juni",
+      "6": "juli",
+      "7": "augusti",
+      "8": "september",
+      "9": "oktober",
+      "10": "november",
+      "11": "december"
+    },
+    "months_short": {
+      "0": "jan",
+      "1": "feb",
+      "2": "mar",
+      "3": "apr",
+      "4": "maj",
+      "5": "jun",
+      "6": "jul",
+      "7": "aug",
+      "8": "sep",
+      "9": "okt",
+      "10": "nov",
+      "11": "dec"
+    }
+  },
+  "filesystem": {
+    "new_directory": "namnlös mapp",
+    "new_file": "namnlös fil"
+  },
+  "image": {
+    "no_image_to_load": "Det finns ingen bild att ladda. Öppna applikationen genom att klicka på en bild",
+    "loading": "Laddar..."
+  },
+  "algorithms": {
+    "start": "Starta",
+    "stop": "Stoppa",
+    "regenerate": "Återskapa",
+    "return_to_overview": "Tillbaka till översikt",
+    "sorting_options": "Sorteringsalternativ",
+    "data_generation_strategy": "Datagenerering strategi",
+    "path_finding_width": "Vägfinningsmiljö bredd",
+    "path_finding_height": "Vägfinningsmiljö höjd",
+    "path_finding_generation_options": {
+      "maze": "Labyrint",
+      "open_field": "Öppet fält",
+      "pipes": "Rör"
+    },
+    "data_generation_options": {
+      "randomly_distributed": "Slumpmässigt fördelade",
+      "sorted_left_to_right": "Sorterade från vänster till höger",
+      "sorted_right_to_left": "Sorterade från höger till vänster"
+    },
+    "data_generation_points": "Datagenerering punkter"
+  },
+  "contact": {
+    "name": "Namn",
+    "email": "E-post",
+    "company": "Företag",
+    "company_optional": "Företag (valfritt)",
+    "message": "Meddelande",
+    "send": "Skicka",
+    "processed": "Ett e-postmeddelande har skickats till min inkorg!",
+    "message_forwarding_instructions": "Alla meddelanden kommer att vidarebefordras direkt till min personliga inkorg",
+    "required": "Obligatorisk",
+    "error": {
+      "invalid-email": "Vänligen ange en giltig e-postadress."
+    }
+  },
+  "skills": {
+    "programming_languages": "Programmeringsspråk",
+    "frameworks": "Ramverk",
+    "databases": "Databaser",
+    "devops": "DevOps",
+    "tools": "Verktyg"
+  },
+  "dos_emulator": {
+    "loading": "Laddar"
+  },
+  "finder": {
+    "favorites": "Favoriter",
+    "create_text_file_instructions": "Ange namnet på textfilen",
+    "create_text_file_duplicated_name": "Det angivna namnet är redan upptaget. Välj ett annat namn",
+    "create_directory_instructions": "Ange namnet på den nya mappen",
+    "create_directory_duplicated_name": "Det angivna namnet är redan upptaget. Välj ett annat namn"
+  },
+  "notes": {
+    "create_file_instructions": "Ange namnet på den nya textfilen",
+    "create_file_duplicated_name": "Det angivna namnet är redan upptaget. Välj ett annat namn"
+  },
+  "about": {
+    "navigation": {
+      "home": "Hem",
+      "about": "Om mig",
+      "experience": "Erfarenhet",
+      "projects": "Projekt",
+      "contact": "Kontakt"
+    },
+    "download_cv": {
+      "title": "Letar du efter mitt CV?",
+      "instruction": "Klicka här för att ladda ner det!",
+      "download_link": "/cv/Joey_de_Ruiter_resume.pdf"
+    }
+  }
+}
