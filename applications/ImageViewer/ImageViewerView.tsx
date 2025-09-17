@@ -1,6 +1,6 @@
-import { FileSystemImage } from '@/apis/FileSystem/FileSystem';
+import type { FileSystemImage } from '@/apis/FileSystem/FileSystem';
 import { constructPath } from '@/apis/FileSystem/util';
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import styles from './ImageViewerView.module.css';
@@ -45,7 +45,7 @@ export default function ImageViewerView(props: WindowProps) {
     }
     const image = imageNode.value;
 
-    const unsubscribe = fs.subscribe(image, (evt) => {
+    const unsubscribe = fs.subscribe(image, _evt => {
       updateWindowTitle(image);
     });
 

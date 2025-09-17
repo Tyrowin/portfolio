@@ -1,10 +1,10 @@
-import { ObserverSubject } from "@/data/Observer";
+import { ObserverSubject } from '@/data/Observer';
 
 export class SoundService extends ObserverSubject<boolean> {
   private enabled = true;
 
   private index = 0;
-  private activeAudio: HTMLAudioElement[] = [];
+  private activeAudio: (HTMLAudioElement | undefined)[] = [];
 
   public isEnabled(): boolean {
     return this.enabled;
@@ -29,7 +29,9 @@ export class SoundService extends ObserverSubject<boolean> {
   public mute(index: number): void {
     const audio = this.activeAudio[index] ?? null;
 
-    if (!audio) { return; }
+    if (!audio) {
+      return;
+    }
 
     audio.muted = true;
   }
@@ -37,7 +39,9 @@ export class SoundService extends ObserverSubject<boolean> {
   public unmute(index: number): void {
     const audio = this.activeAudio[index] ?? null;
 
-    if (!audio) { return; }
+    if (!audio) {
+      return;
+    }
 
     audio.muted = false;
   }
@@ -45,13 +49,16 @@ export class SoundService extends ObserverSubject<boolean> {
   public volume(index: number, volume: number): void {
     const audio = this.activeAudio[index] ?? null;
 
-    if (!audio) { return; }
+    if (!audio) {
+      return;
+    }
 
     audio.volume = volume;
   }
 
-  // NOTE(Joey): Due to how the Audio interface only mutes and unmutes its own "audio" and not other audio elements that might be
-  // toggled by the isEnabled status. Having these methods public might give the wrong impression, so we refrain from that.
+  // NOTE(Joey): Due to how the Audio interface only mutes and unmutes its own "audio"
+  // and not other audio elements that might be toggled by the isEnabled status.
+  // Having these methods public might give the wrong impression, so we refrain from that.
   private muteAll(): void {
     for (const key of this.activeAudio.keys()) {
       this.mute(key);
@@ -67,10 +74,12 @@ export class SoundService extends ObserverSubject<boolean> {
   public stop(index: number): void {
     const audio = this.activeAudio[index] ?? null;
 
-    if (!audio) { return; }
+    if (!audio) {
+      return;
+    }
 
     audio.pause();
-    delete this.activeAudio[index];
+    this.activeAudio[index] = undefined;
   }
 
   public clear(): void {
@@ -78,47 +87,59 @@ export class SoundService extends ObserverSubject<boolean> {
     this.activeAudio = [];
   }
 
-  public play(source: string, volume: number = 1.0): number {
+  public play(source: string, volume = 1.0): number {
     const currentIndex = this.index++;
 
     const audio = new Audio(source);
     audio.volume = volume;
     audio.muted = !this.enabled;
-    audio.play().catch(() => { console.error('Cannot play audio'); });
+    audio.play().catch(() => {
+      /* Handle audio play error silently */
+    });
 
     this.activeAudio[currentIndex] = audio;
 
-    audio.addEventListener('ended', () => { delete this.activeAudio[currentIndex]; });
+    audio.addEventListener('ended', () => {
+      this.activeAudio[currentIndex] = undefined;
+    });
 
     return currentIndex;
   }
 
-  public playAudioFragment(audio: HTMLAudioElement, volume: number = 1.0): number {
+  public playAudioFragment(audio: HTMLAudioElement, volume = 1.0): number {
     const currentIndex = this.index++;
 
     audio.volume = volume;
     audio.muted = !this.enabled;
 
-    audio.play().catch(() => { console.error('Cannot play audio'); });
+    audio.play().catch(() => {
+      /* Handle audio play error silently */
+    });
 
     this.activeAudio[currentIndex] = audio;
 
-    audio.addEventListener('ended', () => { delete this.activeAudio[currentIndex]; });
+    audio.addEventListener('ended', () => {
+      this.activeAudio[currentIndex] = undefined;
+    });
 
     return currentIndex;
   }
 
-  public playOnRepeat(source: string, volume: number = 1.0): number {
+  public playOnRepeat(source: string, volume = 1.0): number {
     const currentIndex = this.index++;
 
     const audio = new Audio(source);
     audio.volume = volume;
     audio.muted = !this.enabled;
-    audio.play().catch(() => { console.error('Cannot play audio'); });
+    audio.play().catch(() => {
+      /* Handle audio play error silently */
+    });
 
     this.activeAudio[currentIndex] = audio;
 
-    audio.addEventListener('ended', () => { this.activeAudio[currentIndex]?.play(); });
+    audio.addEventListener('ended', () => {
+      void this.activeAudio[currentIndex]?.play();
+    });
 
     return currentIndex;
   }

@@ -1,22 +1,30 @@
-import { Shell } from "@/applications/Terminal/Shell";
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { ProgramConfig, getAbsolutePathFromArgs } from "../Programs";
-import { FileSystemDirectory, FileSystem, FileSystemNode } from "@/apis/FileSystem/FileSystem";
-import { constructPath } from "@/apis/FileSystem/util";
+import type { Shell } from '@/applications/Terminal/Shell';
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { ProgramConfig } from '../Programs';
+import { getAbsolutePathFromArgs } from '../Programs';
+import type { FileSystem, FileSystemNode } from '@/apis/FileSystem/FileSystem';
+import { constructPath } from '@/apis/FileSystem/util';
 
 function findNode(absolutePath: string, fs: FileSystem): FileSystemNode | null {
   const isDirectory = absolutePath.endsWith('/');
 
-  { // Normal search
+  {
+    // Normal search
     const nodeResult = fs.getNode(absolutePath);
-    if (nodeResult.ok) { return nodeResult.value; }
+    if (nodeResult.ok) {
+      return nodeResult.value;
+    }
   }
 
-  if (isDirectory) { return null; }
+  if (isDirectory) {
+    return null;
+  }
 
   {
     const nodeResult = fs.getNode(absolutePath + '/');
-    if (nodeResult.ok) { return nodeResult.value; }
+    if (nodeResult.ok) {
+      return nodeResult.value;
+    }
   }
 
   return null;
@@ -25,11 +33,11 @@ function findNode(absolutePath: string, fs: FileSystem): FileSystemNode | null {
 function RemoveDirectory(shell: Shell, args: string[], apis: SystemAPIs): void {
   const fs = apis.fileSystem;
 
-  const hasFlags = (args[1] ?? "").startsWith('-');
-  const flags = hasFlags ? args[1] : "";
+  const hasFlags = (args[1] ?? '').startsWith('-');
+  const flags = hasFlags ? args[1] : '';
 
   const recursive = flags.indexOf('r') > 0;
-  const removeDirs = recursive || (flags.indexOf('d') > 0);
+  const removeDirs = recursive || flags.indexOf('d') > 0;
 
   const path = args[hasFlags ? 2 : 1] ?? null;
 
@@ -52,35 +60,46 @@ function RemoveDirectory(shell: Shell, args: string[], apis: SystemAPIs): void {
       return;
     }
 
-    if (!recursive && (node as FileSystemDirectory).children.count() > 0) {
+    if (!recursive && node.children.count() > 0) {
       shell.getTerminal().writeResponse(`rm: ${path}: Directory not empty`);
       return;
     }
   }
 
-  if (absolutePath === "/") {
-    shell.getTerminal().writeResponse(`Moginistrator: I can't let you do that, kupo!`);
+  if (absolutePath === '/') {
+    shell
+      .getTerminal()
+      .writeResponse("Moginistrator: I can't let you do that, kupo!");
     return;
   }
 
   if (!node.editable) {
-    shell.getTerminal().writeResponse(`rm: ${path}: Insufficient permissions to remove`);
+    shell
+      .getTerminal()
+      .writeResponse(`rm: ${path}: Insufficient permissions to remove`);
     return;
   }
 
-  const nodeParent = node.parent!;
+  const nodeParent = node.parent;
+  if (!nodeParent) {
+    shell
+      .getTerminal()
+      .writeResponse(`rm: ${absolutePath}: Cannot determine parent directory`);
+    return;
+  }
 
   fs.removeNodeFromDirectory(node);
 
-  // If for some reason (users) our current working directory has been deleted, change to the parent of the just deleted node
+  // If for some reason (users) our current working directory has been deleted,
+  // change to the parent of the just deleted node
   if (!fs.getDirectory(shell.getPath()).ok) {
-    shell.changeDirectory(constructPath(nodeParent))
+    shell.changeDirectory(constructPath(nodeParent));
   }
 }
 
 export class RemoveConfig implements ProgramConfig {
-  public readonly appName = "rm"
-  public readonly program = RemoveDirectory
+  public readonly appName = 'rm';
+  public readonly program = RemoveDirectory;
 }
 
 export const rmConfig = new RemoveConfig();

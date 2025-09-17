@@ -1,9 +1,10 @@
-import { LocalWindowCompositor } from "@/components/WindowManagement/LocalWindowCompositor";
-import { WindowContext } from "@/components/WindowManagement/WindowCompositor";
-import { ApplicationEvent } from "../ApplicationEvents";
-import { Application, ApplicationConfig, MenuEntry } from "../ApplicationManager";
-import { LocalApplicationManager } from "../LocalApplicationManager";
-import { SystemAPIs } from "@/components/OperatingSystem";
+import type { LocalWindowCompositor } from '@/components/WindowManagement/LocalWindowCompositor';
+import type { WindowContext } from '@/components/WindowManagement/WindowCompositor';
+import type { ApplicationEvent } from '../ApplicationEvents';
+import type { ApplicationConfig, MenuEntry } from '../ApplicationManager';
+import { Application } from '../ApplicationManager';
+import type { LocalApplicationManager } from '../LocalApplicationManager';
+import type { SystemAPIs } from '@/components/OperatingSystem';
 import dynamic from 'next/dynamic';
 
 const View = dynamic(() => import('./FinderView'));
@@ -13,7 +14,11 @@ export class FinderConfig implements ApplicationConfig {
   public readonly dockPriority = -100;
   public readonly path = '/Applications/';
   public readonly appName = 'Finder.app';
-  public readonly appIcon = { src: '/icons/finder-icon.png', alt: 'Finder application' };
+  public readonly appIcon = {
+    src: '/icons/finder-icon.png',
+    alt: 'Finder application',
+  };
+
   public readonly entrypoint = (
     compositor: LocalWindowCompositor,
     manager: LocalApplicationManager,
@@ -24,19 +29,26 @@ export class FinderConfig implements ApplicationConfig {
 export const finderConfig = new FinderConfig();
 
 export class Finder extends Application {
-
   config(): ApplicationConfig {
     return finderConfig;
   }
 
   menuEntries(): MenuEntry[] {
-    return [{
-      displayOptions: { boldText: true },
-      name: 'Finder',
-      items: [
-        { kind: 'action', value: 'Open window', action: () => this.openNewWindow('/Users/joey/') },
-      ]
-    }]
+    return [
+      {
+        displayOptions: { boldText: true },
+        name: 'Finder',
+        items: [
+          {
+            kind: 'action',
+            value: 'Open window',
+            action: () => {
+              this.openNewWindow('/Users/joey/');
+            },
+          },
+        ],
+      },
+    ];
   }
 
   private openNewWindow(path: string) {
@@ -45,28 +57,33 @@ export class Finder extends Application {
       y: 80,
       height: 400,
       width: 670,
-      title: `Finder`,
+      title: 'Finder',
       application: this,
       args: path,
-      generator: () => { return View; }
+      generator: () => {
+        return View;
+      },
     });
 
-    window.minimalHeight  = 250;
-    window.minimalWidth   = 400;
+    window.minimalHeight = 250;
+    window.minimalWidth = 400;
   }
 
   on(event: ApplicationEvent, windowContext?: WindowContext): void {
     if (event.kind === 'application-open') {
-
       // Do not open a Finder window on the first start, due to the Operating system starting Finder at "boot"
-      if (event.isFirst) { return; }
+      if (event.isFirst) {
+        return;
+      }
 
       const path = event.args.length !== 0 ? event.args : '/Users/joey/';
       this.openNewWindow(path);
-    };
+    }
 
     if (event.kind === 'finder-open-file-event') {
-      if (!windowContext) { return }
+      if (!windowContext) {
+        return;
+      }
 
       this.manager.open(`"${event.path}"`);
     }

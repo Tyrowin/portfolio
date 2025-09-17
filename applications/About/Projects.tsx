@@ -1,4 +1,5 @@
-import { SubViewNavigation, SubViewParams } from './AboutView';
+import type { SubViewParams } from './AboutView';
+import { SubViewNavigation } from './AboutView';
 import styles from './AboutView.module.css';
 import Image from 'next/image';
 
@@ -35,7 +36,7 @@ function ProjectImage(props: {
 function ProjectPage(props: {
   title: string;
   params: SubViewParams;
-  content: JSX.Element;
+  content: React.JSX.Element;
 }) {
   const params = props.params;
 
@@ -48,7 +49,12 @@ function ProjectPage(props: {
       <>
         <p>
           If you have any questions or comments, please contact me via the{' '}
-          <a onClick={() => openContactApp()} href="#contact">
+          <a
+            onClick={() => {
+              openContactApp();
+            }}
+            href="#contact"
+          >
             contact application
           </a>{' '}
           or shoot me an email at{' '}
@@ -65,7 +71,12 @@ function ProjectPage(props: {
       <>
         <p>
           Om du har kommentarer eller frågor, kontakta mig via{' '}
-          <a onClick={() => openContactApp()} href="#contact">
+          <a
+            onClick={() => {
+              openContactApp();
+            }}
+            href="#contact"
+          >
             kontakt-applikationen
           </a>{' '}
           eller skicka ett mejl till{' '}
@@ -84,12 +95,14 @@ function ProjectPage(props: {
 
   return (
     <>
-      <div data-subpage className={styles['subpage']}>
+      <div data-subpage className={styles.subpage}>
         {SubViewNavigation(params)}
         <div data-subpage-content className={styles['subpage-content']}>
           <h1>{props.title}</h1>
           <button
-            onClick={() => params.changeParent('projects')}
+            onClick={() => {
+              params.changeParent('projects');
+            }}
             className={styles['button-link']}
           >
             {backToProjects}
@@ -100,7 +113,9 @@ function ProjectPage(props: {
           {content.contact}
 
           <button
-            onClick={() => params.changeParent('projects')}
+            onClick={() => {
+              params.changeParent('projects');
+            }}
             className={styles['button-link']}
           >
             {backToProjects}
@@ -216,7 +231,7 @@ export function ProjectRedisClone(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'Redis clone', content, params });
@@ -399,7 +414,7 @@ export function ProjectPortfolio2024(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'Portfolio 2024', content, params });
@@ -504,7 +519,7 @@ export function ProjectJScript(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'J-Script', content, params });
@@ -559,7 +574,7 @@ export function ProjectAdventOfCode(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'Advent of Code', content, params });
@@ -645,7 +660,7 @@ export function ProjectPortfolio2021(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'Portfolio 2021', content, params });
@@ -774,7 +789,7 @@ export function ProjectTBot(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'T-Bot', content, params });
@@ -865,7 +880,7 @@ export function ProjectYoui(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'Youi', content, params });
@@ -916,7 +931,7 @@ export function ProjectPCParts(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'PCParts', content, params });
@@ -1004,7 +1019,7 @@ export function ProjectAlbert(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'Albert', content, params });
@@ -1071,7 +1086,7 @@ export function ProjectPaintboy(params: SubViewParams) {
     );
   }
 
-  let content =
+  const content =
     params.language === 'sv' ? RenderSwedishContent() : RenderEnglishContent();
 
   return ProjectPage({ title: 'Paintboy', content, params });

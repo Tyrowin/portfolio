@@ -1,7 +1,7 @@
-import { isDebug } from "@/components/util"
+import { isDebug } from '@/components/util';
 
 export class SystemService {
-  private debug: boolean = false
+  private debug = false;
 
   public isDebug(): boolean {
     return this.debug;

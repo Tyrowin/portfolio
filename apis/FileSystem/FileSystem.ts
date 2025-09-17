@@ -1,138 +1,147 @@
-import { Application, ApplicationConfig } from "@/applications/ApplicationManager";
-import { Action } from "../../components/util";
-import { Err, Ok, Result } from "@/lib/result";
-import { debugConfig } from "@/applications/Debug/DebugApplication";
-import { aboutConfig } from "@/applications/About/About";
-import { LocalWindowCompositor } from "../../components/WindowManagement/LocalWindowCompositor";
-import { finderConfig } from "@/applications/Finder/Finder";
-import { LocalApplicationManager } from "@/applications/LocalApplicationManager";
-import { SystemAPIs } from "../../components/OperatingSystem";
-import { BoundingBox, Point, rectangleIntersection } from "@/applications/math";
-import { Chain, Node } from "@/data/Chain";
-import { constructPath, isUniqueFile } from "./util";
-import { notesConfig } from "@/applications/Notes/Notes";
-import { doomConfig } from "@/applications/Doom/Doom";
-import { imageViewerConfig } from "@/applications/ImageViewer/ImageViewer";
-import { contactConfig } from "@/applications/Contract/Contact";
-import { IconHeight, IconWidth } from "@/components/Icons/FolderIcon";
-import { skillsConfig } from "@/applications/Skills/Skills";
-import { algorithmVisualizerConfig } from "@/applications/AlgorithmVisualizer/AlgorithmVisualizer";
-import { terminalConfig } from "@/applications/Terminal/TerminalApplication";
-import { ProgramConfig } from "@/programs/Programs";
-import { lsConfig } from "@/programs/ListFiles/ListFiles";
-import { pwdConfig } from "@/programs/PrintWorkingDirectory/PrintWorkingDirectory";
-import { cdConfig } from "@/programs/ChangeDirectory/ChangeDirectory";
-import { openConfig } from "@/programs/Open/Open";
-import { catConfig } from "@/programs/Concatenation/Concatenation";
-import { Shell } from "@/applications/Terminal/Shell";
-import { mkdirConfig } from "@/programs/MakeDirectory/MakeDirectory";
-import { rmConfig } from "@/programs/Remove/Remove";
-import { touchConfig } from "@/programs/Touch/Touch";
-import { moveConfig } from "@/programs/Move/Move";
-import { motdConfig } from "@/programs/MessageOfTheDay/MessageOfTheDay";
-import { helpConfig } from "@/programs/Help/Help";
-import { uwuConfig } from "@/programs/Uwufier/Uwufier";
-import { neofetchConfig } from "@/programs/Neofetch/Neofetch";
+import type {
+  Application,
+  ApplicationConfig,
+} from '@/applications/ApplicationManager';
+import type { Action } from '../../components/util';
+import type { Result } from '@/lib/result';
+import { Err, Ok } from '@/lib/result';
+import { debugConfig } from '@/applications/Debug/DebugApplication';
+import { aboutConfig } from '@/applications/About/About';
+import type { LocalWindowCompositor } from '../../components/WindowManagement/LocalWindowCompositor';
+import { finderConfig } from '@/applications/Finder/Finder';
+import type { LocalApplicationManager } from '@/applications/LocalApplicationManager';
+import type { SystemAPIs } from '../../components/OperatingSystem';
+import type { BoundingBox, Point } from '@/applications/math';
+import { rectangleIntersection } from '@/applications/math';
+import type { Node } from '@/data/Chain';
+import { Chain } from '@/data/Chain';
+import { constructPath, isUniqueFile } from './util';
+import { notesConfig } from '@/applications/Notes/Notes';
+import { doomConfig } from '@/applications/Doom/Doom';
+import { imageViewerConfig } from '@/applications/ImageViewer/ImageViewer';
+import { contactConfig } from '@/applications/Contract/Contact';
+import { IconHeight, IconWidth } from '@/components/Icons/FolderIcon';
+import { skillsConfig } from '@/applications/Skills/Skills';
+import { algorithmVisualizerConfig } from '@/applications/AlgorithmVisualizer/AlgorithmVisualizer';
+import { terminalConfig } from '@/applications/Terminal/TerminalApplication';
+import type { ProgramConfig } from '@/programs/Programs';
+import { lsConfig } from '@/programs/ListFiles/ListFiles';
+import { pwdConfig } from '@/programs/PrintWorkingDirectory/PrintWorkingDirectory';
+import { cdConfig } from '@/programs/ChangeDirectory/ChangeDirectory';
+import { openConfig } from '@/programs/Open/Open';
+import { catConfig } from '@/programs/Concatenation/Concatenation';
+import type { Shell } from '@/applications/Terminal/Shell';
+import { mkdirConfig } from '@/programs/MakeDirectory/MakeDirectory';
+import { rmConfig } from '@/programs/Remove/Remove';
+import { touchConfig } from '@/programs/Touch/Touch';
+import { moveConfig } from '@/programs/Move/Move';
+import { motdConfig } from '@/programs/MessageOfTheDay/MessageOfTheDay';
+import { helpConfig } from '@/programs/Help/Help';
+import { uwuConfig } from '@/programs/Uwufier/Uwufier';
+import { neofetchConfig } from '@/programs/Neofetch/Neofetch';
 
-export type DirectorySettings = {
-  alwaysOpenAsIconView: boolean,
-  sortBy: null, // TODO: Implement this
-  sortDirection: 'horizontal' | 'vertical',
-  sortOrigin: 'top-left' | 'top-right',
+export interface DirectorySettings {
+  alwaysOpenAsIconView: boolean;
+  sortBy: null; // TODO: Implement this
+  sortDirection: 'horizontal' | 'vertical';
+  sortOrigin: 'top-left' | 'top-right';
 }
 
-export type ApplicationIcon = {
-  src: string,
-  alt: string
+export interface ApplicationIcon {
+  src: string;
+  alt: string;
 }
 
-export type DirectoryContent = {
-  view: 'icons' | 'list',
-  width: number,
-  height: number,
-  overflowBehavior: 'overflow' | 'overlay'
+export interface DirectoryContent {
+  view: 'icons' | 'list';
+  width: number;
+  height: number;
+  overflowBehavior: 'overflow' | 'overlay';
 }
 
-export type FileSystemNode = (
-  FileSystemDirectory |
-  FileSystemImage |
-  FileSystemTextFile |
-  FileSystemApplication |
-  FileSystemHyperLink |
-  FileSystemProgram
-);
+export type FileSystemNode =
+  | FileSystemDirectory
+  | FileSystemImage
+  | FileSystemTextFile
+  | FileSystemApplication
+  | FileSystemHyperLink
+  | FileSystemProgram;
 
-export type DirectoryEntry = {
-  node: FileSystemNode,
-  x: number,
-  y: number
+export interface DirectoryEntry {
+  node: FileSystemNode;
+  x: number;
+  y: number;
 }
 
-export type FileSystemDirectory = {
-  id: number,
-  parent: FileSystemDirectory | null
-  kind: 'directory',
-  name: string,
-  filenameExtension: '',
-  icon?: ApplicationIcon,
-  settings: DirectorySettings,
-  content: DirectoryContent,
-  children: Chain<DirectoryEntry>
-  editable: boolean,
-  editableContent: boolean,
-};
-
-export type FileSystemHyperLink = {
-  id: number,
-  parent: FileSystemDirectory,
-  kind: 'hyperlink',
-  filenameExtension: '',
-  icon: ApplicationIcon,
-  target: FileSystemNode,
-  editable: boolean,
-  name: string
+export interface FileSystemDirectory {
+  id: number;
+  parent: FileSystemDirectory | null;
+  kind: 'directory';
+  name: string;
+  filenameExtension: '';
+  icon?: ApplicationIcon;
+  settings: DirectorySettings;
+  content: DirectoryContent;
+  children: Chain<DirectoryEntry>;
+  editable: boolean;
+  editableContent: boolean;
 }
 
-export type FileSystemTextFile = {
-  id: number,
-  parent: FileSystemDirectory
-  kind: 'textfile',
-  filenameExtension: string,
-  name: string,
-  content: string,
-  editable: boolean
-};
+export interface FileSystemHyperLink {
+  id: number;
+  parent: FileSystemDirectory;
+  kind: 'hyperlink';
+  filenameExtension: '';
+  icon: ApplicationIcon;
+  target: FileSystemNode;
+  editable: boolean;
+  name: string;
+}
+
+export interface FileSystemTextFile {
+  id: number;
+  parent: FileSystemDirectory;
+  kind: 'textfile';
+  filenameExtension: string;
+  name: string;
+  content: string;
+  editable: boolean;
+}
 
 export type FileSystemImageExtension = '.png' | '.jpg' | '.gif';
-export type FileSystemImage = {
-  id: number,
-  parent: FileSystemDirectory
-  kind: 'image',
-  filenameExtension: FileSystemImageExtension,
-  name: string,
-  source: string,
-  description: string,
-  editable: boolean
+export interface FileSystemImage {
+  id: number;
+  parent: FileSystemDirectory;
+  kind: 'image';
+  filenameExtension: FileSystemImageExtension;
+  name: string;
+  source: string;
+  description: string;
+  editable: boolean;
 }
 
-export type FileSystemApplication = {
-  id: number,
-  parent: FileSystemDirectory
-  icon: ApplicationIcon,
-  kind: 'application'
-  name: string,
-  filenameExtension: '',
-  editable: boolean,
-  entrypoint: (compositor: LocalWindowCompositor, manager: LocalApplicationManager, apis: SystemAPIs) => Application,
+export interface FileSystemApplication {
+  id: number;
+  parent: FileSystemDirectory;
+  icon: ApplicationIcon;
+  kind: 'application';
+  name: string;
+  filenameExtension: '';
+  editable: boolean;
+  entrypoint: (
+    compositor: LocalWindowCompositor,
+    manager: LocalApplicationManager,
+    apis: SystemAPIs
+  ) => Application;
 }
 
-export type FileSystemProgram = {
-  id: number,
-  parent: FileSystemDirectory
-  kind: 'program',
-  name: string,
-  filenameExtension: '',
-  editable: boolean,
+export interface FileSystemProgram {
+  id: number;
+  parent: FileSystemDirectory;
+  kind: 'program';
+  name: string;
+  filenameExtension: '';
+  editable: boolean;
   program: (shell: Shell, args: string[], apis: SystemAPIs) => void;
 }
 
@@ -141,7 +150,11 @@ function createApplication(
   parent: FileSystemDirectory,
   name: string,
   icon: ApplicationIcon,
-  entrypoint: (compositor: LocalWindowCompositor, manager: LocalApplicationManager, apis: SystemAPIs) => Application
+  entrypoint: (
+    compositor: LocalWindowCompositor,
+    manager: LocalApplicationManager,
+    apis: SystemAPIs
+  ) => Application
 ): FileSystemApplication {
   return {
     id,
@@ -151,8 +164,8 @@ function createApplication(
     name,
     filenameExtension: '',
     editable: false,
-    entrypoint
-  }
+    entrypoint,
+  };
 }
 
 function createProgram(
@@ -168,8 +181,8 @@ function createProgram(
     name,
     filenameExtension: '',
     editable: false,
-    program
-  }
+    program,
+  };
 }
 
 function createRootNode(): FileSystemDirectory {
@@ -193,11 +206,18 @@ function createRootNode(): FileSystemDirectory {
     filenameExtension: '',
     editable: false,
     editableContent: false,
-    children: new Chain()
-  }
+    children: new Chain(),
+  };
 }
 
-function createDirectory(id: number, parent: FileSystemDirectory, name: string, editable: boolean, editableContent: boolean, icon?: ApplicationIcon): FileSystemDirectory {
+function createDirectory(
+  id: number,
+  parent: FileSystemDirectory,
+  name: string,
+  editable: boolean,
+  editableContent: boolean,
+  icon?: ApplicationIcon
+): FileSystemDirectory {
   return {
     id,
     parent,
@@ -219,11 +239,18 @@ function createDirectory(id: number, parent: FileSystemDirectory, name: string, 
     filenameExtension: '',
     editable,
     editableContent,
-    children: new Chain()
-  }
+    children: new Chain(),
+  };
 }
 
-function createTextFile(id: number, parent: FileSystemDirectory, name: string, content: string, editable: boolean, extension: string): FileSystemTextFile {
+function createTextFile(
+  id: number,
+  parent: FileSystemDirectory,
+  name: string,
+  content: string,
+  editable: boolean,
+  extension: string
+): FileSystemTextFile {
   return {
     id,
     parent,
@@ -232,10 +259,18 @@ function createTextFile(id: number, parent: FileSystemDirectory, name: string, c
     filenameExtension: extension,
     content,
     editable,
-  }
+  };
 }
 
-function createImage(id: number, parent: FileSystemDirectory, name: string, filenameExtension: FileSystemImageExtension, source: string, description: string, editable: boolean): FileSystemImage {
+function createImage(
+  id: number,
+  parent: FileSystemDirectory,
+  name: string,
+  filenameExtension: FileSystemImageExtension,
+  source: string,
+  description: string,
+  editable: boolean
+): FileSystemImage {
   return {
     id,
     parent,
@@ -244,11 +279,18 @@ function createImage(id: number, parent: FileSystemDirectory, name: string, file
     filenameExtension,
     source,
     description,
-    editable
-  }
+    editable,
+  };
 }
 
-function createHyperLink(id: number, parent: FileSystemDirectory, target: FileSystemNode, name: string, icon: ApplicationIcon, editable: boolean): FileSystemHyperLink {
+function createHyperLink(
+  id: number,
+  parent: FileSystemDirectory,
+  target: FileSystemNode,
+  name: string,
+  icon: ApplicationIcon,
+  editable: boolean
+): FileSystemHyperLink {
   return {
     id,
     parent,
@@ -257,22 +299,29 @@ function createHyperLink(id: number, parent: FileSystemDirectory, target: FileSy
     filenameExtension: '',
     icon,
     name,
-    editable
-  }
+    editable,
+  };
 }
 
 export function getIconFromNode(node: FileSystemNode): ApplicationIcon {
   switch (node.kind) {
     case 'application':
-    case 'hyperlink': return node.icon;
-    case "directory": {
-      if (node.icon) { return node.icon; }
+    case 'hyperlink':
+      return (
+        node.icon ?? { src: '/icons/folder-icon.png', alt: 'Hyperlink icon' }
+      );
+    case 'directory': {
+      if (node.icon) {
+        return node.icon;
+      }
       return { src: '/icons/folder-icon.png', alt: 'Directory icon' };
     }
-    case "hyperlink": return { src: '/icons/folder-icon.png', alt: 'Hyperlink icon' };
-    case "textfile": return { src: '/icons/file-icon.png', alt: 'File icon' }
-    case "image": return { src: '/icons/file-icon.png', alt: 'Image icon' }
-    case "program": return { src: '/icons/file-icon.png', alt: 'Program icon' }
+    case 'textfile':
+      return { src: '/icons/file-icon.png', alt: 'File icon' };
+    case 'image':
+      return { src: '/icons/file-icon.png', alt: 'Image icon' };
+    case 'program':
+      return { src: '/icons/file-icon.png', alt: 'Program icon' };
   }
 }
 
@@ -280,14 +329,28 @@ export function createBaseFileSystem(): FileSystem {
   const fileSystem = new FileSystem();
   const rootEntry = fileSystem.getDirectory('/');
 
-  if (!rootEntry.ok) { return fileSystem; }
+  if (!rootEntry.ok) {
+    return fileSystem;
+  }
   const root = rootEntry.value;
 
-  const applicationFolderIcon = { src: '/icons/icon-applications-folder.png', alt: 'Application folder' };
-  const documentsFolderIcon = { src: '/icons/icon-documents-folder.png', alt: 'Documents folder' };
+  const applicationFolderIcon = {
+    src: '/icons/icon-applications-folder.png',
+    alt: 'Application folder',
+  };
+  const documentsFolderIcon = {
+    src: '/icons/icon-documents-folder.png',
+    alt: 'Documents folder',
+  };
 
   // Create base file tree
-  const applications = fileSystem.addDirectory(root, 'Applications', false, false, applicationFolderIcon);
+  const applications = fileSystem.addDirectory(
+    root,
+    'Applications',
+    false,
+    false,
+    applicationFolderIcon
+  );
 
   fileSystem.addApplication(finderConfig);
   fileSystem.addApplication(contactConfig);
@@ -307,20 +370,53 @@ export function createBaseFileSystem(): FileSystem {
   const joey = fileSystem.addDirectory(users, 'joey', false, true);
 
   const desktop = fileSystem.addDirectory(joey, 'Desktop', false, true);
-  const documents = fileSystem.addDirectory(joey, 'Documents', false, true, documentsFolderIcon);
+  const documents = fileSystem.addDirectory(
+    joey,
+    'Documents',
+    false,
+    true,
+    documentsFolderIcon
+  );
   const trashCanIcon = { src: '/icons/trash-icon.png', alt: 'Trash can icon' };
-  const trash = fileSystem.addDirectory(joey, 'Trash', false, true, trashCanIcon);
+  const trash = fileSystem.addDirectory(
+    joey,
+    'Trash',
+    false,
+    true,
+    trashCanIcon
+  );
 
-  fileSystem.addHyperLink(desktop, applications, 'Applications', applicationFolderIcon, true);
+  fileSystem.addHyperLink(
+    desktop,
+    applications,
+    'Applications',
+    applicationFolderIcon,
+    true
+  );
 
   if (doom.ok) {
     const doomShortcutIcon = { src: '/icons/doom-icon.png', alt: 'Play Doom' };
-    fileSystem.addHyperLink(desktop, doom.value, 'Doom', doomShortcutIcon, true);
+    fileSystem.addHyperLink(
+      desktop,
+      doom.value,
+      'Doom',
+      doomShortcutIcon,
+      true
+    );
   }
 
   if (algoViz.ok) {
-    const algoVizShortcutIcon = { src: '/icons/algorithm-visualizer-icon.png', alt: 'Start Algorithm Visualizer' };
-    fileSystem.addHyperLink(desktop, algoViz.value, 'Algorithms', algoVizShortcutIcon, true);
+    const algoVizShortcutIcon = {
+      src: '/icons/algorithm-visualizer-icon.png',
+      alt: 'Start Algorithm Visualizer',
+    };
+    fileSystem.addHyperLink(
+      desktop,
+      algoViz.value,
+      'Algorithms',
+      algoVizShortcutIcon,
+      true
+    );
   }
 
   const readmeText = `Hey, welcome to my portfolio website!
@@ -341,7 +437,14 @@ xtermjs - https://xtermjs.org/ A great terminal emulator that made the terminal 
   fileSystem.addTextFile(documents, 'libraries', librariesText, true);
 
   // We keep Cheems in the trash can :ˆ)
-  fileSystem.addImage(trash, 'Cheems', '.png', '/images/temp.png', "A lovely debug image", true);
+  fileSystem.addImage(
+    trash,
+    'Cheems',
+    '.png',
+    '/images/temp.png',
+    'A lovely debug image',
+    true
+  );
 
   const binaryDirectory = fileSystem.addDirectory(root, 'bin', false, false);
   fileSystem.addProgram(binaryDirectory, lsConfig);
@@ -368,12 +471,19 @@ export function addDebugAppToFileSystem(fs: FileSystem): void {
 export function removeDebugAppFromFileSystem(fs: FileSystem): void {
   const debugApplication = fs.getApplication('/Applications/Debug.app');
 
-  if (!debugApplication.ok) { return; }
+  if (!debugApplication.ok) {
+    return;
+  }
 
   fs.removeNodeFromDirectory(debugApplication.value);
 }
 
-function entriesWithinSelection(entries: Point[], x: number, y: number, dimensions: { width: number, height: number }): number {
+function entriesWithinSelection(
+  entries: Point[],
+  x: number,
+  y: number,
+  dimensions: { width: number; height: number }
+): number {
   const { width, height } = dimensions;
   // NOTE(Joey): The width & height are used for both the new incoming entry as the already existing entries.
   // It might be a good idea to make this static to the file system/configuration, instead of just randomly defined
@@ -385,63 +495,82 @@ function entriesWithinSelection(entries: Point[], x: number, y: number, dimensio
       x1: x,
       x2: x + width,
       y1: y,
-      y2: y + height
+      y2: y + height,
     };
 
     const b = {
       x1: entry.x,
       x2: entry.x + width,
       y1: entry.y,
-      y2: entry.y + height
+      y2: entry.y + height,
     };
 
     const overlap = rectangleIntersection(a, b);
 
-    if (overlap) { overlapping++; }
+    if (overlap) {
+      overlapping++;
+    }
   }
 
   return overlapping;
 }
 
-function generatePosition(iteration: number, settings: DirectorySettings, content: DirectoryContent, boundingBox: BoundingBox): { x: number, y: number } {
+function generatePosition(
+  iteration: number,
+  settings: DirectorySettings,
+  content: DirectoryContent,
+  boundingBox: BoundingBox
+): { x: number; y: number } {
   const direction = settings.sortDirection;
   const origin = settings.sortOrigin;
   const gridWidth = Math.floor(content.width / boundingBox.width);
   const gridHeight = Math.floor(content.height / boundingBox.height);
 
-  function positionX(iteration: number, direction: 'horizontal' | 'vertical'): number {
+  function positionX(
+    iteration: number,
+    direction: 'horizontal' | 'vertical'
+  ): number {
     switch (direction) {
-      case "horizontal":
+      case 'horizontal':
         return iteration % gridWidth;
 
-      case "vertical":
+      case 'vertical':
         return Math.floor(iteration / gridHeight);
     }
   }
 
-  function positionY(iteration: number, direction: 'horizontal' | 'vertical'): number {
+  function positionY(
+    iteration: number,
+    direction: 'horizontal' | 'vertical'
+  ): number {
     switch (direction) {
-      case "horizontal":
+      case 'horizontal':
         return Math.floor(iteration / gridWidth);
 
-      case "vertical":
+      case 'vertical':
         return iteration % gridHeight;
     }
   }
 
   let x = positionX(iteration, direction) * boundingBox.width;
-  if (origin === 'top-right') { x = (content.width - boundingBox.width) - x; }
+  if (origin === 'top-right') {
+    x = content.width - boundingBox.width - x;
+  }
 
   const y = positionY(iteration, direction) * boundingBox.height;
 
   return { x, y };
 }
 
-function generatePositionRange(settings: DirectorySettings, content: DirectoryContent, boundingBox: { width: number, height: number }): { x: number, y: number }[] {
+function generatePositionRange(
+  settings: DirectorySettings,
+  content: DirectoryContent,
+  boundingBox: { width: number; height: number }
+): { x: number; y: number }[] {
   const horizontalSteps = Math.floor(content.width / boundingBox.width);
   const verticalSteps = Math.floor(content.height / boundingBox.height);
 
-  let steps = [];
+  const steps = [];
 
   const iterations = horizontalSteps * verticalSteps;
 
@@ -456,57 +585,94 @@ export function calculateNodePosition(
   settings: DirectorySettings,
   content: DirectoryContent,
   others: Point[]
-): { x: number, y: number } {
+): { x: number; y: number } {
   const nodeBoundingBox = { width: IconWidth, height: IconHeight };
 
-  const positionRange = generatePositionRange(settings, content, nodeBoundingBox);
-  const possiblePosition = positionRange.find(pos => entriesWithinSelection(others, pos.x, pos.y, nodeBoundingBox) === 0);
+  const positionRange = generatePositionRange(
+    settings,
+    content,
+    nodeBoundingBox
+  );
+  const possiblePosition = positionRange.find(
+    pos => entriesWithinSelection(others, pos.x, pos.y, nodeBoundingBox) === 0
+  );
 
-  if (possiblePosition) { return possiblePosition; }
+  if (possiblePosition) {
+    return possiblePosition;
+  }
 
   // Handle the not possible position behavior
   switch (content.overflowBehavior) {
     case 'overflow': {
       let iteration = positionRange.length;
-      let position: { x: number, y: number };
+      let position: { x: number; y: number };
 
       do {
-        position = generatePosition(iteration++, settings, content, nodeBoundingBox);
-      } while (entriesWithinSelection(others, position.x, position.y, nodeBoundingBox) !== 0);
+        position = generatePosition(
+          iteration++,
+          settings,
+          content,
+          nodeBoundingBox
+        );
+      } while (
+        entriesWithinSelection(
+          others,
+          position.x,
+          position.y,
+          nodeBoundingBox
+        ) !== 0
+      );
 
       return position;
-    };
+    }
     case 'overlay': {
       let iteration = 0;
       let round = 1;
-      let position: { x: number, y: number };
+      let position: { x: number; y: number };
 
       do {
-        position = generatePosition(iteration++, settings, content, nodeBoundingBox);
+        position = generatePosition(
+          iteration++,
+          settings,
+          content,
+          nodeBoundingBox
+        );
 
         if (iteration !== 0 && iteration % positionRange.length === 0) {
           iteration = 0;
           round++;
         }
-
-      } while (entriesWithinSelection(others, position.x, position.y, nodeBoundingBox) > round);
+      } while (
+        entriesWithinSelection(
+          others,
+          position.x,
+          position.y,
+          nodeBoundingBox
+        ) > round
+      );
 
       return position;
     }
   }
 }
 
-export function findNodeInDirectoryChain(directory: FileSystemDirectory, node: FileSystemNode): Result<Node<DirectoryEntry>, Error> {
+export function findNodeInDirectoryChain(
+  directory: FileSystemDirectory,
+  node: FileSystemNode
+): Result<Node<DirectoryEntry>> {
   for (const entry of directory.children.iterFromTail()) {
     if (entry.value.node.id === node.id) {
       return Ok(entry);
     }
   }
 
-  return Err(Error("Unable to find node within the directory chain"));
+  return Err(Error('Unable to find node within the directory chain'));
 }
 
-function isParentOfTargetDirectory(directory: FileSystemDirectory, node: FileSystemNode): boolean {
+function isParentOfTargetDirectory(
+  directory: FileSystemDirectory,
+  node: FileSystemNode
+): boolean {
   let currentDir: FileSystemDirectory | null = directory;
 
   while (currentDir) {
@@ -522,24 +688,34 @@ function isParentOfTargetDirectory(directory: FileSystemDirectory, node: FileSys
 
 function isEditable(node: FileSystemNode | null): boolean {
   // If no node is given (parent not existing) the node should not be editable, as this case should never happen
-  if (!node) { return false; }
+  if (!node) {
+    return false;
+  }
 
   return node.editable;
 }
 
-function targetDirectoryAllowsModification(directory: FileSystemDirectory): boolean {
+function targetDirectoryAllowsModification(
+  directory: FileSystemDirectory
+): boolean {
   return directory.editable || directory.editableContent;
 }
 
-function targetMovedInSameDirectory(targetDirectory: FileSystemDirectory, node: FileSystemNode): boolean {
+function targetMovedInSameDirectory(
+  targetDirectory: FileSystemDirectory,
+  node: FileSystemNode
+): boolean {
   return targetDirectory.id === node.parent?.id;
 }
 
-export function getAbsolutePath(path: string, appendDirectorySlash?: boolean): string {
+export function getAbsolutePath(
+  path: string,
+  appendDirectorySlash?: boolean
+): string {
   let isDirectory = path.endsWith('/') || appendDirectorySlash;
   const pathParts = path.split('/').filter(x => x.length > 0);
 
-  let stack: string[] = [];
+  const stack: string[] = [];
 
   for (let i = 0; i < pathParts.length; i++) {
     const isLast = i === pathParts.length - 1;
@@ -547,7 +723,9 @@ export function getAbsolutePath(path: string, appendDirectorySlash?: boolean): s
 
     switch (part) {
       case '.': {
-        if (isLast) { isDirectory = true; }
+        if (isLast) {
+          isDirectory = true;
+        }
         break;
       }
       case '..': {
@@ -560,16 +738,28 @@ export function getAbsolutePath(path: string, appendDirectorySlash?: boolean): s
     }
   }
 
-  if (stack.length === 0) { return '/' };
+  if (stack.length === 0) {
+    return '/';
+  }
 
   return '/' + stack.join('/') + (isDirectory ? '/' : '');
 }
 
-export type NodeRefreshEvent = { kind: 'refresh' }
-export type NodeUpdateEvent = { kind: 'update' }
-export type NodeRenameEvent = { kind: 'rename', path: string }
+export interface NodeRefreshEvent {
+  kind: 'refresh';
+}
+export interface NodeUpdateEvent {
+  kind: 'update';
+}
+export interface NodeRenameEvent {
+  kind: 'rename';
+  path: string;
+}
 
-export type NodeEventType = NodeRefreshEvent | NodeUpdateEvent | NodeRenameEvent;
+export type NodeEventType =
+  | NodeRefreshEvent
+  | NodeUpdateEvent
+  | NodeRenameEvent;
 export type NodeListener = (type: NodeEventType) => void;
 
 export class FileSystem {
@@ -578,7 +768,7 @@ export class FileSystem {
   private lookupTable: Record<string, FileSystemNode> = {};
 
   // The number used here, is equal to the id of the directory
-  private nodeListeners: Record<number, (NodeListener)[]> = {};
+  private nodeListeners: Record<number, NodeListener[]> = {};
 
   constructor() {
     this.root = createRootNode();
@@ -593,7 +783,9 @@ export class FileSystem {
 
     this.nodeListeners[node.id].push(listener);
 
-    return () => { this.unsubscribe(node, listener); }
+    return () => {
+      this.unsubscribe(node, listener);
+    };
   }
 
   public unsubscribe(node: FileSystemNode, listener: NodeListener) {
@@ -607,16 +799,20 @@ export class FileSystem {
 
   public propagateNodeEvent(node: FileSystemNode, type: NodeEventType) {
     const listeners = this.nodeListeners[node.id];
-    if (!listeners) { return; }
+    if (!listeners) {
+      return;
+    }
 
-    for (const listener of listeners) { listener(type); }
+    for (const listener of listeners) {
+      listener(type);
+    }
   }
 
-  public getNode(path: string): Result<FileSystemNode, Error> {
+  public getNode(path: string): Result<FileSystemNode> {
     const node = this.lookupTable[getAbsolutePath(path)];
 
     if (!node) {
-      return Err(Error("Node not found"));
+      return Err(Error('Node not found'));
     }
 
     return Ok(node);
@@ -635,23 +831,29 @@ export class FileSystem {
       });
   }
 
-  public renameAndMove(node: FileSystemNode, name: string, directory: FileSystemDirectory): Result<DirectoryEntry, Error> {
+  public renameAndMove(
+    node: FileSystemNode,
+    name: string,
+    directory: FileSystemDirectory
+  ): Result<DirectoryEntry> {
     if (isParentOfTargetDirectory(directory, node)) {
-      return Err(Error("Node is a parent of the target directory"));
+      return Err(Error('Node is a parent of the target directory'));
     }
 
     if (!isEditable(node)) {
-      return Err(Error("Node or target directory is not editable"));
+      return Err(Error('Node or target directory is not editable'));
     }
 
     if (!targetDirectoryAllowsModification(directory)) {
-      return Err(Error("Target directory does not allow modification"));
+      return Err(Error('Target directory does not allow modification'));
     }
 
     const oldLookupPath = constructPath(node);
 
     this.removeNodeFromDirectory(node);
-    if (node.parent) { this.propagateNodeEvent(node.parent, { kind: 'update' }); }
+    if (node.parent) {
+      this.propagateNodeEvent(node.parent, { kind: 'update' });
+    }
 
     node.name = name;
 
@@ -669,20 +871,23 @@ export class FileSystem {
     return Ok(entry);
   }
 
-  public renameNode(node: FileSystemNode, name: string): Result<FileSystemNode, Error> {
+  public renameNode(
+    node: FileSystemNode,
+    name: string
+  ): Result<FileSystemNode> {
     // We only check for a duplicate names
     if (!node.parent) {
-      return Err(Error("A parent is required, to rename the directory"));
+      return Err(Error('A parent is required, to rename the directory'));
     }
 
     // We allow any other name, like Apple's HFS+
     if (!isUniqueFile(node.parent, name)) {
-      return Err(Error("Duplicate filename"));
+      return Err(Error('Duplicate filename'));
     }
 
     // We need the name to be at the very least 1 character
     if (name.length < 1) {
-      return Err(Error("The name is too short"));
+      return Err(Error('The name is too short'));
     }
 
     const oldLookupPath = constructPath(node);
@@ -701,28 +906,37 @@ export class FileSystem {
     return Ok(node);
   }
 
-  public moveNode(node: FileSystemNode, directory: FileSystemDirectory): Result<DirectoryEntry, Error> {
+  public moveNode(
+    node: FileSystemNode,
+    directory: FileSystemDirectory
+  ): Result<DirectoryEntry> {
     // Check if the node was a parent of the target directory
     if (isParentOfTargetDirectory(directory, node)) {
-      return Err(Error("Node is a parent of the target directory"));
+      return Err(Error('Node is a parent of the target directory'));
     }
 
     if (!isEditable(node)) {
-      return Err(Error("Node or target directory is not editable"));
+      return Err(Error('Node or target directory is not editable'));
     }
 
     if (!targetDirectoryAllowsModification(directory)) {
-      return Err(Error("Target directory does not allow modification"));
+      return Err(Error('Target directory does not allow modification'));
     }
 
     if (targetMovedInSameDirectory(directory, node)) {
       // Match the directory based on their unique node id
       const originalDirectoryEntry = directory.children
         .iterFromTail() // Doesn't matter which one we take, as long as it is a iterator
-        .find((entry: DirectoryEntry) => { return entry.node.id === node.id; });
+        .find((entry: DirectoryEntry) => {
+          return entry.node.id === node.id;
+        });
 
       if (!originalDirectoryEntry) {
-        return Err(Error("Parent moved in the same directory, but cannot be found in the directory listing"));
+        return Err(
+          Error(
+            'Parent moved in the same directory, but cannot be found in the directory listing'
+          )
+        );
       }
 
       return Ok(originalDirectoryEntry);
@@ -734,7 +948,9 @@ export class FileSystem {
     this.removeNodeFromDirectory(node);
 
     // Inform the old parent that the node has been removed
-    if (node.parent) { this.propagateNodeEvent(node.parent, { kind: 'update' }); }
+    if (node.parent) {
+      this.propagateNodeEvent(node.parent, { kind: 'update' });
+    }
 
     // Create the new directory entry
     // NOTE: This method call modifies the node object, so we can reconstruct the path again
@@ -749,49 +965,67 @@ export class FileSystem {
     return Ok(entry);
   }
 
-  public getApplication(path: string): Result<FileSystemApplication, Error> {
+  public getApplication(path: string): Result<FileSystemApplication> {
     const node = this.getNode(path);
 
-    if (!node.ok) { return node; }
+    if (!node.ok) {
+      return node;
+    }
 
     if (node.value.kind !== 'application') {
-      return Err(Error("Node is not an application"))
+      return Err(Error('Node is not an application'));
     }
 
     return Ok(node.value);
   }
 
-  public getDirectory(path: string): Result<FileSystemDirectory, Error> {
-    if (!path.endsWith('/')) { path += '/'; }
+  public getDirectory(path: string): Result<FileSystemDirectory> {
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
 
     const node = this.getNode(path);
 
-    if (!node.ok) { return node; }
+    if (!node.ok) {
+      return node;
+    }
 
     if (node.value.kind !== 'directory') {
-      return Err(Error("Node is not a directory"));
+      return Err(Error('Node is not a directory'));
     }
 
     return Ok(node.value);
   }
 
-  public getImage(path: string): Result<FileSystemImage, Error> {
+  public getImage(path: string): Result<FileSystemImage> {
     const node = this.getNode(path);
 
-    if (!node.ok) { return node; }
+    if (!node.ok) {
+      return node;
+    }
 
     if (node.value.kind !== 'image') {
-      return Err(Error("Node is not an image"))
+      return Err(Error('Node is not an image'));
     }
 
     return Ok(node.value);
   }
 
-  public addApplication(config: ApplicationConfig): Result<FileSystemApplication, Error> {
+  public addApplication(
+    config: ApplicationConfig
+  ): Result<FileSystemApplication> {
     const parent = this.lookupTable[config.path];
-    if (parent.kind !== 'directory') { return Err(Error("Parent is not a directory")); }
+    if (parent.kind !== 'directory') {
+      return Err(Error('Parent is not a directory'));
+    }
 
-    const application = createApplication(++this.id, parent, config.appName, config.appIcon, config.entrypoint);
+    const application = createApplication(
+      ++this.id,
+      parent,
+      config.appName,
+      config.appIcon,
+      config.entrypoint
+    );
 
     this.addNodeToDirectory(parent, application);
 
@@ -802,8 +1036,16 @@ export class FileSystem {
     return Ok(application);
   }
 
-  public addProgram(parent: FileSystemDirectory, config: ProgramConfig): FileSystemProgram {
-    const program = createProgram(++this.id, parent, config.appName, config.program);
+  public addProgram(
+    parent: FileSystemDirectory,
+    config: ProgramConfig
+  ): FileSystemProgram {
+    const program = createProgram(
+      ++this.id,
+      parent,
+      config.appName,
+      config.program
+    );
 
     this.addNodeToDirectory(parent, program);
 
@@ -814,8 +1056,21 @@ export class FileSystem {
     return program;
   }
 
-  public addDirectory(parent: FileSystemDirectory, name: string, editable: boolean, editableContent: boolean, icon?: ApplicationIcon): FileSystemDirectory {
-    const directory = createDirectory(++this.id, parent, name, editable, editableContent, icon);
+  public addDirectory(
+    parent: FileSystemDirectory,
+    name: string,
+    editable: boolean,
+    editableContent: boolean,
+    icon?: ApplicationIcon
+  ): FileSystemDirectory {
+    const directory = createDirectory(
+      ++this.id,
+      parent,
+      name,
+      editable,
+      editableContent,
+      icon
+    );
 
     this.addNodeToDirectory(parent, directory);
 
@@ -826,8 +1081,21 @@ export class FileSystem {
     return directory;
   }
 
-  public addTextFile(parent: FileSystemDirectory, name: string, content: string, editable: boolean, extension: string = '.txt'): FileSystemTextFile {
-    const textFile = createTextFile(++this.id, parent, name, content, editable, extension);
+  public addTextFile(
+    parent: FileSystemDirectory,
+    name: string,
+    content: string,
+    editable: boolean,
+    extension = '.txt'
+  ): FileSystemTextFile {
+    const textFile = createTextFile(
+      ++this.id,
+      parent,
+      name,
+      content,
+      editable,
+      extension
+    );
 
     this.addNodeToDirectory(parent, textFile);
 
@@ -838,8 +1106,23 @@ export class FileSystem {
     return textFile;
   }
 
-  public addImage(parent: FileSystemDirectory, name: string, extension: FileSystemImageExtension, source: string, description: string, editable: boolean) {
-    const image = createImage(++this.id, parent, name, extension, source, description, editable);
+  public addImage(
+    parent: FileSystemDirectory,
+    name: string,
+    extension: FileSystemImageExtension,
+    source: string,
+    description: string,
+    editable: boolean
+  ) {
+    const image = createImage(
+      ++this.id,
+      parent,
+      name,
+      extension,
+      source,
+      description,
+      editable
+    );
 
     this.addNodeToDirectory(parent, image);
 
@@ -850,8 +1133,21 @@ export class FileSystem {
     return image;
   }
 
-  public addHyperLink(parent: FileSystemDirectory, target: FileSystemNode, name: string, icon: ApplicationIcon, editable: boolean) {
-    const hyperlink = createHyperLink(++this.id, parent, target, name, icon, editable);
+  public addHyperLink(
+    parent: FileSystemDirectory,
+    target: FileSystemNode,
+    name: string,
+    icon: ApplicationIcon,
+    editable: boolean
+  ) {
+    const hyperlink = createHyperLink(
+      ++this.id,
+      parent,
+      target,
+      name,
+      icon,
+      editable
+    );
 
     this.addNodeToDirectory(parent, hyperlink);
 
@@ -862,7 +1158,10 @@ export class FileSystem {
     return hyperlink;
   }
 
-  public addNodeToDirectory(directory: FileSystemDirectory, node: FileSystemNode): DirectoryEntry {
+  public addNodeToDirectory(
+    directory: FileSystemDirectory,
+    node: FileSystemNode
+  ): DirectoryEntry {
     const { x, y } = calculateNodePosition(
       directory.settings,
       directory.content,
@@ -884,10 +1183,14 @@ export class FileSystem {
 
   public removeNodeFromDirectory(node: FileSystemNode) {
     const parentDirectory = node.parent;
-    if (!parentDirectory) { return; }
+    if (!parentDirectory) {
+      return;
+    }
 
     const chainNode = findNodeInDirectoryChain(parentDirectory, node);
-    if (!chainNode.ok) { return; }
+    if (!chainNode.ok) {
+      return;
+    }
 
     const result = chainNode.value;
     parentDirectory.children.unlink(result);

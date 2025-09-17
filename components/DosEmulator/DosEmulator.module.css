@@ -22,11 +22,11 @@
 
 @keyframes loading-animation {
   from {
-    content: '.'
+    content: '.';
   }
 
   50% {
-    content: '..'
+    content: '..';
   }
 
   to {

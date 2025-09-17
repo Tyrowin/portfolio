@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from "zod";
-import nodemailer from "nodemailer";
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import nodemailer from 'nodemailer';
 
-type SendEmailRequestData = {
-  name: string,
-  email: string,
-  company?: string,
-  message: string
+interface SendEmailRequestData {
+  name: string;
+  email: string;
+  company?: string;
+  message: string;
 }
 
 const contactSchema = z.object({
@@ -19,7 +20,7 @@ const contactSchema = z.object({
 async function sendEmailToMe(request: SendEmailRequestData): Promise<void> {
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_SERVER,
-    port: parseInt(process.env.MAIL_PORT ?? "587"),
+    port: parseInt(process.env.MAIL_PORT ?? '587'),
     secure: false,
     auth: {
       user: process.env.MAIL_USER,
@@ -33,7 +34,7 @@ async function sendEmailToMe(request: SendEmailRequestData): Promise<void> {
     from: process.env.MAIL_USER,
     to: process.env.MAIL_USER,
     subject,
-    text: request.message
+    text: request.message,
   });
 }
 
@@ -50,12 +51,11 @@ export async function POST(request: NextRequest) {
     }
 
     await sendEmailToMe(validatedRequest.data);
-    return NextResponse.json({ message: "Message processed" });
-    
+    return NextResponse.json({ message: 'Message processed' });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
-      { error: "Unable to send email" },
+      { error: 'Unable to send email' },
       { status: 500 }
     );
   }

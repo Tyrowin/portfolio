@@ -1,8 +1,9 @@
-import { Shell } from "@/applications/Terminal/Shell";
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { getAbsolutePathFromArgs, ProgramConfig } from "../Programs";
-import { FileSystem } from "@/apis/FileSystem/FileSystem";
-import { pathLastEntry, pathPop } from "@/apis/FileSystem/util";
+import type { Shell } from '@/applications/Terminal/Shell';
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { ProgramConfig } from '../Programs';
+import { getAbsolutePathFromArgs } from '../Programs';
+import type { FileSystem } from '@/apis/FileSystem/FileSystem';
+import { pathLastEntry, pathPop } from '@/apis/FileSystem/util';
 
 function isDirectory(path: string): boolean {
   return path.endsWith('/');
@@ -23,22 +24,32 @@ function stripExtension(fileName: string): string {
 }
 
 function getSourcePath(source: string, fs: FileSystem, shell: Shell): string {
-  const sourceDirectoryResult = fs.getDirectory(getAbsolutePathFromArgs(source, shell));
+  const sourceDirectoryResult = fs.getDirectory(
+    getAbsolutePathFromArgs(source, shell)
+  );
 
-  if (sourceDirectoryResult.ok) { return toDirectoryPath(source); }
+  if (sourceDirectoryResult.ok) {
+    return toDirectoryPath(source);
+  }
 
   return source;
 }
 
-function getTargetPath(source: string, target: string, fs: FileSystem, shell: Shell): string {
-
+function getTargetPath(
+  source: string,
+  target: string,
+  fs: FileSystem,
+  shell: Shell
+): string {
   function toEntry(path: string): string {
-    const entry = pathLastEntry(source) ?? "";
+    const entry = pathLastEntry(source) ?? '';
 
     return entry + (isDirectory(path) ? '/' : '');
   }
 
-  const targetDirectoryResult = fs.getDirectory(getAbsolutePathFromArgs(target, shell));
+  const targetDirectoryResult = fs.getDirectory(
+    getAbsolutePathFromArgs(target, shell)
+  );
 
   if (targetDirectoryResult.ok || isDirectory(target)) {
     return toDirectoryPath(target) + toEntry(source);
@@ -47,7 +58,12 @@ function getTargetPath(source: string, target: string, fs: FileSystem, shell: Sh
   return target;
 }
 
-function moveFiles(source: string, target: string, fs: FileSystem, shell: Shell): void {
+function moveFiles(
+  source: string,
+  target: string,
+  fs: FileSystem,
+  shell: Shell
+): void {
   const sourceAbsolutePath = getAbsolutePathFromArgs(source, shell);
   const targetAbsolutePath = getAbsolutePathFromArgs(target, shell);
 
@@ -57,7 +73,11 @@ function moveFiles(source: string, target: string, fs: FileSystem, shell: Shell)
   const sourceResult = fs.getNode(sourceAbsolutePath);
 
   if (!rootResult.ok || !sourceResult.ok) {
-    shell.getTerminal().writeResponse(`mv: rename ${source} to ${target}: No such file or directory`);
+    shell
+      .getTerminal()
+      .writeResponse(
+        `mv: rename ${source} to ${target}: No such file or directory`
+      );
     return;
   }
 
@@ -97,7 +117,11 @@ function Move(shell: Shell, args: string[], apis: SystemAPIs): void {
 
   const sourceNodeResult = fs.getNode(sourceAbsolutePath);
   if (!sourceNodeResult.ok) {
-    shell.getTerminal().writeResponse(`mv: rename ${sourcePath} to ${targetPath}: No such file or directory`);
+    shell
+      .getTerminal()
+      .writeResponse(
+        `mv: rename ${sourcePath} to ${targetPath}: No such file or directory`
+      );
     return;
   }
 
@@ -111,8 +135,8 @@ function Move(shell: Shell, args: string[], apis: SystemAPIs): void {
 }
 
 export class MoveConfig implements ProgramConfig {
-  public readonly appName = "mv"
-  public readonly program = Move
+  public readonly appName = 'mv';
+  public readonly program = Move;
 }
 
 export const moveConfig = new MoveConfig();

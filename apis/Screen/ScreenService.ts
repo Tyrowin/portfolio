@@ -1,4 +1,4 @@
-import { ObserverSubject } from "@/data/Observer"
+import { ObserverSubject } from '@/data/Observer';
 
 const MobileDeviceWidthThreshold = 700;
 

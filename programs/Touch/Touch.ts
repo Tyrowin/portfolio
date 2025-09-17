@@ -1,10 +1,20 @@
-import { Shell } from "@/applications/Terminal/Shell";
-import { FileSystem, FileSystemDirectory } from "@/apis/FileSystem/FileSystem";
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { ProgramConfig, getAbsolutePathFromArgs, getFileNameParts } from "../Programs";
-import { isUniqueFile, pathLastEntry, pathPop } from "@/apis/FileSystem/util";
+import type { Shell } from '@/applications/Terminal/Shell';
+import type {
+  FileSystem,
+  FileSystemDirectory,
+} from '@/apis/FileSystem/FileSystem';
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { ProgramConfig } from '../Programs';
+import { getAbsolutePathFromArgs, getFileNameParts } from '../Programs';
+import { isUniqueFile, pathLastEntry, pathPop } from '@/apis/FileSystem/util';
 
-function createFile(shell: Shell, fs: FileSystem, root: FileSystemDirectory, fileName: string, path: string): boolean {
+function createFile(
+  shell: Shell,
+  fs: FileSystem,
+  root: FileSystemDirectory,
+  fileName: string,
+  path: string
+): boolean {
   if (!root.editableContent) {
     shell.getTerminal().writeResponse(`touch: ${path}: Read-only file system`);
     return false;
@@ -17,21 +27,29 @@ function createFile(shell: Shell, fs: FileSystem, root: FileSystemDirectory, fil
 
   const { base, extension } = getFileNameParts(fileName);
 
-  fs.addTextFile(root, base, "", true, extension);
+  fs.addTextFile(root, base, '', true, extension);
 
   return true;
 }
 
-function createSequentialDirectory(shell: Shell, fs: FileSystem, path: string): void {
+function createSequentialDirectory(
+  shell: Shell,
+  fs: FileSystem,
+  path: string
+): void {
   const root = pathPop(path);
   const fileName = pathLastEntry(path);
 
-  if (!fileName) { return; }
+  if (!fileName) {
+    return;
+  }
 
   const rootDirectoryResult = fs.getDirectory(root);
 
   if (!rootDirectoryResult.ok) {
-    shell.getTerminal().writeResponse(`touch: ${root}: No such file or directory`);
+    shell
+      .getTerminal()
+      .writeResponse(`touch: ${root}: No such file or directory`);
     return;
   }
 
@@ -55,8 +73,8 @@ function Touch(shell: Shell, args: string[], apis: SystemAPIs): void {
 }
 
 export class TouchConfig implements ProgramConfig {
-  public readonly appName = "touch"
-  public readonly program = Touch
+  public readonly appName = 'touch';
+  public readonly program = Touch;
 }
 
 export const touchConfig = new TouchConfig();

@@ -18,7 +18,7 @@ export function Ok<T>(value: T): OkType<T> {
   return {
     ok: true,
     err: false,
-    value
+    value,
   };
 }
 
@@ -26,7 +26,7 @@ export function Err<E>(error: E): ErrType<E> {
   return {
     ok: false,
     err: true,
-    error
+    error,
   };
 }
 

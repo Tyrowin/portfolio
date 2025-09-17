@@ -2,24 +2,31 @@
   font-family: 'Century Schoolbook';
   font-style: sans-serif;
   font-weight: normal;
-  src: local('Century Schoolbook'), url('/fonts/century_schoolbook.ttf') format('truetype');
+  src:
+    local('Century Schoolbook'),
+    url('/fonts/century_schoolbook.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'Noto Serif Toto';
   font-style: sans-serif;
   font-weight: normal;
-  src: local('Noto Serif Toto'), url('/fonts/noto_serif_toto.ttf') format('truetype');
+  src:
+    local('Noto Serif Toto'),
+    url('/fonts/noto_serif_toto.ttf') format('truetype');
 }
 
-html, body {
+html,
+body {
   padding: 0;
   margin: 0;
   overscroll-behavior: none;
   font-family: 'Noto Serif Toto', 'Times New Roman', sans-serif;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -33,7 +40,11 @@ html, body {
   color: #000;
   background-color: #dcdcdc;
   font-size: 0.85em;
-  box-shadow: inset -1px -1px #535353,inset 1px 1px #fff,inset -2px -2px grey,inset 2px 2px #dfdfdf;
+  box-shadow:
+    inset -1px -1px #535353,
+    inset 1px 1px #fff,
+    inset -2px -2px grey,
+    inset 2px 2px #dfdfdf;
   user-select: none;
   cursor: pointer;
   white-space: nowrap;
@@ -57,10 +68,25 @@ html, body {
   outline: none;
   border-radius: 0;
   padding: 5px 6px;
-  box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+  box-shadow:
+    inset -1px -1px #fff,
+    inset 1px 1px grey,
+    inset -2px -2px #dfdfdf,
+    inset 2px 2px #0a0a0a;
   background-color: #fff;
   font-size: 0.8rem;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Open Sans',
+    'Helvetica Neue',
+    sans-serif;
 }
 
 .system-text-input:disabled {
@@ -91,14 +117,22 @@ html, body {
 .system-button:active,
 .header-button:active {
   background-color: #dcdcdc;
-  box-shadow: inset -1px -1px #fff,inset 1px 1px #535353,inset -2px -2px #dfdfdf,inset 2px 2px grey
+  box-shadow:
+    inset -1px -1px #fff,
+    inset 1px 1px #535353,
+    inset -2px -2px #dfdfdf,
+    inset 2px 2px grey;
 }
 
 .xl-system-button:disabled,
 .system-button:disabled,
 .header-button:disabled {
   background-color: #dcdcdc;
-  box-shadow: inset -1px -1px #535353,inset 1px 1px #fff,inset -2px -2px grey,inset 2px 2px #dfdfdf;
+  box-shadow:
+    inset -1px -1px #535353,
+    inset 1px 1px #fff,
+    inset -2px -2px grey,
+    inset 2px 2px #dfdfdf;
   text-shadow: 1px 1px 0 #fff;
   cursor: auto;
   color: grey;
@@ -114,7 +148,11 @@ html, body {
   background: #fff;
   margin: 3px;
   padding: 2px;
-  box-shadow: inset -1px -1px #fff,inset 1px 1px grey,inset -2px -2px #dfdfdf,inset 2px 2px #0a0a0a;
+  box-shadow:
+    inset -1px -1px #fff,
+    inset 1px 1px grey,
+    inset -2px -2px #dfdfdf,
+    inset 2px 2px #0a0a0a;
   flex: 1;
   overflow: auto;
 }
@@ -133,7 +171,6 @@ html, body {
   height: 100%;
 }
 
-
 h1,
 h2,
 h3,
@@ -147,7 +184,7 @@ h6 {
 .spritesheet-btn {
   width: 26px;
   height: 26px;
-  
+
   display: inline-flex;
 
   flex-direction: column;
@@ -166,7 +203,7 @@ h6 {
   display: block;
   width: 16px;
   height: 16px;
-  
+
   image-rendering: pixelated;
   background-size: 80px 16px;
   background-repeat: no-repeat;

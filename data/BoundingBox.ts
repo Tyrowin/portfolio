@@ -1,5 +1,5 @@
 /* These files are copied from the web project, we can make them shared but that takes a bit of effort */
-import { TouchData } from "./TouchData";
+import type { TouchData } from './TouchData';
 
 export class BoundingBox {
   constructor(
@@ -19,8 +19,8 @@ export class BoundingBox {
       return new BoundingBox(x, y, x, y);
     }
 
-    const x = data.touches.map((touch) => touch.x);
-    const y = data.touches.map((touch) => touch.y);
+    const x = data.touches.map(touch => touch.x);
+    const y = data.touches.map(touch => touch.y);
 
     const x1 = Math.min(...x);
     const x2 = Math.max(...x);
@@ -39,7 +39,7 @@ export class BoundingBox {
     return this.y2 - this.y1;
   }
 
-  center(): { x: number, y: number } {
+  center(): { x: number; y: number } {
     const x = this.x1 + this.width() / 2;
     const y = this.y1 + this.height() / 2;
 

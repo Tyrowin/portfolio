@@ -1,15 +1,32 @@
-import { ApplicationIcon, FileSystem, FileSystemApplication, FileSystemDirectory, FileSystemNode } from "@/apis/FileSystem/FileSystem";
-import { LocalWindowCompositor } from "@/components/WindowManagement/LocalWindowCompositor";
-import { WindowCompositor, WindowContext } from "@/components/WindowManagement/WindowCompositor";
-import { Err, Ok, Result } from "@/lib/result";
-import { LocalApplicationManager } from "./LocalApplicationManager";
-import { ApplicationEvent, ApplicationWindowEvent, createApplicationOpenEvent, createApplicationQuitEvent } from "./ApplicationEvents";
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { Action } from "@/components/util";
-import { parseCommand } from "@/apis/FileSystem/CommandEncoding";
-import { constructPath } from "@/apis/FileSystem/util";
+import type {
+  ApplicationIcon,
+  FileSystem,
+  FileSystemApplication,
+  FileSystemNode,
+} from '@/apis/FileSystem/FileSystem';
+import { LocalWindowCompositor } from '@/components/WindowManagement/LocalWindowCompositor';
+import type {
+  WindowCompositor,
+  WindowContext,
+} from '@/components/WindowManagement/WindowCompositor';
+import type { Result } from '@/lib/result';
+import { Err, Ok } from '@/lib/result';
+import { LocalApplicationManager } from './LocalApplicationManager';
+import type {
+  ApplicationEvent,
+  ApplicationWindowEvent,
+} from './ApplicationEvents';
+import {
+  createApplicationOpenEvent,
+  createApplicationQuitEvent,
+} from './ApplicationEvents';
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { Action } from '@/components/util';
+import { parseCommand } from '@/apis/FileSystem/CommandEncoding';
+import { constructPath } from '@/apis/FileSystem/util';
 
-// ApplicationContext should hold meta data/instances that is important to the application manager, but not to anyone else.
+// ApplicationContext should hold meta data/instances that is important to the
+// application manager, but not to anyone else.
 class ApplicationContext {
   constructor(
     public readonly path: string,
@@ -18,39 +35,38 @@ class ApplicationContext {
 }
 
 export interface ApplicationConfig {
-  readonly displayName: string,
-  readonly dockPriority: number | null,
-  readonly path: string,
-  readonly appName: string,
-  readonly appIcon: ApplicationIcon,
+  readonly displayName: string;
+  readonly dockPriority: number | null;
+  readonly path: string;
+  readonly appName: string;
+  readonly appIcon: ApplicationIcon;
   readonly entrypoint: (
     compositor: LocalWindowCompositor,
     manager: LocalApplicationManager,
     apis: SystemAPIs
-  ) => Application
+  ) => Application;
 }
 
-
-export type MenuItemAction = {
-  kind: 'action',
-  value: string,
-  action: () => void
+export interface MenuItemAction {
+  kind: 'action';
+  value: string;
+  action: () => void;
 }
 
-export type MenuItemSpacer = {
-  kind: 'spacer'
+export interface MenuItemSpacer {
+  kind: 'spacer';
 }
 
 export type MenuItem = MenuItemSpacer | MenuItemAction;
 
 export interface MenuDisplayOptions {
-  boldText?: boolean
-};
+  boldText?: boolean;
+}
 
 export interface MenuEntry {
-  readonly displayOptions: MenuDisplayOptions,
-  readonly name: string
-  readonly items: MenuItem[]
+  readonly displayOptions: MenuDisplayOptions;
+  readonly name: string;
+  readonly items: MenuItem[];
 }
 
 type ApplicationWindowListener = (event: ApplicationWindowEvent) => void;
@@ -67,7 +83,10 @@ export abstract class Application {
   abstract config(): ApplicationConfig;
   abstract menuEntries(): MenuEntry[];
 
-  protected baseHandler(event: ApplicationEvent, windowContext?: WindowContext): void {
+  protected baseHandler(
+    event: ApplicationEvent,
+    _windowContext?: WindowContext
+  ): void {
     if (event.kind === 'all-windows-closed') {
       this.manager.quit();
       return;
@@ -79,17 +98,25 @@ export abstract class Application {
     }
   }
 
-  subscribeToWindowEvents(windowId: number, listener: ApplicationWindowListener): Action<void> {
+  subscribeToWindowEvents(
+    windowId: number,
+    listener: ApplicationWindowListener
+  ): Action<void> {
     if (!this.windowListeners[windowId]) {
       this.windowListeners[windowId] = [];
     }
 
     this.windowListeners[windowId].push(listener);
 
-    return () => { this.unsubscribeFromWindowEvents(windowId, listener); };
+    return () => {
+      this.unsubscribeFromWindowEvents(windowId, listener);
+    };
   }
 
-  unsubscribeFromWindowEvents(windowId: number, listener: ApplicationWindowListener) {
+  unsubscribeFromWindowEvents(
+    windowId: number,
+    listener: ApplicationWindowListener
+  ) {
     for (const [index, entry] of this.windowListeners[windowId].entries()) {
       if (entry === listener) {
         this.windowListeners[windowId].splice(index);
@@ -100,51 +127,59 @@ export abstract class Application {
 
   sendEventToView(windowId: number, event: ApplicationWindowEvent) {
     const listeners = this.windowListeners[windowId];
-    if (!listeners) { return; }
+    if (!listeners) {
+      return;
+    }
 
-    for (const listener of listeners) { listener(event); }
+    for (const listener of listeners) {
+      listener(event);
+    }
   }
 
   sendEventToAllViews(event: ApplicationWindowEvent) {
     for (const listeners of Object.values(this.windowListeners)) {
-      for (const listener of listeners) { listener(event); }
+      for (const listener of listeners) {
+        listener(event);
+      }
     }
   }
 
   abstract on(event: ApplicationEvent, windowContext?: WindowContext): void;
 }
 
-type ApplicationInstance = {
-  application: Application,
-  context: ApplicationContext,
-  processId: number,
+interface ApplicationInstance {
+  application: Application;
+  context: ApplicationContext;
+  processId: number;
 }
 
 export interface BaseApplicationManager {
-  open(argument: string): Result<number, Error>;
+  open(argument: string): Result<number>;
   kill(processId: number): void;
 }
 
-
-export type ApplicationManagerFocusEvent = {
-  kind: 'focus',
-  application: Application
+export interface ApplicationManagerFocusEvent {
+  kind: 'focus';
+  application: Application;
 }
 
-export type ApplicationManagerUpdateEvent = {
-  kind: 'update'
+export interface ApplicationManagerUpdateEvent {
+  kind: 'update';
 }
 
-export type ApplicationManagerEvent = ApplicationManagerFocusEvent | ApplicationManagerUpdateEvent;
+export type ApplicationManagerEvent =
+  | ApplicationManagerFocusEvent
+  | ApplicationManagerUpdateEvent;
 
-export type ApplicationManagerListener = (event: ApplicationManagerEvent) => void;
+export type ApplicationManagerListener = (
+  event: ApplicationManagerEvent
+) => void;
 
 export class ApplicationManager implements BaseApplicationManager {
-
-  private processId: number = 0;
+  private processId = 0;
   private processes: (ApplicationInstance | null)[] = [];
 
-  private observers: (ApplicationManagerListener)[] = [];
+  private observers: ApplicationManagerListener[] = [];
 
   constructor(
     private windowCompositor: WindowCompositor,
@@ -156,7 +191,9 @@ export class ApplicationManager implements BaseApplicationManager {
 
   public subscribe(listener: ApplicationManagerListener) {
     this.observers.push(listener);
-    return () => { this.unsubscribe(listener); }
+    return () => {
+      this.unsubscribe(listener);
+    };
   }
 
   public unsubscribe(listener: ApplicationManagerListener) {
@@ -175,18 +212,19 @@ export class ApplicationManager implements BaseApplicationManager {
   }
 
   public focus(application: Application) {
-    console.log(`Application focussed: ${application.config().displayName}`);
-
+    // Focus event handled
     this.publishChanges({ kind: 'focus', application });
   }
 
   public listApplications(): Application[] {
-    return this.processes
-      .filter(x => x !== null)
-      .map(x => x!.application);
+    return this.processes.filter(x => x !== null).map(x => x.application);
   }
 
-  private openApplication(application: FileSystemApplication, path: string, args: string): Result<number, Error> {
+  private openApplication(
+    application: FileSystemApplication,
+    path: string,
+    args: string
+  ): Result<number> {
     const compositor = new LocalWindowCompositor(this.windowCompositor);
     const manager = new LocalApplicationManager(this.processId, this);
 
@@ -200,58 +238,68 @@ export class ApplicationManager implements BaseApplicationManager {
       const instance = {
         application: application.entrypoint(compositor, manager, this.apis),
         context: new ApplicationContext(path, compositor),
-        processId: this.processId
+        processId: this.processId,
       };
 
       this.processes.push(instance);
 
       instance.application.on(createApplicationOpenEvent(true, args));
 
-      this.publishChanges({ kind: 'update'});
+      this.publishChanges({ kind: 'update' });
 
       return Ok(this.processId++);
     }
   }
 
-  private openDirectory(path: string): Result<number, Error> {
+  private openDirectory(path: string): Result<number> {
     return this.open(`/Applications/Finder.app ${path}`);
   }
 
-  private openTextFile(path: string): Result<number, Error> {
+  private openTextFile(path: string): Result<number> {
     return this.open(`/Applications/Notes.app ${path}`);
   }
 
-  private openImage(path: string): Result<number, Error> {
+  private openImage(path: string): Result<number> {
     return this.open(`/Applications/Image.app ${path}`);
   }
 
-  private openFileSystemNode(node: FileSystemNode, path: string, args: string): Result<number, Error> {
+  private openFileSystemNode(
+    node: FileSystemNode,
+    path: string,
+    args: string
+  ): Result<number> {
     switch (node.kind) {
-      case 'application': return this.openApplication(node, path, args);
-      case 'directory': return this.openDirectory(path);
-      case 'textfile': return this.openTextFile(path);
-      case 'image': return this.openImage(path);
+      case 'application':
+        return this.openApplication(node, path, args);
+      case 'directory':
+        return this.openDirectory(path);
+      case 'textfile':
+        return this.openTextFile(path);
+      case 'image':
+        return this.openImage(path);
       case 'hyperlink': {
-
         // Hyperlink content is only editable by me, so we don't have to be very rigorous with the safety checks
-        const target      = node.target;
-        const targetPath  = constructPath(target);
+        const target = node.target;
+        const targetPath = constructPath(target);
 
         return this.openFileSystemNode(target, targetPath, args);
-      };
-      default: return Err(Error("Not yet implemented"))
+      }
+      default:
+        return Err(Error('Not yet implemented'));
     }
   }
 
-  open(argument: string): Result<number, Error> {
+  open(argument: string): Result<number> {
     const parts = parseCommand(argument);
 
     const path = parts.splice(0, 1)[0] ?? '';
-    const args = parts.join(' ') ?? '';
+    const args = parts.join(' ');
 
     const node = this.fileSystem.getNode(path);
 
-    if (!node.ok) { return Err(Error("File not found")); }
+    if (!node.ok) {
+      return Err(Error('File not found'));
+    }
 
     const value = node.value;
 
@@ -261,7 +309,9 @@ export class ApplicationManager implements BaseApplicationManager {
   kill(processId: number): void {
     const instance = this.processes[processId];
 
-    if (instance === null) { return; }
+    if (instance === null) {
+      return;
+    }
 
     instance.application.on(createApplicationQuitEvent());
     instance.context.compositor.closeAll();

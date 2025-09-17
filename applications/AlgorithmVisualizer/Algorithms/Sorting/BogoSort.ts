@@ -1,13 +1,16 @@
-import { SubViewParams } from "../../AlgorithmVisualizerView";
-import { SortingAlgorithmContainer } from "../Containers/SortingAlgorithmContainer";
-import { SortView, verifySort } from "../Containers/SortingView";
+import type { SubViewParams } from '../../AlgorithmVisualizerView';
+import { SortingAlgorithmContainer } from '../Containers/SortingAlgorithmContainer';
+import type { SortView } from '../Containers/SortingView';
+import { verifySort } from '../Containers/SortingView';
 
 async function bogosort(view: SortView, abortSignal: AbortSignal) {
-  while (!await verifySort(view, abortSignal)) {
+  while (!(await verifySort(view, abortSignal))) {
     view.cleanColors();
 
     for (let i = view.size() - 1; i > 0; i--) {
-      if (abortSignal.aborted) { return; }
+      if (abortSignal.aborted) {
+        return;
+      }
 
       // Fisher–Yates shuffle
       const j = Math.floor(Math.random() * i);

@@ -1,4 +1,5 @@
-import { Err, Ok, Result } from "@/lib/result";
+import type { Result } from '@/lib/result';
+import { Err, Ok } from '@/lib/result';
 
 function normalize(value: number, min: number, max: number): number {
   return min + value * (max - min);
@@ -11,9 +12,13 @@ export class PRNG {
     this.seeder = this.xmur3(seed);
   }
 
-  public random(min: number = 0, max: number = 1): Result<number, Error> {
-    if (min > max) { return Err(Error('The minimum value must be below the maximum value')); }
-    if (min === max) { return Err(Error('The minimum value cannot equal the maximum value')); }
+  public random(min = 0, max = 1): Result<number> {
+    if (min > max) {
+      return Err(Error('The minimum value must be below the maximum value'));
+    }
+    if (min === max) {
+      return Err(Error('The minimum value cannot equal the maximum value'));
+    }
 
     return Ok(normalize(this.sfc32(), min, max));
   }
@@ -24,12 +29,12 @@ export class PRNG {
 
     for (let i = 0; i < str.length; i++) {
       h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-      h = h << 13 | h >>> 19;
+      h = (h << 13) | (h >>> 19);
     }
 
     return () => {
-      h = Math.imul(h ^ h >>> 16, 2246822507);
-      h = Math.imul(h ^ h >>> 13, 3266489909);
+      h = Math.imul(h ^ (h >>> 16), 2246822507);
+      h = Math.imul(h ^ (h >>> 13), 3266489909);
       return (h ^= h >>> 16) >>> 0;
     };
   }

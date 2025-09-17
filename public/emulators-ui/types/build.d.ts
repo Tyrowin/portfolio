@@ -1,5 +1,5 @@
 export declare const Build: {
-    short: string;
-    version: string;
-    buildSeed: number;
+  short: string;
+  version: string;
+  buildSeed: number;
 };

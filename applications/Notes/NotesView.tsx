@@ -1,9 +1,10 @@
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import styles from './NotesView.module.css';
 import { useEffect, useRef, useState } from 'react';
-import { Application } from '../ApplicationManager';
-import { Err, Ok, Result } from '@/lib/result';
-import { FileSystemTextFile } from '@/apis/FileSystem/FileSystem';
+import type { Application } from '../ApplicationManager';
+import type { Result } from '@/lib/result';
+import { Err, Ok } from '@/lib/result';
+import type { FileSystemTextFile } from '@/apis/FileSystem/FileSystem';
 import {
   constructPath,
   generateUniqueNameForDirectory,
@@ -13,7 +14,7 @@ import { useTranslations } from 'next-intl';
 function getFileSystemTextNodeByPath(
   application: Application,
   path: string
-): Result<FileSystemTextFile, Error> {
+): Result<FileSystemTextFile> {
   const node = application.apis.fileSystem.getNode(path);
 
   if (!node.ok) {
@@ -55,7 +56,7 @@ export default function NotesApplicationView(props: WindowProps) {
 
     application.compositor
       .prompt(windowContext.id, t('notes.create_file_instructions'), title)
-      .then((title) => {
+      .then(title => {
         if (fs.getNode(`${path}${title}.txt`).ok) {
           application.compositor
             .alert(windowContext.id, t('notes.create_file_duplicated_name'))
@@ -84,7 +85,7 @@ export default function NotesApplicationView(props: WindowProps) {
     textFileRef.current.content = content;
   }
 
-  function loadFile(path: string): Result<FileSystemTextFile, Error> {
+  function loadFile(path: string): Result<FileSystemTextFile> {
     const file = getFileSystemTextNodeByPath(application, path);
 
     if (!file.ok) {
@@ -118,7 +119,7 @@ export default function NotesApplicationView(props: WindowProps) {
       return;
     }
 
-    const unsubscribe = fs.subscribe(file.value, (evt) => {
+    const unsubscribe = fs.subscribe(file.value, _evt => {
       updateWindowTitle(file.value);
     });
 
@@ -137,9 +138,9 @@ export default function NotesApplicationView(props: WindowProps) {
         </button>
       </div>
       <textarea
-        className={['system-text-input', styles['textarea']].join(' ')}
+        className={['system-text-input', styles.textarea].join(' ')}
         value={content}
-        onChange={(evt) => {
+        onChange={evt => {
           setContent(evt.target.value);
         }}
       />

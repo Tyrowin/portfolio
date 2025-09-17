@@ -1,8 +1,9 @@
-import { Shell } from "@/applications/Terminal/Shell";
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { ProgramConfig, getAbsolutePathFromArgs } from "../Programs";
-import { FileSystemNode } from "@/apis/FileSystem/FileSystem";
-import { blueBright } from "ansi-colors";
+import type { Shell } from '@/applications/Terminal/Shell';
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { ProgramConfig } from '../Programs';
+import { getAbsolutePathFromArgs } from '../Programs';
+import type { FileSystemNode } from '@/apis/FileSystem/FileSystem';
+import { blueBright } from 'ansi-colors';
 
 function formatEntry(node: FileSystemNode): string {
   const isDirectory = node.kind === 'directory';
@@ -34,8 +35,8 @@ function ListFile(shell: Shell, args: string[], apis: SystemAPIs): void {
 }
 
 export class ListFileConfig implements ProgramConfig {
-  public readonly appName = "ls"
-  public readonly program = ListFile
+  public readonly appName = 'ls';
+  public readonly program = ListFile;
 }
 
 export const lsConfig = new ListFileConfig();

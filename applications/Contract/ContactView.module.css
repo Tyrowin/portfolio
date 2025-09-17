@@ -29,8 +29,8 @@
   padding: 5px 0;
 }
 
-.form-row input[type=text],
-.form-row input[type=email],
+.form-row input[type='text'],
+.form-row input[type='email'],
 .form-row textarea {
   width: 100%;
 }
@@ -47,7 +47,11 @@
 .processed {
   background: #0dff0d;
   padding: 10px;
-  box-shadow: inset -1px -1px #535353,inset 1px 1px #fff,inset -2px -2px grey,inset 2px 2px #dfdfdf;
+  box-shadow:
+    inset -1px -1px #535353,
+    inset 1px 1px #fff,
+    inset -2px -2px grey,
+    inset 2px 2px #dfdfdf;
 }
 
 .instructions span {
@@ -101,7 +105,11 @@
   height: 22px;
   box-sizing: content-box;
   background-color: #dcdcdc;
-  box-shadow: inset -1px -1px #0a0a0a,inset 1px 1px #c8c8c8,inset -2px -2px grey,inset 2px 2px #fff;
+  box-shadow:
+    inset -1px -1px #0a0a0a,
+    inset 1px 1px #c8c8c8,
+    inset -2px -2px grey,
+    inset 2px 2px #fff;
 }
 
 .contact-socials a img {
@@ -114,5 +122,9 @@
 
 .contact-socials a:active {
   background-color: #dcdcdc;
-  box-shadow: inset -1px -1px #fff,inset 1px 1px #535353,inset -2px -2px #dfdfdf,inset 2px 2px grey;
+  box-shadow:
+    inset -1px -1px #fff,
+    inset 1px 1px #535353,
+    inset -2px -2px #dfdfdf,
+    inset 2px 2px grey;
 }

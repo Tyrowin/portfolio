@@ -1,32 +1,35 @@
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { Terminal } from "@xterm/xterm";
-import { cursorTo, cursorHide, cursorShow, cursorUp, cursorDown, cursorMove } from "ansi-escapes";
-import { BaseApplicationManager } from "../ApplicationManager";
-import { Shell } from "./Shell";
-import { TerminalConnector } from "./TerminalApplicationView";
-import { clamp, isSafari } from "@/components/util";
-import { SoundService } from "@/apis/Sound/Sound";
-import { playKeyDownSound } from "@/components/PeripheralSounds/PeripheralSounds";
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { Terminal } from '@xterm/xterm';
+import { cursorTo, cursorHide, cursorShow } from 'ansi-escapes';
+import type { BaseApplicationManager } from '../ApplicationManager';
+import { Shell } from './Shell';
+import type { TerminalConnector } from './TerminalApplicationView';
+import { clamp, isSafari } from '@/components/util';
+import type { SoundService } from '@/apis/Sound/Sound';
+import { playKeyDownSound } from '@/components/PeripheralSounds/PeripheralSounds';
 
 function isEscapeSequence(ansi: string, index: number): boolean {
-  return ansi.charCodeAt(index) === 0x1B;
+  return ansi.charCodeAt(index) === 0x1b;
 }
 
 function isControlSequenceIntroducer(ansi: string, index: number): boolean {
-  return ansi.charCodeAt(index) === 0x5B;
+  return ansi.charCodeAt(index) === 0x5b;
 }
 
 function isControlSequenceEndMarker(ansi: string, index: number): boolean {
-  return ansi.charCodeAt(index) === 0x6D;
+  return ansi.charCodeAt(index) === 0x6d;
 }
 
-function ansiSplit(ansi: string, maxLength: number): { part: string, offset: number } {
+function ansiSplit(
+  ansi: string,
+  maxLength: number
+): { part: string; offset: number } {
   let lastUsableIndex = 0;
 
   let length = 0;
   let index = 0;
 
-  let inControlSequence: boolean = false;
+  let inControlSequence = false;
 
   while (length < maxLength && index < ansi.length) {
     if (isEscapeSequence(ansi, index)) {
@@ -34,7 +37,10 @@ function ansiSplit(ansi: string, maxLength: number): { part: string, offset: num
       continue;
     }
 
-    if (isEscapeSequence(ansi, index - 1) && isControlSequenceIntroducer(ansi, index)) {
+    if (
+      isEscapeSequence(ansi, index - 1) &&
+      isControlSequenceIntroducer(ansi, index)
+    ) {
       inControlSequence = true;
     }
 
@@ -59,12 +65,14 @@ function ansiSplit(ansi: string, maxLength: number): { part: string, offset: num
 }
 
 export function ansiStringLength(ansi: string): number {
-  if (ansi.length < 1) { return ansi.length; }
+  if (ansi.length < 1) {
+    return ansi.length;
+  }
 
   let length = 0;
   let index = 0;
 
-  let inControlSequence: boolean = false;
+  let inControlSequence = false;
 
   while (index < ansi.length) {
     if (isEscapeSequence(ansi, index)) {
@@ -72,7 +80,10 @@ export function ansiStringLength(ansi: string): number {
       continue;
     }
 
-    if (isEscapeSequence(ansi, index - 1) && isControlSequenceIntroducer(ansi, index)) {
+    if (
+      isEscapeSequence(ansi, index - 1) &&
+      isControlSequenceIntroducer(ansi, index)
+    ) {
       inControlSequence = true;
     }
 
@@ -91,12 +102,14 @@ export function ansiStringLength(ansi: string): number {
 }
 
 export function stripAnsi(ansi: string): string {
-  if (ansi.length < 1) { return ""; }
+  if (ansi.length < 1) {
+    return '';
+  }
 
-  let output = "";
+  let output = '';
   let index = 0;
 
-  let inControlSequence: boolean = false;
+  let inControlSequence = false;
 
   while (index < ansi.length) {
     if (isEscapeSequence(ansi, index)) {
@@ -104,7 +117,10 @@ export function stripAnsi(ansi: string): string {
       continue;
     }
 
-    if (isEscapeSequence(ansi, index - 1) && isControlSequenceIntroducer(ansi, index)) {
+    if (
+      isEscapeSequence(ansi, index - 1) &&
+      isControlSequenceIntroducer(ansi, index)
+    ) {
       inControlSequence = true;
     }
 
@@ -122,22 +138,34 @@ export function stripAnsi(ansi: string): string {
   return output;
 }
 
-export function ansiStringPadStart(ansi: string, length: number, fillString?: string): string {
-  const fill = fillString || ' ';
+export function ansiStringPadStart(
+  ansi: string,
+  length: number,
+  fillString?: string
+): string {
+  const fill = fillString ?? ' ';
 
   const stringLength = ansiStringLength(ansi);
-  if (stringLength > length) { return ansi; }
+  if (stringLength > length) {
+    return ansi;
+  }
 
   const filling = fill.repeat(length - stringLength);
 
   return filling + ansi;
 }
 
-export function ansiStringPadEnd(ansi: string, length: number, fillString?: string): string {
-  const fill = fillString || ' ';
+export function ansiStringPadEnd(
+  ansi: string,
+  length: number,
+  fillString?: string
+): string {
+  const fill = fillString ?? ' ';
 
   const stringLength = ansiStringLength(ansi);
-  if (stringLength > length) { return ansi; }
+  if (stringLength > length) {
+    return ansi;
+  }
 
   const filling = fill.repeat(length - stringLength);
 
@@ -145,10 +173,12 @@ export function ansiStringPadEnd(ansi: string, length: number, fillString?: stri
 }
 
 function splitStringInParts(input: string, cols: number): string[] {
-  if (input === '') { return ['']; }
+  if (input === '') {
+    return [''];
+  }
 
   let index = 0;
-  let parts: string[] = [];
+  const parts: string[] = [];
 
   while (index < input.length) {
     const { part, offset } = ansiSplit(input.slice(index), cols);
@@ -161,19 +191,19 @@ function splitStringInParts(input: string, cols: number): string[] {
 }
 
 export class TerminalManager implements TerminalConnector {
-  private prompt: string = "";
-  private showOutput: boolean = true;
+  private prompt = '';
+  private showOutput = true;
 
-  private promptLines: number = 1;
-  private actualPromptLines: number = 1;
+  private promptLines = 1;
+  private actualPromptLines = 1;
 
-  private promptLine: number = 0;
-  private promptPosition: number = 0;
+  private promptLine = 0;
+  private promptPosition = 0;
 
   private resizeObserver: ResizeObserver | null = null;
   private shell: Shell;
 
-  private historyPrompt: string = "";
+  private historyPrompt = '';
   private historyEntries: string[] = [];
   private historyIndex = 0;
 
@@ -181,12 +211,17 @@ export class TerminalManager implements TerminalConnector {
 
   private soundService: SoundService;
 
-  constructor(private terminal: Terminal, private domElement: HTMLElement, applicationManager: BaseApplicationManager, apis: SystemAPIs) {
+  constructor(
+    private terminal: Terminal,
+    private domElement: HTMLElement,
+    applicationManager: BaseApplicationManager,
+    apis: SystemAPIs
+  ) {
     this.terminal.options.fontSize = 16;
 
     // xterm js has a bit of a weird initialization process, so we hardcode these values
-    const cellWidth   = 9.6;
-    const cellHeight  = 17;
+    const cellWidth = 9.6;
+    const cellHeight = 17;
 
     const cols = Math.floor(domElement.clientWidth / cellWidth);
     const rows = Math.floor(domElement.clientHeight / cellHeight);
@@ -197,7 +232,7 @@ export class TerminalManager implements TerminalConnector {
     this.soundService = apis.sound;
   }
 
-  private coordsInPrompt(index: number): { x: number, y: number } {
+  private coordsInPrompt(index: number): { x: number; y: number } {
     index += ansiStringLength(this.shell.getPromptString());
 
     const x = index % this.terminal.cols;
@@ -205,7 +240,7 @@ export class TerminalManager implements TerminalConnector {
 
     const baseY = this.promptLine - this.terminal.buffer.active.baseY;
 
-    return { x, y: baseY + y}
+    return { x, y: baseY + y };
   }
 
   private clearPrompt(): void {
@@ -251,7 +286,9 @@ export class TerminalManager implements TerminalConnector {
   public writeResponse(response: string): void {
     this.responseLines.push(response);
 
-    if (!this.showOutput) { return; }
+    if (!this.showOutput) {
+      return;
+    }
 
     this.hideCursor();
 
@@ -268,7 +305,9 @@ export class TerminalManager implements TerminalConnector {
   public writeResponseLines(lines: string[]): void {
     this.responseLines.push(...lines);
 
-    if (!this.showOutput) { return; }
+    if (!this.showOutput) {
+      return;
+    }
 
     for (const line of lines) {
       this.writeResponse(line);
@@ -303,7 +342,7 @@ export class TerminalManager implements TerminalConnector {
     const lines = splitStringInParts(content, this.terminal.cols);
     const lineDiff = Math.max(lines.length - this.promptLines, 0);
 
-    for (let i = 0; i > lineDiff; i++) {
+    for (let i = 0; i < lineDiff; i++) {
       this.terminal.write('\r\n'); // Write empty lines, so we can write over them with a write with data
     }
 
@@ -337,11 +376,15 @@ export class TerminalManager implements TerminalConnector {
 
   private moveCursor(direction: 'left' | 'right'): void {
     if (direction === 'left') {
-      if (this.promptPosition === 0) { return; }
+      if (this.promptPosition === 0) {
+        return;
+      }
 
       this.promptPosition--;
     } else {
-      if (this.promptPosition >= this.prompt.length) { return; }
+      if (this.promptPosition >= this.prompt.length) {
+        return;
+      }
 
       this.promptPosition++;
     }
@@ -352,7 +395,11 @@ export class TerminalManager implements TerminalConnector {
 
   private loadHistory(direction: 'prev' | 'next'): void {
     const offset = direction === 'next' ? 1 : -1;
-    this.historyIndex = clamp(this.historyIndex + offset, 0, this.historyEntries.length);
+    this.historyIndex = clamp(
+      this.historyIndex + offset,
+      0,
+      this.historyEntries.length
+    );
 
     if (this.historyIndex === this.historyEntries.length) {
       this.prompt = this.historyPrompt;
@@ -381,7 +428,9 @@ export class TerminalManager implements TerminalConnector {
   }
 
   private insertBackspace(): void {
-    if (this.promptPosition === 0) { return; }
+    if (this.promptPosition === 0) {
+      return;
+    }
 
     if (this.promptPosition === this.prompt.length) {
       this.prompt = this.prompt.slice(0, this.prompt.length - 1);
@@ -418,45 +467,55 @@ export class TerminalManager implements TerminalConnector {
   }
 
   private playKeySound(keyCode: string): void {
-    if (isSafari()) { return; }
+    if (isSafari()) {
+      return;
+    }
 
     // No clue why, but xterm doesn't capture the space event, like it does with the other keys
     // So the space is still handled by the PeripheralSounds service
-    if (keyCode === 'Space') { return; }
+    if (keyCode === 'Space') {
+      return;
+    }
 
     playKeyDownSound(this.soundService, keyCode);
   }
 
-  private onKey(args: { key: string, domEvent: KeyboardEvent }): void {
+  private onKey(args: { key: string; domEvent: KeyboardEvent }): void {
     const { key, domEvent } = args;
 
     const code = domEvent.code;
 
-    if (domEvent.ctrlKey || domEvent.altKey) { return; }
+    if (domEvent.ctrlKey || domEvent.altKey) {
+      return;
+    }
 
-    if (!domEvent.repeat) { this.playKeySound(code); }
+    if (!domEvent.repeat) {
+      this.playKeySound(code);
+    }
 
     switch (code) {
-      case "Enter": {
+      case 'Enter': {
         this.insertEnter();
         break;
       }
-      case "Backspace": {
+      case 'Backspace': {
         this.insertBackspace();
         break;
       }
-      case "ArrowLeft":
-      case "ArrowRight": {
+      case 'ArrowLeft':
+      case 'ArrowRight': {
         this.moveCursor(code === 'ArrowLeft' ? 'left' : 'right');
         break;
       }
-      case "ArrowUp":
-      case "ArrowDown": {
+      case 'ArrowUp':
+      case 'ArrowDown': {
         this.loadHistory(code === 'ArrowUp' ? 'prev' : 'next');
         break;
       }
       default: {
-        if (key.length !== 1) { return; }
+        if (key.length !== 1) {
+          return;
+        }
         this.insertCharacters(key);
       }
     }
@@ -468,7 +527,7 @@ export class TerminalManager implements TerminalConnector {
     // Build on a private api, just like the FitAddon of xterm itself :ˆ)
     const core = (this.terminal as any)._core;
     const dimensions = core._renderService.dimensions;
-    const cell: { height: number, width: number } = dimensions.css.cell;
+    const cell: { height: number; width: number } = dimensions.css.cell;
 
     const cols = Math.floor(terminalContainer.clientWidth / cell.width);
     const rows = Math.floor(terminalContainer.clientHeight / cell.height);

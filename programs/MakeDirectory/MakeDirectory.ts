@@ -1,11 +1,26 @@
-import { Shell } from "@/applications/Terminal/Shell";
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { FileSystem, FileSystemDirectory } from "@/apis/FileSystem/FileSystem";
-import { ProgramConfig, getAbsolutePathFromArgs } from "../Programs";
-import { isUniqueFile, pathLastEntry, pathParts, pathPop } from "@/apis/FileSystem/util";
-import { unwrap } from "@/lib/result";
+import type { Shell } from '@/applications/Terminal/Shell';
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type {
+  FileSystem,
+  FileSystemDirectory,
+} from '@/apis/FileSystem/FileSystem';
+import type { ProgramConfig } from '../Programs';
+import { getAbsolutePathFromArgs } from '../Programs';
+import {
+  isUniqueFile,
+  pathLastEntry,
+  pathParts,
+  pathPop,
+} from '@/apis/FileSystem/util';
+import { unwrap } from '@/lib/result';
 
-function createDirectory(shell: Shell, fs: FileSystem, root: FileSystemDirectory, directory: string, path: string): boolean {
+function createDirectory(
+  shell: Shell,
+  fs: FileSystem,
+  root: FileSystemDirectory,
+  directory: string,
+  path: string
+): boolean {
   if (!root.editableContent) {
     shell.getTerminal().writeResponse(`mkdir: ${path}: Read-only file system`);
     return false;
@@ -21,16 +36,24 @@ function createDirectory(shell: Shell, fs: FileSystem, root: FileSystemDirectory
   return true;
 }
 
-function createSequentialDirectory(shell: Shell, fs: FileSystem, path: string): void {
+function createSequentialDirectory(
+  shell: Shell,
+  fs: FileSystem,
+  path: string
+): void {
   const root = pathPop(path);
   const directory = pathLastEntry(path);
 
-  if (!directory) { return; }
+  if (!directory) {
+    return;
+  }
 
   const rootDirectoryResult = fs.getDirectory(root);
 
   if (!rootDirectoryResult.ok) {
-    shell.getTerminal().writeResponse(`mkdir: ${root}: No such file or directory`);
+    shell
+      .getTerminal()
+      .writeResponse(`mkdir: ${root}: No such file or directory`);
     return;
   }
 
@@ -39,28 +62,50 @@ function createSequentialDirectory(shell: Shell, fs: FileSystem, path: string): 
   createDirectory(shell, fs, rootDir, directory, path);
 }
 
-function createIntermediateDirectory(shell: Shell, fs: FileSystem, path: string): void {
+function createIntermediateDirectory(
+  shell: Shell,
+  fs: FileSystem,
+  path: string
+): void {
   const rootPath = pathPop(path);
   const rootParts = pathParts(rootPath);
   const directory = pathLastEntry(path);
 
-  if (!directory) { return; }
+  if (!directory) {
+    return;
+  }
 
   let currentPath = '/';
-  let currentNode = unwrap(fs.getDirectory(currentPath))!;
+  let currentNode = unwrap(fs.getDirectory(currentPath));
 
   let part: string | undefined;
 
-  while (part = rootParts.shift()) {
+  while ((part = rootParts.shift())) {
     currentPath += `${part}/`;
     const nodeResult = fs.getNode(currentPath);
 
     if (!nodeResult.ok) {
       // Node doesn't exists yet, so we might be able to create a new one (if allowed by the parent node)
-      const createdDirectory = createDirectory(shell, fs, currentNode, part, path);
-      if (!createdDirectory) { return; }
+      const createdDirectory = createDirectory(
+        shell,
+        fs,
+        currentNode,
+        part,
+        path
+      );
+      if (!createdDirectory) {
+        return;
+      }
 
-      currentNode = unwrap(fs.getDirectory(currentPath))!;
+      const dirResult = fs.getDirectory(currentPath);
+      if (dirResult.ok) {
+        currentNode = dirResult.value;
+      } else {
+        shell
+          .getTerminal()
+          .writeResponse(`mkdir: ${path}: Unable to access created directory`);
+        return;
+      }
     } else {
       const node = nodeResult.value;
 
@@ -89,13 +134,15 @@ function MakeDirectory(shell: Shell, args: string[], apis: SystemAPIs): void {
 
   const absolutePath = getAbsolutePathFromArgs(path, shell, true);
 
-  const directoryCreator = createIntermediateDirs ? createIntermediateDirectory : createSequentialDirectory;
+  const directoryCreator = createIntermediateDirs
+    ? createIntermediateDirectory
+    : createSequentialDirectory;
   directoryCreator(shell, fs, absolutePath);
 }
 
 export class MakeDirectoryConfig implements ProgramConfig {
-  public readonly appName = "mkdir"
-  public readonly program = MakeDirectory
+  public readonly appName = 'mkdir';
+  public readonly program = MakeDirectory;
 }
 
 export const mkdirConfig = new MakeDirectoryConfig();

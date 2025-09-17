@@ -1,5 +1,11 @@
-import { AreaView, AreaViewTile } from "@/applications/AlgorithmVisualizer/Algorithms/Containers/AreaView";
-import { SortView, SortViewEntry } from "@/applications/AlgorithmVisualizer/Algorithms/Containers/SortingView";
+import type {
+  AreaView,
+  AreaViewTile,
+} from '@/applications/AlgorithmVisualizer/Algorithms/Containers/AreaView';
+import type {
+  SortView,
+  SortViewEntry,
+} from '@/applications/AlgorithmVisualizer/Algorithms/Containers/SortingView';
 
 interface Graph {
   resize(width: number, height: number): void;
@@ -13,7 +19,9 @@ export abstract class CanvasGraph implements Graph {
   constructor() {}
 
   public resize(width: number, height: number): void {
-    if (this.parent === null) { return; }
+    if (this.parent === null) {
+      return;
+    }
 
     this.parent.width = width;
     this.parent.height = height;
@@ -25,7 +33,9 @@ export abstract class CanvasGraph implements Graph {
     this.context = element.getContext('2d');
     this.parent = element;
 
-    if (this.context === null) { return false; }
+    if (this.context === null) {
+      return false;
+    }
 
     this.render();
 
@@ -43,9 +53,12 @@ export class BarGraph extends CanvasGraph {
   private renderBar(index: number) {
     function barColor(entry: SortViewEntry) {
       switch (entry.color) {
-        case "white": return "#fff";
-        case "red": return "#f00";
-        case "green": return "#0f0";
+        case 'white':
+          return '#fff';
+        case 'red':
+          return '#f00';
+        case 'green':
+          return '#0f0';
       }
     }
 
@@ -56,14 +69,15 @@ export class BarGraph extends CanvasGraph {
     const entry = this.view.entry(index);
 
     const containerWidth = parentWidth / this.view.size();
-    const containerHeight = parentHeight / this.view.getHighestValue() * entry.value;
+    const containerHeight =
+      (parentHeight / this.view.getHighestValue()) * entry.value;
 
     const widthOffset = containerWidth * 0.05;
 
-    const x = (containerWidth * index) + widthOffset;
+    const x = containerWidth * index + widthOffset;
     const y = parentHeight - containerHeight; // We render from the top left corner
 
-    const width = containerWidth - (widthOffset * 2);
+    const width = containerWidth - widthOffset * 2;
     const height = containerHeight;
 
     context.fillStyle = barColor(entry);
@@ -71,8 +85,12 @@ export class BarGraph extends CanvasGraph {
   }
 
   public render(): void {
-    if (this.context === null) { return; }
-    if (this.parent === null) { return; }
+    if (this.context === null) {
+      return;
+    }
+    if (this.parent === null) {
+      return;
+    }
 
     this.context.fillStyle = '#000';
     this.context.fillRect(0, 0, this.parent.width, this.parent.height);
@@ -84,19 +102,22 @@ export class BarGraph extends CanvasGraph {
 }
 
 export class AreaGraph extends CanvasGraph {
-
   constructor(private view: AreaView) {
     super();
   }
 
   public subscribe(handler: (evt: PointerEvent) => void) {
-    if (!this.parent) { return; }
+    if (!this.parent) {
+      return;
+    }
 
     this.parent.addEventListener('pointerdown', handler);
   }
 
   public disconnect(handler: (evt: PointerEvent) => void) {
-    if (!this.parent) { return; }
+    if (!this.parent) {
+      return;
+    }
 
     this.parent.removeEventListener('pointerdown', handler);
   }
@@ -107,15 +128,26 @@ export class AreaGraph extends CanvasGraph {
     return width / this.view.getWidth();
   }
 
-  private renderTile(x: number, y: number, tile: AreaViewTile, tileSize: number) {
+  private renderTile(
+    x: number,
+    y: number,
+    tile: AreaViewTile,
+    tileSize: number
+  ) {
     function tileColor(tile: AreaViewTile) {
       switch (tile) {
-        case "open": return '#fff';
-        case "wall": return '#000';
-        case "start": return '#0f0';
-        case "end": return '#f00';
-        case "visited": return "#5ca314"
-        case "happy-path": return '#90e83c';
+        case 'open':
+          return '#fff';
+        case 'wall':
+          return '#000';
+        case 'start':
+          return '#0f0';
+        case 'end':
+          return '#f00';
+        case 'visited':
+          return '#5ca314';
+        case 'happy-path':
+          return '#90e83c';
       }
     }
 
@@ -123,7 +155,6 @@ export class AreaGraph extends CanvasGraph {
 
     const offsetX = x * tileSize;
     const offsetY = y * tileSize;
-
 
     context.fillStyle = '#000';
 
@@ -145,8 +176,12 @@ export class AreaGraph extends CanvasGraph {
   }
 
   public render(): void {
-    if (this.context === null) { return; }
-    if (this.parent === null) { return; }
+    if (this.context === null) {
+      return;
+    }
+    if (this.parent === null) {
+      return;
+    }
 
     const area = this.view.getArea();
     const width = this.view.getWidth();
@@ -162,7 +197,9 @@ export class AreaGraph extends CanvasGraph {
 
       const tile = this.view.getTile(x, y);
 
-      if (tile) { this.renderTile(x, y, tile, tileSize); }
+      if (tile) {
+        this.renderTile(x, y, tile, tileSize);
+      }
     }
   }
 }

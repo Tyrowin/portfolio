@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './AlgorithmContainer.module.css';
 import { AreaGraph } from '@/components/GraphViewer/GraphViewer';
+import type { Area } from './AreaView';
 import {
-  Area,
   AreaView,
   generateMaze,
   generateOpenFieldArea,
   generatePipes,
 } from './AreaView';
-import { PathFindingAlgorithmContainerProps } from './Containers';
+import type { PathFindingAlgorithmContainerProps } from './Containers';
 import { useTranslations } from 'next-intl';
 import {
   PathFindingGenerationStrategyDropdown,
@@ -249,7 +249,7 @@ export function PathFindingAlgorithmContainer(
   );
 
   return (
-    <div className={styles['parent']} ref={parent}>
+    <div className={styles.parent} ref={parent}>
       <canvas className={styles['algo-visualization']} ref={graphRef}></canvas>
 
       <div className={styles['data-container']}>
@@ -323,7 +323,9 @@ export function PathFindingAlgorithmContainer(
 
         <button
           className={styles['button-link']}
-          onClick={() => params.changeParent('home')}
+          onClick={() => {
+            params.changeParent('home');
+          }}
         >
           {t('return_to_overview')}
         </button>

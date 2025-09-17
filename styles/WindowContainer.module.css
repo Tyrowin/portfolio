@@ -5,7 +5,11 @@
   height: 100%;
   padding: 3px;
   background-color: silver;
-  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #c8c8c8, inset -2px -2px grey, inset 2px 2px #fff;
+  box-shadow:
+    inset -1px -1px #0a0a0a,
+    inset 1px 1px #c8c8c8,
+    inset -2px -2px grey,
+    inset 2px 2px #fff;
 }
 
 .content-container {
@@ -42,12 +46,20 @@
 
 .focused.header {
   background: rgb(255, 106, 0);
-  background: linear-gradient(90deg, rgba(255, 106, 0, 1) 0%, rgba(156, 65, 0, 1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 106, 0, 1) 0%,
+    rgba(156, 65, 0, 1) 100%
+  );
 }
 
 .header {
   background: rgb(142, 142, 141);
-  background: linear-gradient(90deg, rgba(142, 142, 141, 1) 0%, rgba(184, 184, 184, 1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(142, 142, 141, 1) 0%,
+    rgba(184, 184, 184, 1) 100%
+  );
   flex: 0 1 auto;
 
   height: 30px;
@@ -150,7 +162,11 @@
   padding: 10px;
 
   background-color: #fff;
-  box-shadow: inset -1px -1px #fff,inset 1px 1px grey,inset -2px -2px #dfdfdf,inset 2px 2px #0a0a0a;
+  box-shadow:
+    inset -1px -1px #fff,
+    inset 1px 1px grey,
+    inset -2px -2px #dfdfdf,
+    inset 2px 2px #0a0a0a;
 }
 
 .action-container span {

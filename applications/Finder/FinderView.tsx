@@ -1,26 +1,28 @@
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import { useState, useEffect, useRef } from 'react';
 import FolderView from '@/components/Folder/FolderView';
-import {
+import type {
   FileSystemDirectory,
   FileSystemNode,
 } from '@/apis/FileSystem/FileSystem';
 import styles from './FinderView.module.css';
-import { Application } from '../ApplicationManager';
+import type { Application } from '../ApplicationManager';
 import React from 'react';
-import { Chain, Node } from '@/data/Chain';
-import { Err, Ok, Result } from '@/lib/result';
+import type { Node } from '@/data/Chain';
+import { Chain } from '@/data/Chain';
+import type { Result } from '@/lib/result';
+import { Err, Ok } from '@/lib/result';
 import {
   constructPath,
   generateUniqueNameForDirectory,
 } from '@/apis/FileSystem/util';
 import { useTranslations } from 'next-intl';
-import { ScreenResolution } from '@/apis/Screen/ScreenService';
+import type { ScreenResolution } from '@/apis/Screen/ScreenService';
 
 function getFileSystemDirectoryByPath(
   application: Application,
   path: string
-): Result<FileSystemDirectory, Error> {
+): Result<FileSystemDirectory> {
   if (!path.endsWith('/')) {
     path += '/';
   }
@@ -42,7 +44,7 @@ function buildPathNodesFromDirectoryEntry(
 ): FileSystemDirectory[] {
   let current: FileSystemDirectory | null =
     node.kind === 'directory' ? node : node.parent;
-  let items: FileSystemDirectory[] = [];
+  const items: FileSystemDirectory[] = [];
 
   while (current) {
     items.push(current);
@@ -53,7 +55,7 @@ function buildPathNodesFromDirectoryEntry(
   // Reverse the entries
   for (let i = 0; i < Math.floor(items.length / 2); i++) {
     const target = items.length - 1 - i;
-    let swapValue = items[target];
+    const swapValue = items[target];
 
     items[target] = items[i];
     items[i] = swapValue;
@@ -147,7 +149,7 @@ export default function FinderView(props: WindowProps) {
 
     application.compositor
       .prompt(windowContext.id, t('finder.create_directory_instructions'), name)
-      .then((name) => {
+      .then(name => {
         if (fs.getDirectory(`${path}${name}`).ok) {
           application.compositor
             .alert(
@@ -181,7 +183,7 @@ export default function FinderView(props: WindowProps) {
 
     application.compositor
       .prompt(windowContext.id, t('finder.create_text_file_instructions'), name)
-      .then((name) => {
+      .then(name => {
         if (fs.getNode(`${path}${name}.txt`).ok) {
           application.compositor
             .alert(
@@ -273,13 +275,15 @@ export default function FinderView(props: WindowProps) {
     }
   }
 
-  const mobileClass = needsMobileView ? styles['mobile'] : '';
+  const mobileClass = needsMobileView ? styles.mobile : '';
 
   const locations = pathNodes.map((val, index) => (
     <React.Fragment key={index}>
       <button
         className={['system-button', styles.breadcrumb].join(' ')}
-        onClick={() => onClickBreadcrumb(val, index)}
+        onClick={() => {
+          onClickBreadcrumb(val, index);
+        }}
       >
         {val.name}
       </button>
@@ -297,7 +301,9 @@ export default function FinderView(props: WindowProps) {
                 styles['header-left'],
               ].join(' ')}
               disabled={!hasBackwardHistory()}
-              onClick={() => goBackInHistory()}
+              onClick={() => {
+                goBackInHistory();
+              }}
             >
               <div
                 className={['spritesheet-btn-icon', styles['icon-prev']].join(
@@ -311,7 +317,9 @@ export default function FinderView(props: WindowProps) {
                 styles['header-left'],
               ].join(' ')}
               disabled={!hasForwardHistory()}
-              onClick={() => goForwardInHistory()}
+              onClick={() => {
+                goForwardInHistory();
+              }}
             >
               <div
                 className={['spritesheet-btn-icon', styles['icon-next']].join(
@@ -325,7 +333,9 @@ export default function FinderView(props: WindowProps) {
                 styles['header-right'],
               ].join(' ')}
               disabled={!canEdit}
-              onClick={() => createDirectory()}
+              onClick={() => {
+                createDirectory();
+              }}
             >
               <div
                 className={[
@@ -340,7 +350,9 @@ export default function FinderView(props: WindowProps) {
                 styles['header-right'],
               ].join(' ')}
               disabled={!canEdit}
-              onClick={() => createTextFile()}
+              onClick={() => {
+                createTextFile();
+              }}
             >
               <div
                 className={[

@@ -1,12 +1,14 @@
-import { Shell } from "@/applications/Terminal/Shell";
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { ProgramConfig } from "../Programs";
-import { getAbsolutePath } from "@/apis/FileSystem/FileSystem";
+import type { Shell } from '@/applications/Terminal/Shell';
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { ProgramConfig } from '../Programs';
+import { getAbsolutePath } from '@/apis/FileSystem/FileSystem';
 
 function Open(shell: Shell, args: string[], apis: SystemAPIs): void {
   function openNode(shell: Shell, path: string): boolean {
     const node = fs.getNode(path);
-    if (!node.ok) { return false}
+    if (!node.ok) {
+      return false;
+    }
 
     shell.openNewProcess(path);
 
@@ -17,12 +19,14 @@ function Open(shell: Shell, args: string[], apis: SystemAPIs): void {
   let path = args[1] ?? null;
 
   if (!path) {
-    shell.getTerminal().writeResponseLines([
-      'Usage: open filename',
-      'Help: Open opens files from a shell.',
-      'By default, opens each file using the default application for that file.',
-      'If the file is in the form of a URL, the file will be opened as a URL.'
-    ]);
+    shell
+      .getTerminal()
+      .writeResponseLines([
+        'Usage: open filename',
+        'Help: Open opens files from a shell.',
+        'By default, opens each file using the default application for that file.',
+        'If the file is in the form of a URL, the file will be opened as a URL.',
+      ]);
 
     return;
   }
@@ -35,16 +39,20 @@ function Open(shell: Shell, args: string[], apis: SystemAPIs): void {
   const isDirectory = absolutePath.endsWith('/');
 
   // If the file path is not a directory, also try attempting opening the directory with the same name
-  const openedFile = openNode(shell, absolutePath) || (!isDirectory && openNode(shell, absolutePath + '/'));
+  const openedFile =
+    openNode(shell, absolutePath) ||
+    (!isDirectory && openNode(shell, absolutePath + '/'));
 
   if (!openedFile) {
-    shell.getTerminal().writeResponse(`The file ${absolutePath} does not exist.`);
+    shell
+      .getTerminal()
+      .writeResponse(`The file ${absolutePath} does not exist.`);
   }
 }
 
 export class OpenConfig implements ProgramConfig {
-  public readonly appName = "open"
-  public readonly program = Open
+  public readonly appName = 'open';
+  public readonly program = Open;
 }
 
 export const openConfig = new OpenConfig();

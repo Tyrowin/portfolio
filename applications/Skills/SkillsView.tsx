@@ -1,4 +1,4 @@
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import Image from 'next/image';
 import styles from './SkillsView.module.css';
 import { useTranslations } from 'next-intl';
@@ -26,7 +26,7 @@ function SkillEntry(props: {
   );
 }
 
-export default function SkillsView(props: WindowProps) {
+export default function SkillsView(_props: WindowProps) {
   const t = useTranslations('skills');
 
   return (

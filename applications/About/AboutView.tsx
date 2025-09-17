@@ -1,7 +1,7 @@
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import { useEffect, useRef, useState } from 'react';
 import styles from './AboutView.module.css';
-import { BaseApplicationManager } from '../ApplicationManager';
+import type { BaseApplicationManager } from '../ApplicationManager';
 import { useTranslations, useLocale } from 'next-intl';
 import {
   ProjectAdventOfCode,
@@ -15,7 +15,7 @@ import {
   ProjectTBot,
   ProjectYoui,
 } from './Projects';
-import { ScreenResolution } from '@/apis/Screen/ScreenService';
+import type { ScreenResolution } from '@/apis/Screen/ScreenService';
 
 type SubView =
   | 'home'
@@ -34,13 +34,15 @@ type SubView =
   | 'project-paintboy'
   | 'contact';
 
-export type SubViewParams = {
+type TranslateFunction = (key: string) => string;
+
+export interface SubViewParams {
   needsMobileView: boolean;
   manager: BaseApplicationManager;
   changeParent: (view: SubView) => void;
-  translate: any;
+  translate: TranslateFunction;
   language: string;
-};
+}
 
 function Contact(props: { manager: BaseApplicationManager; language: string }) {
   function openContactApp() {
@@ -52,7 +54,12 @@ function Contact(props: { manager: BaseApplicationManager; language: string }) {
       <>
         <p>
           If you have any questions or comments, please contact me via the{' '}
-          <a onClick={() => openContactApp()} href="#contact">
+          <a
+            onClick={() => {
+              openContactApp();
+            }}
+            href="#contact"
+          >
             contact application
           </a>{' '}
           or shoot me an email at{' '}
@@ -67,7 +74,12 @@ function Contact(props: { manager: BaseApplicationManager; language: string }) {
       <>
         <p>
           Om du har kommentarer eller frågor, kontakta mig via{' '}
-          <a onClick={() => openContactApp()} href="#contact">
+          <a
+            onClick={() => {
+              openContactApp();
+            }}
+            href="#contact"
+          >
             kontakt-applikationen
           </a>{' '}
           eller skicka ett mejl till{' '}
@@ -80,7 +92,7 @@ function Contact(props: { manager: BaseApplicationManager; language: string }) {
   return props.language === 'sv' ? swedishContent() : englishContent();
 }
 
-function DownloadCv(props: { translate: any }) {
+function DownloadCv(props: { translate: TranslateFunction }) {
   const t = props.translate;
 
   return (
@@ -105,7 +117,7 @@ function DownloadCv(props: { translate: any }) {
 function HomeSubView(params: SubViewParams) {
   const t = params.translate;
 
-  const mobileClass = params.needsMobileView ? styles['mobile'] : '';
+  const mobileClass = params.needsMobileView ? styles.mobile : '';
 
   return (
     <>
@@ -116,25 +128,33 @@ function HomeSubView(params: SubViewParams) {
         <div className={styles['home-button-container']}>
           <button
             className={`${styles['home-button']} system-button ${mobileClass}`}
-            onClick={() => params.changeParent('about')}
+            onClick={() => {
+              params.changeParent('about');
+            }}
           >
             {t('navigation.about')}
           </button>
           <button
             className={`${styles['home-button']} system-button ${mobileClass}`}
-            onClick={() => params.changeParent('experience')}
+            onClick={() => {
+              params.changeParent('experience');
+            }}
           >
             {t('navigation.experience')}
           </button>
           <button
             className={`${styles['home-button']} system-button ${mobileClass}`}
-            onClick={() => params.changeParent('projects')}
+            onClick={() => {
+              params.changeParent('projects');
+            }}
           >
             {t('navigation.projects')}
           </button>
           <button
             className={`${styles['home-button']} system-button ${mobileClass}`}
-            onClick={() => params.changeParent('contact')}
+            onClick={() => {
+              params.changeParent('contact');
+            }}
           >
             {t('navigation.contact')}
           </button>
@@ -147,11 +167,11 @@ function HomeSubView(params: SubViewParams) {
 export function SubViewNavigation(params: SubViewParams) {
   const t = params.translate;
 
-  const mobileClass = params.needsMobileView ? styles['mobile'] : '';
+  const mobileClass = params.needsMobileView ? styles.mobile : '';
 
   return (
     <>
-      <div className={styles['navigation']}>
+      <div className={styles.navigation}>
         <div>
           <span className={styles['logo-part']}>Joey</span>
           <span className={styles['logo-part']}>de Ruiter</span>
@@ -162,31 +182,41 @@ export function SubViewNavigation(params: SubViewParams) {
         >
           <button
             className="system-button"
-            onClick={() => params.changeParent('home')}
+            onClick={() => {
+              params.changeParent('home');
+            }}
           >
             {t('navigation.home')}
           </button>
           <button
             className="system-button"
-            onClick={() => params.changeParent('about')}
+            onClick={() => {
+              params.changeParent('about');
+            }}
           >
             {t('navigation.about')}
           </button>
           <button
             className="system-button"
-            onClick={() => params.changeParent('experience')}
+            onClick={() => {
+              params.changeParent('experience');
+            }}
           >
             {t('navigation.experience')}
           </button>
           <button
             className="system-button"
-            onClick={() => params.changeParent('projects')}
+            onClick={() => {
+              params.changeParent('projects');
+            }}
           >
             {t('navigation.projects')}
           </button>
           <button
             className="system-button"
-            onClick={() => params.changeParent('contact')}
+            onClick={() => {
+              params.changeParent('contact');
+            }}
           >
             {t('navigation.contact')}
           </button>
@@ -226,7 +256,12 @@ function AboutSubView(params: SubViewParams) {
           Tack för att du tar dig tid att titta på min portfoliowebbplats. Jag
           hoppas att du har lika mycket nöje av den som jag hade när jag
           utvecklade den. Om du har kommentarer eller frågor, kontakta mig via{' '}
-          <a onClick={() => openContactApp()} href="#contact">
+          <a
+            onClick={() => {
+              openContactApp();
+            }}
+            href="#contact"
+          >
             kontakt-applikationen
           </a>{' '}
           eller skicka ett mejl till{' '}
@@ -339,7 +374,12 @@ function AboutSubView(params: SubViewParams) {
           Thanks for taking the time to explore my portfolio. I hope you enjoy
           it as much I did enjoy developing it. If you have any questions or
           comments, please contact me via the{' '}
-          <a onClick={() => openContactApp()} href="#contact">
+          <a
+            onClick={() => {
+              openContactApp();
+            }}
+            href="#contact"
+          >
             contact application
           </a>{' '}
           or shoot me an email at{' '}
@@ -445,7 +485,7 @@ function AboutSubView(params: SubViewParams) {
 
   return (
     <>
-      <div data-subpage className={styles['subpage']}>
+      <div data-subpage className={styles.subpage}>
         {SubViewNavigation(params)}
         <div data-subpage-content className={styles['subpage-content']}>
           {params.language === 'sv'
@@ -769,7 +809,7 @@ function ExperienceSubView(params: SubViewParams) {
 
   return (
     <>
-      <div data-subpage className={styles['subpage']}>
+      <div data-subpage className={styles.subpage}>
         {SubViewNavigation(params)}
         <div data-subpage-content className={styles['subpage-content']}>
           <h1 className={styles['page-h1']}>{t('navigation.experience')}</h1>
@@ -803,7 +843,9 @@ function ProjectsSubView(params: SubViewParams) {
       <>
         <button
           className={styles['project-button']}
-          onClick={() => params.changeParent(target)}
+          onClick={() => {
+            params.changeParent(target);
+          }}
         >
           <div>
             <img
@@ -821,7 +863,7 @@ function ProjectsSubView(params: SubViewParams) {
 
   return (
     <>
-      <div data-subpage className={styles['subpage']}>
+      <div data-subpage className={styles.subpage}>
         {SubViewNavigation(params)}
         <div data-subpage-content className={styles['subpage-content']}>
           <h1 className={styles['page-h1']}>{t('navigation.projects')}</h1>
@@ -921,7 +963,10 @@ function ProjectsSubView(params: SubViewParams) {
   );
 }
 
-function RenderSubView(view: SubView, params: SubViewParams): JSX.Element {
+function RenderSubView(
+  view: SubView,
+  params: SubViewParams
+): React.JSX.Element {
   switch (view) {
     case 'home':
       return HomeSubView(params);
@@ -976,7 +1021,7 @@ export default function AboutApplicationView(props: WindowProps) {
     const subViewParent = contentParent.current;
     const subViewParentChildren = Array.from(subViewParent.children);
 
-    const subView = subViewParentChildren.find((x) =>
+    const subView = subViewParentChildren.find(x =>
       x.hasAttribute('data-subpage')
     );
     if (!subView) {
@@ -985,7 +1030,7 @@ export default function AboutApplicationView(props: WindowProps) {
 
     const subViewChildren = Array.from(subView.children);
 
-    const contentView = subViewChildren.find((x) =>
+    const contentView = subViewChildren.find(x =>
       x.hasAttribute('data-subpage-content')
     );
 

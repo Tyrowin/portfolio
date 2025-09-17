@@ -1,10 +1,11 @@
-import { LocalWindowCompositor } from "@/components/WindowManagement/LocalWindowCompositor";
-import { WindowContext } from "@/components/WindowManagement/WindowCompositor";
-import { ApplicationEvent } from "../ApplicationEvents";
-import { Application, ApplicationConfig, MenuEntry } from "../ApplicationManager";
-import { LocalApplicationManager } from "../LocalApplicationManager";
+import type { LocalWindowCompositor } from '@/components/WindowManagement/LocalWindowCompositor';
+import type { WindowContext } from '@/components/WindowManagement/WindowCompositor';
+import type { ApplicationEvent } from '../ApplicationEvents';
+import type { ApplicationConfig, MenuEntry } from '../ApplicationManager';
+import { Application } from '../ApplicationManager';
+import type { LocalApplicationManager } from '../LocalApplicationManager';
 import dynamic from 'next/dynamic';
-import { SystemAPIs } from "@/components/OperatingSystem";
+import type { SystemAPIs } from '@/components/OperatingSystem';
 
 const View = dynamic(() => import('./TerminalApplicationView'));
 
@@ -13,7 +14,11 @@ export class TerminalConfig implements ApplicationConfig {
   public readonly dockPriority = null;
   public readonly path = '/Applications/';
   public readonly appName = 'Terminal.app';
-  public readonly appIcon = { src: '/icons/terminal-icon.png', alt: 'Terminal' };
+  public readonly appIcon = {
+    src: '/icons/terminal-icon.png',
+    alt: 'Terminal',
+  };
+
   public readonly entrypoint = (
     compositor: LocalWindowCompositor,
     manager: LocalApplicationManager,
@@ -24,17 +29,18 @@ export class TerminalConfig implements ApplicationConfig {
 export const terminalConfig = new TerminalConfig();
 
 export class TerminalApplication extends Application {
-
   config(): ApplicationConfig {
     return terminalConfig;
   }
 
   menuEntries(): MenuEntry[] {
-    return [{
-      displayOptions: { boldText: true },
-      name: 'Terminal',
-      items: []
-    }]
+    return [
+      {
+        displayOptions: { boldText: true },
+        name: 'Terminal',
+        items: [],
+      },
+    ];
   }
 
   on(event: ApplicationEvent, windowContext?: WindowContext): void {
@@ -46,11 +52,13 @@ export class TerminalApplication extends Application {
         y: 150,
         height: 450,
         width: 600,
-        title: `Terminal`,
+        title: 'Terminal',
         application: this,
         args: event.args,
-        generator: () => { return View; }
+        generator: () => {
+          return View;
+        },
       });
-    };
+    }
   }
 }

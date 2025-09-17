@@ -1,4 +1,4 @@
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import { useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { TerminalManager } from './TerminalManager';
@@ -10,7 +10,7 @@ export interface TerminalConnector {
 
   resetResponseLines(): void;
   getResponseLines(): string[];
-  
+
   enableOutput(): void;
   disableOutput(): void;
 }
@@ -27,9 +27,11 @@ export default function TerminalApplicationView(props: WindowProps) {
       terminal.current.focus();
     }
   }
-  
+
   useEffect(() => {
-    if (!terminalRef.current) { return; }
+    if (!terminalRef.current) {
+      return;
+    }
 
     terminal.current = new Terminal();
     const manager = new TerminalManager(
@@ -43,7 +45,7 @@ export default function TerminalApplicationView(props: WindowProps) {
 
     const unsubscribe = application.compositor.subscribeWithFilter(
       windowContext.id,
-      (evt) => evt.event === 'focus_window',
+      evt => evt.event === 'focus_window',
       onWindowFocus
     );
 
@@ -52,7 +54,7 @@ export default function TerminalApplicationView(props: WindowProps) {
     return () => {
       manager.dispose();
       unsubscribe();
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -65,8 +67,11 @@ export default function TerminalApplicationView(props: WindowProps) {
   // But the browsers accept it anyway :ˆ)
   return (
     <>
-      <link rel="stylesheet" href="/xterm/xterm.css"/>
-      <div ref={terminalRef} style={{ height: '100%', width: '100%', background: '#000' }}></div>
+      <link rel="stylesheet" href="/xterm/xterm.css" />
+      <div
+        ref={terminalRef}
+        style={{ height: '100%', width: '100%', background: '#000' }}
+      ></div>
     </>
-  )
-} 
+  );
+}

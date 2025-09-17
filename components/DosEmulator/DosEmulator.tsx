@@ -1,8 +1,8 @@
-import { CommandInterface, Emulators } from 'emulators';
-import { EmulatorsUi } from 'emulators-ui';
+import type { CommandInterface, Emulators } from 'emulators';
+import type { EmulatorsUi } from 'emulators-ui';
 import { useEffect, useRef, useState } from 'react';
 import { DosWebGLRenderer } from './DosWebGLRenderer';
-import { SoundService } from '@/apis/Sound/Sound';
+import type { SoundService } from '@/apis/Sound/Sound';
 import styles from './DosEmulator.module.css';
 import { isFirefox } from '../util';
 import { useTranslations } from 'next-intl';
@@ -93,8 +93,8 @@ function domKeyboardCodeToDosKeyCode(code: string): number {
 }
 
 class Runner {
-  private active: boolean = true;
-  private volume: number = 0.25;
+  private active = true;
+  private volume = 0.25;
 
   private audioHandler: ((volume: number) => void) | null = null;
   private ci: CommandInterface | null = null;
@@ -163,7 +163,7 @@ function LoadingScreen(t: any) {
   return (
     <div className="content-outer">
       <div className="content">
-        <div className={styles['center']}>
+        <div className={styles.center}>
           <span className={styles['loading-text']}>{t('loading')}</span>
         </div>
       </div>
@@ -198,7 +198,7 @@ export default function DosEmulator(props: {
     let movementOrigin: { x: number; y: number } | null = null;
 
     const runner = new Runner();
-    const observer = new ResizeObserver((target) => {
+    const observer = new ResizeObserver(target => {
       const width = target[0].target.clientWidth;
       const height = target[0].target.clientHeight;
 
@@ -208,15 +208,17 @@ export default function DosEmulator(props: {
     const width = canvasContainerRef.current.clientWidth;
     const height = canvasContainerRef.current.clientHeight;
 
-    const soundServiceUnsubscribe = props.soundService.subscribe((isEnabled) =>
-      handleSound(isEnabled, runner)
-    );
+    const soundServiceUnsubscribe = props.soundService.subscribe(isEnabled => {
+      handleSound(isEnabled, runner);
+    });
     handleSound(props.soundService.isEnabled(), runner);
 
-    const handleKeyDown = (evt: KeyboardEvent) =>
+    const handleKeyDown = (evt: KeyboardEvent) => {
       runner.sendKeyEvent(domKeyboardCodeToDosKeyCode(evt.code), true);
-    const handleKeyUp = (evt: KeyboardEvent) =>
+    };
+    const handleKeyUp = (evt: KeyboardEvent) => {
       runner.sendKeyEvent(domKeyboardCodeToDosKeyCode(evt.code), false);
+    };
 
     document.addEventListener('keydown', handleKeyDown, false);
     document.addEventListener('keyup', handleKeyUp, false);

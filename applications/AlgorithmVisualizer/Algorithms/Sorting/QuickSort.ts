@@ -1,9 +1,13 @@
-import { SubViewParams } from "../../AlgorithmVisualizerView";
-import { SortingAlgorithmContainer } from "../Containers/SortingAlgorithmContainer";
-import { SortView } from "../Containers/SortingView";
+import type { SubViewParams } from '../../AlgorithmVisualizerView';
+import { SortingAlgorithmContainer } from '../Containers/SortingAlgorithmContainer';
+import type { SortView } from '../Containers/SortingView';
 
 async function quickSort(view: SortView, abortSignal: AbortSignal) {
-  async function partition(view: SortView, low: number, high: number): Promise<number | null> {
+  async function partition(
+    view: SortView,
+    low: number,
+    high: number
+  ): Promise<number | null> {
     // we use the middle element as pivot
     const pivot = view.entry(Math.floor((low + high) / 2));
 
@@ -13,24 +17,36 @@ async function quickSort(view: SortView, abortSignal: AbortSignal) {
     while (true) {
       view.cleanColors();
 
-      if (abortSignal.aborted) { return null; }
+      if (abortSignal.aborted) {
+        return null;
+      }
 
-      while (view.entry(i).value < pivot.value) { i++; }
-      while (view.entry(j).value > pivot.value) { j--; }
+      while (view.entry(i).value < pivot.value) {
+        i++;
+      }
+      while (view.entry(j).value > pivot.value) {
+        j--;
+      }
 
-      if (i >= j) { return j; }
+      if (i >= j) {
+        return j;
+      }
 
       await view.swap(i, j);
     }
   }
 
   async function sort(view: SortView, low: number, high: number) {
-    if (abortSignal.aborted) { return; }
+    if (abortSignal.aborted) {
+      return;
+    }
 
     if (low >= 0 && high >= 0 && low < high) {
       const pivot = await partition(view, low, high);
 
-      if (pivot === null) { return; }
+      if (pivot === null) {
+        return;
+      }
 
       await sort(view, low, pivot);
       await sort(view, pivot + 1, high);
@@ -47,6 +63,6 @@ export default function QuickSort(params: SubViewParams) {
     params,
     entrypoint: quickSort,
     title: 'Quick Sort',
-    options: params.algorithmOptions!
+    options: params.algorithmOptions!,
   });
 }

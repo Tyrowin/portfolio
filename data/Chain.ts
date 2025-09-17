@@ -9,12 +9,15 @@ export class ChainIterator<T> implements Iterable<Node<T>> {
   private originalNode: Node<T> | null;
   private node: Node<T> | null;
 
-  constructor(chain: Chain<T>, private direction: 'fromTail' | 'fromHead') {
+  constructor(
+    chain: Chain<T>,
+    private direction: 'fromTail' | 'fromHead'
+  ) {
     switch (this.direction) {
-      case "fromTail":
+      case 'fromTail':
         this.node = chain.getTail();
         break;
-      case "fromHead":
+      case 'fromHead':
         this.node = chain.getHead();
         break;
     }
@@ -22,10 +25,15 @@ export class ChainIterator<T> implements Iterable<Node<T>> {
     this.originalNode = this.node;
   }
 
-  private getNextIterator(node: Node<T>, direction: 'fromTail' | 'fromHead'): Node<T> | null {
+  private getNextIterator(
+    node: Node<T>,
+    direction: 'fromTail' | 'fromHead'
+  ): Node<T> | null {
     switch (this.direction) {
-      case "fromTail": return node.next;
-      case "fromHead": return node.prev;
+      case 'fromTail':
+        return node.next;
+      case 'fromHead':
+        return node.prev;
     }
   }
 
@@ -36,22 +44,26 @@ export class ChainIterator<T> implements Iterable<Node<T>> {
     return {
       next: () => {
         // NOTE(Joey): Not sure, why value is required here, as it is not used in the for ... of loop
-        if (!this.node) { return {done: true, value: value!}}
+        if (!this.node) {
+          return { done: true, value: value! };
+        }
 
         value = this.node;
 
         this.node = this.getNextIterator(this.node, this.direction);
 
         return { done: false, value };
-      }
-    }
+      },
+    };
   }
 
   public find(predicate: (value: T) => boolean): T | null {
     let node: Node<T> | null = this.node;
 
     while (node) {
-      if (predicate(node.value)) { return node.value; }
+      if (predicate(node.value)) {
+        return node.value;
+      }
 
       node = this.getNextIterator(node, this.direction);
     }
@@ -73,10 +85,14 @@ export class Chain<T> {
     const prev = this.getHead();
 
     node.prev = prev;
-    if (prev !== null) { prev.next = node; }
+    if (prev !== null) {
+      prev.next = node;
+    }
 
     this.head = node;
-    if (this.tail === null) { this.tail = node; }
+    if (this.tail === null) {
+      this.tail = node;
+    }
 
     this.items++;
 
@@ -128,10 +144,14 @@ export class Chain<T> {
     const next = this.getTail();
 
     node.next = next;
-    if (next !== null) { next.prev = node; }
+    if (next !== null) {
+      next.prev = node;
+    }
 
     this.tail = node;
-    if (this.head === null) { this.head = node; }
+    if (this.head === null) {
+      this.head = node;
+    }
 
     this.items++;
 
@@ -144,7 +164,6 @@ export class Chain<T> {
       // Link the prev node to the next node
       node.prev.next = node.next;
       node.next.prev = node.prev;
-
     } else if (node.prev) {
       // Unlink this node from the prev node
       node.prev.next = null;
@@ -154,8 +173,12 @@ export class Chain<T> {
     }
 
     // Repair the head and tail
-    if (this.head == node) { this.head = node.prev; }
-    if (this.tail == node) { this.tail = node.next; }
+    if (this.head == node) {
+      this.head = node.prev;
+    }
+    if (this.tail == node) {
+      this.tail = node.next;
+    }
 
     // Remove local references
     node.next = null;
@@ -187,7 +210,7 @@ export class Chain<T> {
   }
 
   public toArray(): T[] {
-    let items: T[] = [];
+    const items: T[] = [];
     let node = this.getTail();
 
     while (node !== null) {

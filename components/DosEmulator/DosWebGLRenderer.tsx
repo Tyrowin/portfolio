@@ -1,8 +1,8 @@
-import { CommandInterface } from "emulators";
+import type { CommandInterface } from 'emulators';
 
 /*
-** Modified WebGL renderer from the "emulators-ui" webgl renderer
-*/
+ ** Modified WebGL renderer from the "emulators-ui" webgl renderer
+ */
 
 const vsSource = `
 attribute vec4 aVertexPosition;
@@ -38,16 +38,21 @@ export class DosWebGLRenderer {
     private ci: CommandInterface,
     width: number,
     height: number,
-    private isActive: () => boolean,
+    private isActive: () => boolean
   ) {
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext('webgl');
 
-    if (gl === null) { throw new Error("Unable to create webgl context on given canvas"); }
+    if (gl === null) {
+      throw new Error('Unable to create webgl context on given canvas');
+    }
 
-    const shaderProgram     = initShaderProgram(gl, vsSource, fsSource);
-    const vertexPosition    = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    const textureCoord      = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-    const uSampler          = gl.getUniformLocation(shaderProgram, "uSampler");
+    const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+    const vertexPosition = gl.getAttribLocation(
+      shaderProgram,
+      'aVertexPosition'
+    );
+    const textureCoord = gl.getAttribLocation(shaderProgram, 'aTextureCoord');
+    const uSampler = gl.getUniformLocation(shaderProgram, 'uSampler');
 
     initBuffers(gl, vertexPosition, textureCoord);
 
@@ -57,14 +62,24 @@ export class DosWebGLRenderer {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  
+
     const pixel = new Uint8Array([0, 0, 0]);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, pixel);
-  
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGB,
+      1,
+      1,
+      0,
+      gl.RGB,
+      gl.UNSIGNED_BYTE,
+      pixel
+    );
+
     gl.useProgram(shaderProgram);
     gl.activeTexture(gl.TEXTURE0);
     gl.uniform1i(uSampler, 0);
-  
+
     const onResizeFrame = (w: number, h: number) => {
       this.frameWidth = w;
       this.frameHeight = h;
@@ -80,10 +95,12 @@ export class DosWebGLRenderer {
 
     let requestAnimationFrameId: number | null = null;
     let frame: Uint8Array | null = null;
-    let frameFormat: number = 0;
+    let frameFormat = 0;
 
     ci.events().onFrame((rgb, rgba) => {
-      if (!isActive()) { ci.exit(); }
+      if (!isActive()) {
+        ci.exit();
+      }
 
       frame = rgb != null ? rgb : rgba;
       frameFormat = rgb != null ? gl.RGB : gl.RGBA;
@@ -93,9 +110,17 @@ export class DosWebGLRenderer {
     });
 
     const updateTexture = () => {
-      gl.texImage2D(gl.TEXTURE_2D, 0, frameFormat,
-        this.frameWidth, this.frameHeight, 0, frameFormat, gl.UNSIGNED_BYTE,
-        frame);
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        frameFormat,
+        this.frameWidth,
+        this.frameHeight,
+        0,
+        frameFormat,
+        gl.UNSIGNED_BYTE,
+        frame
+      );
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
       requestAnimationFrameId = null;
@@ -114,11 +139,11 @@ export class DosWebGLRenderer {
       width = this.containerHeight * aspect;
     }
 
-    this.canvas.style.position = "relative";
-    this.canvas.style.top = (this.containerHeight - height) / 2 + "px";
-    this.canvas.style.left = (this.containerWidth - width) / 2 + "px";
-    this.canvas.style.width = width + "px";
-    this.canvas.style.height = height + "px";
+    this.canvas.style.position = 'relative';
+    this.canvas.style.top = (this.containerHeight - height) / 2 + 'px';
+    this.canvas.style.left = (this.containerWidth - width) / 2 + 'px';
+    this.canvas.style.width = width + 'px';
+    this.canvas.style.height = height + 'px';
   }
 
   public resize(width: number, height: number): void {
@@ -129,9 +154,13 @@ export class DosWebGLRenderer {
   }
 }
 
-function initShaderProgram(gl: WebGLRenderingContext, vsSource: string, fsSource: string) {
-  const vertexShader    = loadShader(gl, gl.VERTEX_SHADER, vsSource);
-  const fragmentShader  = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
+function initShaderProgram(
+  gl: WebGLRenderingContext,
+  vsSource: string,
+  fsSource: string
+) {
+  const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
+  const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
 
   const shaderProgram = gl.createProgram() as WebGLShader;
   gl.attachShader(shaderProgram, vertexShader);
@@ -139,35 +168,42 @@ function initShaderProgram(gl: WebGLRenderingContext, vsSource: string, fsSource
   gl.linkProgram(shaderProgram);
 
   if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-    throw new Error("Unable to initialize the shader program: " + gl.getProgramInfoLog(shaderProgram));
+    throw new Error(
+      'Unable to initialize the shader program: ' +
+        gl.getProgramInfoLog(shaderProgram)
+    );
   }
 
   return shaderProgram;
 }
 
-function loadShader(gl: WebGLRenderingContext, shaderType: GLenum, source: string) {
-  const shader = gl.createShader(shaderType) as WebGLShader;
+function loadShader(
+  gl: WebGLRenderingContext,
+  shaderType: GLenum,
+  source: string
+) {
+  const shader = gl.createShader(shaderType)!;
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
     const info = gl.getShaderInfoLog(shader);
     gl.deleteShader(shader);
-    throw new Error("An error occurred compiling the shaders: " + info);
+    throw new Error('An error occurred compiling the shaders: ' + info);
   }
 
   return shader;
 }
 
-function initBuffers(gl: WebGLRenderingContext, vertexPosition: number, textureCoord: number) {
+function initBuffers(
+  gl: WebGLRenderingContext,
+  vertexPosition: number,
+  textureCoord: number
+) {
   const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   const positions = [
-    -1.0, -1.0, 0.0,
-    1.0, -1.0, 0.0,
-    1.0, 1.0, 0.0,
-    -1.0, -1.0, 0.0,
-    1.0, 1.0, 0.0,
-    -1.0, 1.0, 0.0,
+    -1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0,
+    0.0, -1.0, 1.0, 0.0,
   ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
@@ -178,15 +214,14 @@ function initBuffers(gl: WebGLRenderingContext, vertexPosition: number, textureC
   gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
 
   const textureCoordinates = [
-    0.0, 1.0,
-    1.0, 1.0,
-    1.0, 0.0,
-    0.0, 1.0,
-    1.0, 0.0,
-    0.0, 0.0,
+    0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0,
   ];
 
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array(textureCoordinates),
+    gl.STATIC_DRAW
+  );
 
   gl.vertexAttribPointer(textureCoord, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(textureCoord);

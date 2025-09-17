@@ -1,6 +1,10 @@
 export function capitalize(text: string): string {
-  if (text.length === 0) { return ""; }
-  if (text.length === 1) { return text.toUpperCase(); }
+  if (text.length === 0) {
+    return '';
+  }
+  if (text.length === 1) {
+    return text.toUpperCase();
+  }
 
   return text.charAt(0).toUpperCase() + text.slice(1);
 }

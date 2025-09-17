@@ -6,7 +6,9 @@ export class Queue<T> {
   }
 
   public dequeue(): T | null {
-    if (this.size() === 0) { return null; }
+    if (this.size() === 0) {
+      return null;
+    }
 
     return this.storage.shift()!;
   }
