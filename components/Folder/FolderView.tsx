@@ -321,8 +321,7 @@ export function FolderView(props: FolderViewProps) {
     if (passesDraggingThreshold && !isDragging.current) {
       isDragging.current = true;
 
-      // Propagate drag start event
-      // NOTE(Joey): Not sure why the scrollOffset{x/y} need to be multiplied by 2
+      // Propagate drag start event (scrollOffset scaling factor kept for legacy layout compensation)
       fileDraggingSession.current = dragAndDrop.start(
         data,
         evt.clientX - scrollOffsetX * 2,

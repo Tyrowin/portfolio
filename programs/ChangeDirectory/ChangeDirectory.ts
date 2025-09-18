@@ -2,13 +2,14 @@ import type { Shell } from '@/applications/Terminal/Shell';
 import type { SystemAPIs } from '@/components/OperatingSystem';
 import type { ProgramConfig } from '../Programs';
 import { getAbsolutePathFromArgs } from '../Programs';
+import { getOwner } from '../../config/siteOwner';
 
 function ChangeDirectory(shell: Shell, args: string[], apis: SystemAPIs): void {
   const fs = apis.fileSystem;
   let path = args[1] ?? null;
 
   if (!path) {
-    path = '/Users/joey/';
+    path = `/Users/${getOwner().username}/`;
   }
 
   const absolutePath = getAbsolutePathFromArgs(path, shell, true);

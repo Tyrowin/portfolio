@@ -9,8 +9,10 @@ import { Err, Ok } from '@/lib/result';
 import type { FileSystem } from '@/apis/FileSystem/FileSystem';
 import { isUniqueFile, pathLastEntry, pathPop } from '@/apis/FileSystem/util';
 import { stripAnsi } from './TerminalManager';
+import { getOwner } from '@/config/siteOwner';
 
-export const HomeDirectory = '/Users/joey/';
+const ownerUsername = getOwner().username;
+export const HomeDirectory = `/Users/${ownerUsername}/`;
 
 type CommandOutput =
   | { type: 'stdout' }
@@ -116,7 +118,7 @@ export class Shell {
     private terminal: TerminalConnector,
     private applicationManager: BaseApplicationManager,
     private apis: SystemAPIs
-  ) {}
+  ) { }
 
   public getTerminal(): TerminalConnector {
     return this.terminal;
@@ -153,7 +155,7 @@ export class Shell {
     const isHomeDirectory =
       pathItems.length >= 2 &&
       pathItems[0] === 'Users' &&
-      pathItems[1] === 'joey';
+      pathItems[1] === ownerUsername;
     const pathItemsDelta = pathItems.length - topItems.length;
 
     if (isHomeDirectory && pathItemsDelta <= 1) {

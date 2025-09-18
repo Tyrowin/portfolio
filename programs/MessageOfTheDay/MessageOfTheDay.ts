@@ -1,11 +1,14 @@
 import type { ProgramConfig } from '../Programs';
 import type { Shell } from '@/applications/Terminal/Shell';
+import { getOwner } from '@/config/siteOwner';
 
 function MessageOfTheDay(shell: Shell): void {
+  const owner = getOwner();
+  const osName = owner.branding.productName ?? 'PortfolioOS';
   shell
     .getTerminal()
     .writeResponseLines([
-      'J-OS Generic alpha build, (C)1998 Joeysoft, bv.',
+      `${osName} (c) ${new Date().getFullYear()} ${owner.fullName}.`,
       'Authorized use only.',
       'All activity is monitored and may be reported.',
       '',

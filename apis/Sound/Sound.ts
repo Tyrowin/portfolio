@@ -56,9 +56,7 @@ export class SoundService extends ObserverSubject<boolean> {
     audio.volume = volume;
   }
 
-  // NOTE(Joey): Due to how the Audio interface only mutes and unmutes its own "audio"
-  // and not other audio elements that might be toggled by the isEnabled status.
-  // Having these methods public might give the wrong impression, so we refrain from that.
+  // Internal helpers: muting only affects tracked audio instances; keep private to avoid misuse.
   private muteAll(): void {
     for (const key of this.activeAudio.keys()) {
       this.mute(key);

@@ -1,9 +1,21 @@
 import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
+import { siteOwner } from '@/config/siteOwner';
 
 export const metadata: Metadata = {
-  title: 'Joey de Ruiter - Portfolio',
-  description: 'Personal portfolio featuring a retro desktop environment',
+  title: siteOwner.branding.siteTitle,
+  description: siteOwner.branding.description,
+  openGraph: {
+    title: siteOwner.branding.siteTitle,
+    description: siteOwner.branding.description,
+    siteName: siteOwner.branding.siteTitle,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: siteOwner.branding.siteTitle,
+    description: siteOwner.branding.description,
+  },
 };
 
 export const viewport: Viewport = {

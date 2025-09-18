@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import styles from './SkillsView.module.css';
 import { useTranslations } from 'next-intl';
+import { getOwnerContent } from '@/config/siteOwner';
+import { useLocale } from 'next-intl';
 
 function SkillEntry(props: {
   language: string;
@@ -27,188 +29,93 @@ function SkillEntry(props: {
 
 export default function SkillsView() {
   const t = useTranslations('skills');
+  const locale = useLocale();
+  const content = getOwnerContent(locale);
+
+  // Mapping from generic name to icon to avoid hard-coding lists in the component.
+  const iconMap: Record<string, { src: string; alt: string }> = {
+    // Programming Languages
+    Python: { src: '/icons/skills/python.svg', alt: 'Python' },
+    'C++': { src: '/icons/skills/cpp.svg', alt: 'C++' },
+    TypeScript: { src: '/icons/skills/typescript.svg', alt: 'TypeScript' },
+    HTML: { src: '/icons/skills/html.svg', alt: 'HTML' },
+    CSS: { src: '/icons/skills/css.svg', alt: 'CSS' },
+
+    // Frontend Frameworks/Libraries
+    React: { src: '/icons/skills/react.svg', alt: 'React' },
+    'Next.js': { src: '/icons/skills/nextjs.svg', alt: 'Next.js' },
+    tRPC: { src: '/icons/skills/trpc.svg', alt: 'tRPC' },
+
+    // Development Tools & Services
+    Git: { src: '/icons/skills/git.svg', alt: 'Git' },
+    GitHub: { src: '/icons/skills/github.svg', alt: 'GitHub' },
+    Docker: { src: '/icons/skills/docker.svg', alt: 'Docker' },
+    Azure: { src: '/icons/skills/azure.svg', alt: 'Azure' },
+    AWS: { src: '/icons/skills/aws.svg', alt: 'AWS' },
+    Vercel: { src: '/icons/skills/vercel.svg', alt: 'Vercel' },
+    PostgreSQL: { src: '/icons/skills/postgresql.svg', alt: 'PostgreSQL' },
+    MySQL: { src: '/icons/skills/mysql.svg', alt: 'MySQL' },
+    Convex: { src: '/icons/skills/convex.svg', alt: 'Convex' },
+    Redis: { src: '/icons/skills/redis.svg', alt: 'Redis' },
+
+    // Operating Systems
+    Windows: { src: '/icons/skills/windows.svg', alt: 'Windows' },
+    Linux: { src: '/icons/skills/linux.svg', alt: 'Linux' },
+  };
+
+  function renderSkillList(title: string, items: string[]) {
+    if (!items.length) return null;
+    return (
+      <div>
+        <h1>{title}</h1>
+        <ul>
+          {items.map(item => (
+            <li key={item}>
+              <SkillEntry
+                language={item}
+                icon={
+                  iconMap[item] ?? {
+                    src: '/icons/skills/default-skill.png',
+                    alt: item,
+                  }
+                }
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
 
   return (
     <div className="content-outer">
       <div className="content">
         <div className="content-inner">
           <div className={styles['skills-content']}>
-            <h1>{t('programming_languages')}</h1>
-
-            <ul>
-              <li>
-                <SkillEntry
-                  language="TypeScript / JavaScript"
-                  icon={{
-                    src: '/icons/skills/typescript.svg',
-                    alt: 'TypeScript',
-                  }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Swift"
-                  icon={{ src: '/icons/skills/swift.svg', alt: 'Swift' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Rust"
-                  icon={{ src: '/icons/skills/rust.svg', alt: 'Rust' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="C / C++"
-                  icon={{ src: '/icons/skills/c.svg', alt: 'C' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="C#"
-                  icon={{ src: '/icons/skills/c-sharp.svg', alt: 'C#' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Java"
-                  icon={{ src: '/icons/skills/java.svg', alt: 'Java' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Python"
-                  icon={{ src: '/icons/skills/python.svg', alt: 'Python' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="HTML/CSS"
-                  icon={{ src: '/icons/skills/html.svg', alt: 'HTML5' }}
-                />
-              </li>
-            </ul>
-
-            <h1>{t('frameworks')}</h1>
-            <ul>
-              <li>
-                <SkillEntry
-                  language="React / NextJS"
-                  icon={{ src: '/icons/skills/react.svg', alt: 'React' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Angular"
-                  icon={{ src: '/icons/skills/angular.svg', alt: 'Angular' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Svelte"
-                  icon={{ src: '/icons/skills/svelte.svg', alt: 'Svelte' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="SwiftUI"
-                  icon={{ src: '/icons/skills/swiftui.png', alt: 'SwiftUI' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Spring Boot"
-                  icon={{
-                    src: '/icons/skills/spring-boot.svg',
-                    alt: 'Spring Boot',
-                  }}
-                />
-              </li>
-            </ul>
-
-            <h1>{t('databases')}</h1>
-            <ul>
-              <li>
-                <SkillEntry
-                  language="PostgreSQL"
-                  icon={{
-                    src: '/icons/skills/postgresql.svg',
-                    alt: 'PostgreSQL',
-                  }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="MS SQL"
-                  icon={{
-                    src: '/icons/skills/mssql.svg',
-                    alt: 'Microsoft SQL Server',
-                  }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="MariaDB"
-                  icon={{ src: '/icons/skills/mariadb.svg', alt: 'MariaDB' }}
-                />
-              </li>
-            </ul>
-
-            <h1>{t('devops')}</h1>
-            <ul>
-              <li>
-                <SkillEntry
-                  language="Azure DevOps"
-                  icon={{
-                    src: '/icons/skills/azure-devops.svg',
-                    alt: 'Azure DevOps',
-                  }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="GitLab"
-                  icon={{ src: '/icons/skills/gitlab.svg', alt: 'GitLab' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Docker"
-                  icon={{ src: '/icons/skills/docker.svg', alt: 'Docker' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Ansible"
-                  icon={{ src: '/icons/skills/ansible.svg', alt: 'Ansible' }}
-                />
-              </li>
-            </ul>
-
-            <h1>{t('tools')}</h1>
-            <ul>
-              <li>
-                <SkillEntry
-                  language="Visual Studio Code"
-                  icon={{
-                    src: '/icons/skills/vsc.svg',
-                    alt: 'Visual Studio Code',
-                  }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Git"
-                  icon={{ src: '/icons/skills/git.svg', alt: 'Git' }}
-                />
-              </li>
-              <li>
-                <SkillEntry
-                  language="Vim"
-                  icon={{ src: '/icons/skills/vim.svg', alt: 'Vim' }}
-                />
-              </li>
-            </ul>
+            {renderSkillList(
+              t('programming_languages', { default: 'Programming Languages' }),
+              content.skills.languages
+            )}
+            {renderSkillList(
+              t('frameworks', { default: 'Frameworks & Libraries' }),
+              content.skills.frameworks
+            )}
+            {renderSkillList(
+              t('databases', { default: 'Databases' }),
+              content.skills.databases
+            )}
+            {renderSkillList(
+              t('devops', { default: 'DevOps & Version Control' }),
+              content.skills.devops
+            )}
+            {renderSkillList(
+              t('cloud', { default: 'Cloud & Deployment' }),
+              content.skills.cloud
+            )}
+            {renderSkillList(
+              t('operating_systems', { default: 'Operating Systems' }),
+              content.skills.os
+            )}
           </div>
         </div>
       </div>

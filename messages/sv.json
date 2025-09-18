@@ -100,10 +100,11 @@
   },
   "skills": {
     "programming_languages": "Programmeringsspråk",
-    "frameworks": "Ramverk",
+    "frameworks": "Ramverk & Bibliotek",
     "databases": "Databaser",
-    "devops": "DevOps",
-    "tools": "Verktyg"
+    "devops": "DevOps & Versionskontroll",
+    "cloud": "Moln & Distribution",
+    "operating_systems": "Operativsystem"
   },
   "dos_emulator": {
     "loading": "Laddar"
@@ -130,7 +131,7 @@
     "download_cv": {
       "title": "Letar du efter mitt CV?",
       "instruction": "Klicka här för att ladda ner det!",
-      "download_link": "/cv/Joey_de_Ruiter_resume.pdf"
+      "download_link": "/cv/cv.pdf"
     }
   }
 }

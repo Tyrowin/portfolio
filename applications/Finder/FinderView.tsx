@@ -8,6 +8,7 @@ import type {
 import styles from './FinderView.module.css';
 import type { Application } from '../ApplicationManager';
 import React from 'react';
+import { getOwner } from '../../config/siteOwner';
 import type { Node } from '@/data/Chain';
 import { Chain } from '@/data/Chain';
 import type { Result } from '@/lib/result';
@@ -377,7 +378,7 @@ export default function FinderView(props: WindowProps) {
               <button
                 className={`system-button ${styles['navigation-btn']} ${mobileClass}`}
                 onClick={() => {
-                  onClickLocation('/Users/joey/');
+                  onClickLocation(`/Users/${getOwner().username}/`);
                 }}
               >
                 Home
@@ -387,7 +388,7 @@ export default function FinderView(props: WindowProps) {
               <button
                 className={`system-button ${styles['navigation-btn']} ${mobileClass}`}
                 onClick={() => {
-                  onClickLocation('/Users/joey/Desktop/');
+                  onClickLocation(`/Users/${getOwner().username}/Desktop/`);
                 }}
               >
                 Desktop
@@ -397,7 +398,7 @@ export default function FinderView(props: WindowProps) {
               <button
                 className={`system-button ${styles['navigation-btn']} ${mobileClass}`}
                 onClick={() => {
-                  onClickLocation('/Users/joey/Documents');
+                  onClickLocation(`/Users/${getOwner().username}/Documents`);
                 }}
               >
                 Documents

@@ -2,7 +2,7 @@ export class Node<T> {
   public next: Node<T> | null = null;
   public prev: Node<T> | null = null;
 
-  constructor(public value: T) {}
+  constructor(public value: T) { }
 }
 
 export class ChainIterator<T> implements Iterable<Node<T>> {
@@ -40,7 +40,7 @@ export class ChainIterator<T> implements Iterable<Node<T>> {
 
     return {
       next: () => {
-        // NOTE(Joey): Not sure, why value is required here, as it is not used in the for ... of loop
+        // Iterator protocol requires returning a value even if caller ignores it.
         if (!this.node) {
           return { done: true, value: value! };
         }

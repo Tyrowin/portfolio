@@ -1,5 +1,6 @@
 import styles from './Desktop.module.css';
 import React, { useEffect, useRef, useReducer } from 'react';
+import { getOwner } from '../../config/siteOwner';
 import type {
   Window,
   WindowApplication,
@@ -135,7 +136,7 @@ export const Desktop = (props: {
   return (
     <div className={styles.desktop}>
       <FolderView
-        directory="/Users/joey/Desktop"
+        directory={`/Users/${getOwner().username}/Desktop`}
         apis={apis}
         onFileOpen={onFileOpen}
         localIconPosition={true}

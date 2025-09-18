@@ -4,6 +4,7 @@ import type { FormEvent } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { isEmail, isEmpty } from '@/components/util';
 import Image from 'next/image';
+import { getOwner } from '@/config/siteOwner';
 
 type ValidationError =
   | 'empty-name'
@@ -11,41 +12,38 @@ type ValidationError =
   | 'empty-message'
   | 'invalid-email';
 
-function SwedishContent() {
+function SwedishContent(props: { email: string }) {
   return (
     <>
       <p className={styles['contact-info']}>
-        För närvarande är jag inte kontraktsbunden, så om du har några
-        möjligheter tveka inte att höra av dig! Du kan nå mig via min personliga
-        e-post, eller fylla i formuläret nedan!
+        För närvarande är jag tillgänglig för möjligheter. Kontakta mig gärna
+        via e-post eller formuläret nedan.
       </p>
-
       <p>
         <b>E-post:&nbsp;</b>
-        <a href="mailto:contact@joeyderuiter.me">contact@joeyderuiter.me</a>
+        <a href={`mailto:${props.email}`}>{props.email}</a>
       </p>
     </>
   );
 }
 
-function EnglishContent() {
+function EnglishContent(props: { email: string }) {
   return (
     <>
       <p className={styles['contact-info']}>
-        I am currently not contracted, so if you have any opportunities feel
-        free to reach out! You can reach me via my personal email, or fill out
-        the form below!
+        I am currently available for opportunities. Feel free to reach out via
+        email or the form below.
       </p>
-
       <p>
         <b>Email:&nbsp;</b>
-        <a href="mailto:contact@joeyderuiter.me">contact@joeyderuiter.me</a>
+        <a href={`mailto:${props.email}`}>{props.email}</a>
       </p>
     </>
   );
 }
 
 export default function ContactApplicationView() {
+  const owner = getOwner();
   const nameRef = useRef<HTMLInputElement>(null);
 
   const t = useTranslations('contact');
@@ -159,45 +157,41 @@ export default function ContactApplicationView() {
             <div className={styles['contact-header']}>
               <h1>Contact</h1>
               <div className={styles['contact-socials']}>
-                <a
-                  rel="noreferrer"
-                  target="_blank"
-                  href="https://github.com/0xJ0EY"
-                >
-                  <Image
-                    src="icons/github-icon.svg"
-                    alt="Github"
-                    width={22}
-                    height={22}
-                  />
-                </a>
-                <a
-                  rel="noreferrer"
-                  target="_blank"
-                  href="https://www.linkedin.com/in/j-de-ruiter/"
-                >
-                  <Image
-                    src="icons/linkedin-icon.svg"
-                    alt="Linkedin"
-                    width={22}
-                    height={22}
-                  />
-                </a>
-                <a
-                  rel="noreferrer"
-                  target="_blank"
-                  href="https://twitter.com/0xJ0EY"
-                >
-                  <Image
-                    src="icons/x-icon.svg"
-                    alt="X"
-                    width={22}
-                    height={22}
-                  />
-                </a>
+                {owner.socials.map(social => {
+                  if (social.platform === 'email') return null;
+                  const iconMap: Record<string, string> = {
+                    github: 'icons/github-icon.svg',
+                    linkedin: 'icons/linkedin-icon.svg',
+                    x: 'icons/x-icon.svg',
+                  };
+                  const platformIcon = iconMap[social.platform];
+                  const icon =
+                    social.icon ??
+                    (platformIcon ? platformIcon : 'icons/link-icon.svg');
+                  return (
+                    <a
+                      key={social.url}
+                      rel="noreferrer"
+                      target="_blank"
+                      href={social.url}
+                      title={social.label ?? social.platform}
+                    >
+                      <Image
+                        src={icon}
+                        alt={social.label ?? social.platform}
+                        width={22}
+                        height={22}
+                      />
+                    </a>
+                  );
+                })}
               </div>
             </div>
-            {locale === 'sv' ? SwedishContent() : EnglishContent()}
+            {locale === 'sv' ? (
+              <SwedishContent email={owner.email} />
+            ) : (
+              <EnglishContent email={owner.email} />
+            )}
             <form onSubmit={onSubmit}>
               {processed ? (
                 <div

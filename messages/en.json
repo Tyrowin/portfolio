@@ -99,11 +99,12 @@
     }
   },
   "skills": {
-    "programming_languages": "Programming languages",
-    "frameworks": "Frameworks",
+    "programming_languages": "Programming Languages",
+    "frameworks": "Frameworks & Libraries",
     "databases": "Databases",
-    "devops": "DevOps",
-    "tools": "Tools"
+    "devops": "DevOps & Version Control",
+    "cloud": "Cloud & Deployment",
+    "operating_systems": "Operating Systems"
   },
   "dos_emulator": {
     "loading": "Loading"
@@ -130,7 +131,7 @@
     "download_cv": {
       "title": "Looking for my resume?",
       "instruction": "Click here to download it!",
-      "download_link": "/cv/Joey_de_Ruiter_resume.pdf"
+      "download_link": "/cv/cv.pdf"
     }
   }
 }

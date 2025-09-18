@@ -39,6 +39,7 @@ import { motdConfig } from '@/programs/MessageOfTheDay/MessageOfTheDay';
 import { helpConfig } from '@/programs/Help/Help';
 import { uwuConfig } from '@/programs/Uwufier/Uwufier';
 import { neofetchConfig } from '@/programs/Neofetch/Neofetch';
+import { getOwner } from '@/config/siteOwner';
 
 export interface DirectorySettings {
   alwaysOpenAsIconView: boolean;
@@ -365,11 +366,17 @@ export function createBaseFileSystem(): FileSystem {
 
   // Create macOS like Users folder
   const users = fileSystem.addDirectory(root, 'Users', false, false);
-  const joey = fileSystem.addDirectory(users, 'joey', false, true);
+  const owner = getOwner();
+  const userDirectory = fileSystem.addDirectory(
+    users,
+    owner.username,
+    false,
+    true
+  );
 
-  const desktop = fileSystem.addDirectory(joey, 'Desktop', false, true);
+  const desktop = fileSystem.addDirectory(userDirectory, 'Desktop', false, true);
   const documents = fileSystem.addDirectory(
-    joey,
+    userDirectory,
     'Documents',
     false,
     true,
@@ -377,7 +384,7 @@ export function createBaseFileSystem(): FileSystem {
   );
   const trashCanIcon = { src: '/icons/trash-icon.png', alt: 'Trash can icon' };
   const trash = fileSystem.addDirectory(
-    joey,
+    userDirectory,
     'Trash',
     false,
     true,
@@ -417,12 +424,7 @@ export function createBaseFileSystem(): FileSystem {
     );
   }
 
-  const readmeText = `Hey, welcome to my portfolio website!
-
-This website is meant as an interactive showcase of my work as software developer for the last few years.
-
-Please enjoy, and explore as much as you would like.
-`;
+  const readmeText = `Hey, welcome to this interactive portfolio OS!\n\nThis environment showcases the work and background of ${owner.fullName}.\n\nExplore the Applications folder, open the Terminal or read the libraries file in Documents to learn more.\n`;
 
   const librariesText = `For this portfolio I used some libraries, so to give some credit:
 Three - https://threejs.org/ Awesome library for 3D web stuff.
@@ -482,9 +484,7 @@ function entriesWithinSelection(
   y: number,
   dimensions: { width: number; height: number }
 ): number {
-  const { width, height } = dimensions;
-  // NOTE(Joey): The width & height are used for both the new incoming entry as the already existing entries.
-  // It might be a good idea to make this static to the file system/configuration, instead of just randomly defined
+  const { width, height } = dimensions; // Width & height applied to both new and existing entries; consider extracting to config if reused.
 
   let overlapping = 0;
 

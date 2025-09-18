@@ -3,6 +3,7 @@ import type { WindowContext } from '@/components/WindowManagement/WindowComposit
 import type { ApplicationEvent } from '../ApplicationEvents';
 import type { ApplicationConfig, MenuEntry } from '../ApplicationManager';
 import { Application } from '../ApplicationManager';
+import { getOwner } from '../../config/siteOwner';
 import type { LocalApplicationManager } from '../LocalApplicationManager';
 import type { SystemAPIs } from '@/components/OperatingSystem';
 import dynamic from 'next/dynamic';
@@ -43,7 +44,8 @@ export class Finder extends Application {
             kind: 'action',
             value: 'Open window',
             action: () => {
-              this.openNewWindow('/Users/joey/');
+              const user = getOwner().username;
+              this.openNewWindow(`/Users/${user}/`);
             },
           },
         ],
@@ -76,7 +78,8 @@ export class Finder extends Application {
         return;
       }
 
-      const path = event.args.length !== 0 ? event.args : '/Users/joey/';
+      const defaultUser = getOwner().username;
+      const path = event.args.length !== 0 ? event.args : `/Users/${defaultUser}/`;
       this.openNewWindow(path);
     }
 

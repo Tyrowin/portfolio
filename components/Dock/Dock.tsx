@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { getOwner } from '../../config/siteOwner';
 import type {
   ApplicationConfig,
   ApplicationManager,
@@ -354,20 +355,20 @@ export function Dock(props: {
     content.push({
       kind: 'directory',
       title: 'Documents',
-      path: '/Users/joey/Documents',
+      path: `/Users/${getOwner().username}/Documents`,
       icon: { src: '/icons/icon-documents-folder.png', alt: 'File icon' },
       onClick: () => {
-        onClickDirectory('/Users/joey/Documents');
+        onClickDirectory(`/Users/${getOwner().username}/Documents`);
       },
     });
 
     content.push({
       kind: 'directory',
       title: 'Bin',
-      path: '/Users/joey/Trash',
+      path: `/Users/${getOwner().username}/Trash`,
       icon: { src: '/icons/trash-icon.png', alt: 'Trash can' },
       onClick: () => {
-        onClickDirectory('/Users/joey/Trash');
+        onClickDirectory(`/Users/${getOwner().username}/Trash`);
       },
     });
 

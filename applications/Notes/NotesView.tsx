@@ -2,6 +2,7 @@ import type { WindowProps } from '@/components/WindowManagement/WindowCompositor
 import styles from './NotesView.module.css';
 import { useEffect, useRef, useState } from 'react';
 import type { Application } from '../ApplicationManager';
+import { getOwner } from '../../config/siteOwner';
 import type { Result } from '@/lib/result';
 import { Err, Ok } from '@/lib/result';
 import type { FileSystemTextFile } from '@/apis/FileSystem/FileSystem';
@@ -39,7 +40,8 @@ export default function NotesApplicationView(props: WindowProps) {
   const path = args;
 
   function createOnSave() {
-    const path = '/Users/joey/Documents/';
+    const user = getOwner().username;
+    const path = `/Users/${user}/Documents/`;
 
     const documentsDirectory = fs.getDirectory(path);
     if (!documentsDirectory.ok) {
