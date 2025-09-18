@@ -57,11 +57,11 @@ export default function NotesApplicationView(props: WindowProps) {
     };
 
     application.compositor
-      .prompt(windowContext.id, t('notes.create_file_instructions'), title)
+      .prompt(windowContext.id, t('create_file_instructions'), title)
       .then(title => {
         if (fs.getNode(`${path}${title}.txt`).ok) {
           application.compositor
-            .alert(windowContext.id, t('notes.create_file_duplicated_name'))
+            .alert(windowContext.id, t('create_file_duplicated_name'))
             .catch(noop);
           return;
         }

@@ -150,14 +150,11 @@ export default function FinderView(props: WindowProps) {
     };
 
     application.compositor
-      .prompt(windowContext.id, t('finder.create_directory_instructions'), name)
+      .prompt(windowContext.id, t('create_directory_instructions'), name)
       .then(name => {
         if (fs.getDirectory(`${path}${name}`).ok) {
           application.compositor
-            .alert(
-              windowContext.id,
-              t('finder.create_directory_duplicated_name')
-            )
+            .alert(windowContext.id, t('create_directory_duplicated_name'))
             .catch(noop);
           return;
         }
@@ -186,14 +183,11 @@ export default function FinderView(props: WindowProps) {
     };
 
     application.compositor
-      .prompt(windowContext.id, t('finder.create_text_file_instructions'), name)
+      .prompt(windowContext.id, t('create_text_file_instructions'), name)
       .then(name => {
         if (fs.getNode(`${path}${name}.txt`).ok) {
           application.compositor
-            .alert(
-              windowContext.id,
-              t('finder.create_text_file_duplicated_name')
-            )
+            .alert(windowContext.id, t('create_text_file_duplicated_name'))
             .catch(noop);
           return;
         }
@@ -367,7 +361,7 @@ export default function FinderView(props: WindowProps) {
             </button>
           </div>
 
-          {t('finder.favorites')}
+          {t('favorites')}
           <ul>
             <li>
               <button

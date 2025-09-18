@@ -244,7 +244,7 @@ export default function ContactApplicationView() {
                   onChange={handleChange}
                 />
                 {errors.has('invalid-email') ? (
-                  <span>{t('contact.error.invalid-email')}</span>
+                  <span>{t('error.invalid-email')}</span>
                 ) : (
                   <></>
                 )}

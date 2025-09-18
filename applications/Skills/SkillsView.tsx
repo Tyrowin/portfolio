@@ -33,7 +33,7 @@ export default function SkillsView() {
       <div className="content">
         <div className="content-inner">
           <div className={styles['skills-content']}>
-            <h1>{t('skills.programming_languages')}</h1>
+            <h1>{t('programming_languages')}</h1>
 
             <ul>
               <li>
@@ -89,7 +89,7 @@ export default function SkillsView() {
               </li>
             </ul>
 
-            <h1>{t('skills.frameworks')}</h1>
+            <h1>{t('frameworks')}</h1>
             <ul>
               <li>
                 <SkillEntry
@@ -126,7 +126,7 @@ export default function SkillsView() {
               </li>
             </ul>
 
-            <h1>{t('skills.databases')}</h1>
+            <h1>{t('databases')}</h1>
             <ul>
               <li>
                 <SkillEntry
@@ -154,7 +154,7 @@ export default function SkillsView() {
               </li>
             </ul>
 
-            <h1>{t('skills.devops')}</h1>
+            <h1>{t('devops')}</h1>
             <ul>
               <li>
                 <SkillEntry
@@ -185,7 +185,7 @@ export default function SkillsView() {
               </li>
             </ul>
 
-            <h1>{t('skills.tools')}</h1>
+            <h1>{t('tools')}</h1>
             <ul>
               <li>
                 <SkillEntry
