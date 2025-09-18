@@ -784,16 +784,20 @@ export class FileSystem {
   }
 
   public unsubscribe(node: FileSystemNode, listener: NodeListener) {
-    for (const [index, entry] of this.nodeListeners[node.id].entries()) {
+    const listeners = this.nodeListeners[node.id];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!listeners) return;
+
+    for (const [index, entry] of listeners.entries()) {
       if (entry === listener) {
-        this.nodeListeners[node.id].splice(index);
+        listeners.splice(index, 1);
         return;
       }
     }
   }
 
   public propagateNodeEvent(node: FileSystemNode, type: NodeEventType) {
-    const listeners = this.nodeListeners[node.id];
+    const listeners = this.nodeListeners[node.id] ?? [];
     for (const listener of listeners) {
       listener(type);
     }

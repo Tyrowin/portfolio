@@ -131,7 +131,13 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
 
     const code = evt.code;
 
-    const audioSource = activeSounds.current[code].onUp;
+    const activeSound = activeSounds.current[code];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!activeSound) {
+      return;
+    }
+
+    const audioSource = activeSound.onUp;
 
     if (audioSource) {
       const audioFragment = fetchAudioFragmentFromCacheOrCreate(audioSource);
@@ -164,7 +170,13 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
         ? PointerPrimaryKey
         : PointerSecondaryKey;
 
-    const audioSource = activeSounds.current[key].onUp;
+    const activeSound = activeSounds.current[key];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!activeSound) {
+      return;
+    }
+
+    const audioSource = activeSound.onUp;
     if (audioSource) {
       const audioFragment = fetchAudioFragmentFromCacheOrCreate(audioSource);
       soundService.playAudioFragment(audioFragment, 1.0);

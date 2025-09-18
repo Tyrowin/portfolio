@@ -86,14 +86,14 @@ export class Window {
     public args: string,
     public readonly application: Application,
     public readonly generator: WindowApplicationGenerator
-  ) {}
+  ) { }
 }
 
 export class OrderedWindow {
   constructor(
     private window: Window,
     private order: number
-  ) {}
+  ) { }
 
   getWindow(): Window {
     return this.window;
@@ -167,7 +167,9 @@ export class WindowCompositor {
   }
 
   public getById(windowId: number): Window | null {
-    return this.windowNodeLookup[windowId].value;
+    const node = this.windowNodeLookup[windowId];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    return node ? node.value : null;
   }
 
   public setSize(width: number, height: number) {
@@ -284,6 +286,12 @@ export class WindowCompositor {
   public close(windowId: number): void {
     const node = this.windowNodeLookup[windowId];
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!node) {
+      console.warn(`Attempted to close window ${windowId} that doesn't exist`);
+      return;
+    }
+
     const window = node.value;
 
     if (window.action) {
@@ -311,6 +319,11 @@ export class WindowCompositor {
 
   public async alert(windowId: number, alert: string) {
     const node = this.windowNodeLookup[windowId];
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!node) {
+      throw new Error(`Window ${windowId} not found`);
+    }
 
     const window = node.value;
 
@@ -348,6 +361,11 @@ export class WindowCompositor {
   ): Promise<string> {
     const node = this.windowNodeLookup[windowId];
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!node) {
+      throw new Error(`Window ${windowId} not found`);
+    }
+
     const window = node.value;
 
     const cleanup = () => {
@@ -381,6 +399,11 @@ export class WindowCompositor {
   public minimize(windowId: number): void {
     const node = this.windowNodeLookup[windowId];
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!node) {
+      return;
+    }
+
     const window = node.value;
     window.minimized = true;
 
@@ -404,6 +427,11 @@ export class WindowCompositor {
 
   public maximize(windowId: number): void {
     const node = this.windowNodeLookup[windowId];
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!node) {
+      return;
+    }
 
     const window = node.value;
     window.minimized = false;
