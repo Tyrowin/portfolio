@@ -322,9 +322,9 @@ export class Shell {
       const args = parseCommand(stdin);
 
       const type = part.output.type;
-      const applicationName = args[0]?.toLocaleLowerCase() ?? null;
+      const applicationName = args[0]?.toLocaleLowerCase();
 
-      if (applicationName === null) {
+      if (!applicationName) {
         return;
       }
 

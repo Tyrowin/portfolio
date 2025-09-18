@@ -126,9 +126,6 @@ export function PathFindingAlgorithmContainer(
 
     const areaGraph = graph.current;
 
-    if (!areaGraph) {
-      return;
-    }
     if (!areaGraph.bind(graphRef.current)) {
       return;
     } // Bind the rendering
@@ -141,7 +138,7 @@ export function PathFindingAlgorithmContainer(
     return () => {
       observer.disconnect();
       areaGraph.disconnect(onPointerEvt);
-      abortController.current?.abort();
+      abortController.current.abort();
     };
   }, []);
 
@@ -157,7 +154,7 @@ export function PathFindingAlgorithmContainer(
 
     let isSolved = false;
 
-    entrypoint(view.current, abortController.current.signal).then(() => {
+    void entrypoint(view.current, abortController.current.signal).then(() => {
       isSolved = true;
       setPathFinding(false);
     });

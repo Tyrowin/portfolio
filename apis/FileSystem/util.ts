@@ -52,8 +52,13 @@ export function pathLastEntry(path: string): string | null {
   return nodes[nodes.length - 1];
 }
 
-export function pathShift(_path: string): string {
-  return '';
+export function pathShift(path: string): string {
+  const parts = path.split('/').filter(x => x.length > 0);
+  if (parts.length <= 1) {
+    return '/';
+  }
+  parts.shift();
+  return `/${parts.join('/')}${path.endsWith('/') ? '/' : ''}`;
 }
 
 export function isUniqueFile(

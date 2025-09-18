@@ -9,13 +9,7 @@ import type {
 } from '@/apis/FileSystem/FileSystem';
 import { calculateNodePosition } from '@/apis/FileSystem/FileSystem';
 import type { RefObject, MutableRefObject } from 'react';
-import {
-  forwardRef,
-  useState,
-  useRef,
-  useEffect,
-  useImperativeHandle,
-} from 'react';
+import { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import styles from '@/components/Folder/FolderView.module.css';
 import type { FolderIconEntry } from '../Icons/FolderIcon';
@@ -42,10 +36,7 @@ import { clamp } from '../util';
 import type { Result } from '@/lib/result';
 import { Err, Ok } from '@/lib/result';
 import type { SystemAPIs } from '../OperatingSystem';
-import {
-  constructPath,
-  generateUniqueNameForDirectory,
-} from '@/apis/FileSystem/util';
+import { constructPath } from '@/apis/FileSystem/util';
 
 const FolderIcon = dynamic(() => import('../Icons/FolderIcon'));
 
@@ -381,7 +372,7 @@ export function FolderView(props: FolderViewProps) {
         detail: data,
         bubbles: false,
       });
-      dropPoint?.dispatchEvent(moveEvent);
+      dropPoint.dispatchEvent(moveEvent);
 
       if (dropPoint !== fileDraggingCurrentNode.current) {
         const enterEvent = new CustomEvent(FileSystemItemDragEnter, {
@@ -394,7 +385,7 @@ export function FolderView(props: FolderViewProps) {
         });
 
         fileDraggingCurrentNode.current?.dispatchEvent(leaveEvent);
-        dropPoint?.dispatchEvent(enterEvent);
+        dropPoint.dispatchEvent(enterEvent);
 
         fileDraggingCurrentNode.current = dropPoint;
       }
@@ -468,8 +459,6 @@ export function FolderView(props: FolderViewProps) {
   function stopRenamingFiles() {
     const files = localFiles.current;
 
-    const update = false;
-
     for (const file of files.iterFromTail()) {
       if (file.value.editing.active) {
         fs.renameNode(file.value.entry.node, file.value.editing.value);
@@ -478,9 +467,8 @@ export function FolderView(props: FolderViewProps) {
       }
     }
 
-    if (update) {
-      updateFiles(files);
-    }
+    // updateFiles would be called here if update was truthy
+    // Currently update is always falsy based on the logic above
   }
 
   function onTouchDown(evt: TouchEvent) {
@@ -816,10 +804,7 @@ export function FolderView(props: FolderViewProps) {
   ) {
     const selectedFiles = new Set<number>();
 
-    const first = evt.detail.nodes[0] ?? null;
-    if (!first) {
-      return;
-    }
+    const first = evt.detail.nodes[0];
 
     for (const node of evt.detail.nodes) {
       selectedFiles.add(node.item.id);
@@ -862,15 +847,11 @@ export function FolderView(props: FolderViewProps) {
   ): Result<FileSystemDirectory> {
     const selectedFiles = new Set<number>();
 
-    const first = evt.detail.nodes[0] ?? null;
+    const first = evt.detail.nodes[0];
 
     const dir = fs.getDirectory(currentDirectory.current);
     if (!dir.ok) {
       return Err(Error('Unable to lookup currentDirectory'));
-    }
-
-    if (!first) {
-      return Ok(dir.value);
     }
 
     for (const node of evt.detail.nodes) {

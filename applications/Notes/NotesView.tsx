@@ -52,7 +52,9 @@ export default function NotesApplicationView(props: WindowProps) {
       template
     );
 
-    const noop = () => {};
+    const noop = () => {
+      // No operation
+    };
 
     application.compositor
       .prompt(windowContext.id, t('notes.create_file_instructions'), title)
@@ -119,7 +121,7 @@ export default function NotesApplicationView(props: WindowProps) {
       return;
     }
 
-    const unsubscribe = fs.subscribe(file.value, _evt => {
+    const unsubscribe = fs.subscribe(file.value, () => {
       updateWindowTitle(file.value);
     });
 

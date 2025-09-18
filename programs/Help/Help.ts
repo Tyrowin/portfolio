@@ -1,4 +1,3 @@
-import type { SystemAPIs } from '@/components/OperatingSystem';
 import type { ProgramConfig } from '../Programs';
 import type { Shell } from '@/applications/Terminal/Shell';
 import { greenBright } from 'ansi-colors';
@@ -19,7 +18,7 @@ function command(name: string, description: string): string {
   return command + description;
 }
 
-function Help(shell: Shell, _args: string[], _apis: SystemAPIs): void {
+function Help(shell: Shell): void {
   shell
     .getTerminal()
     .writeResponseLines([

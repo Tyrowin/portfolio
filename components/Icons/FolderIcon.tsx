@@ -79,14 +79,18 @@ function EditTitle(props: { entry: FolderIconEntry }) {
       onChange={evt => {
         onChange(evt.target.value);
       }}
-      onKeyDown={evt => evt.key === 'Enter' && onSave()}
+      onKeyDown={evt => {
+        if (evt.key === 'Enter') {
+          onSave();
+        }
+      }}
     />
   );
 }
 
 function chunkString(lineLength: number, value: string): string[] {
   const chunks = Math.ceil(value.length / lineLength);
-  const lines = new Array(chunks);
+  const lines: string[] = new Array<string>(chunks);
 
   for (let i = 0, d = 0; i < chunks; i++, d += lineLength) {
     lines[i] = value.substring(d, d + lineLength);

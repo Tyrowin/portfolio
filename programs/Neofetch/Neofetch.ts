@@ -1,9 +1,8 @@
 import type { Shell } from '@/applications/Terminal/Shell';
-import type { SystemAPIs } from '@/components/OperatingSystem';
 import type { ProgramConfig } from '../Programs';
 import { greenBright, white } from 'ansi-colors';
 
-function Neofetch(shell: Shell, args: string[], apis: SystemAPIs): void {
+function Neofetch(shell: Shell): void {
   function entry(key: string, value: string): string {
     return `${greenBright(key)} ${white(value)}`;
   }

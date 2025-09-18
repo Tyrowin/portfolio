@@ -155,11 +155,11 @@ class Runner {
     this.active = false;
 
     this.changeVolume(0);
-    this.ci?.exit();
+    void this.ci?.exit();
   }
 }
 
-function LoadingScreen(t: any) {
+function LoadingScreen(t: (key: string) => string) {
   return (
     <div className="content-outer">
       <div className="content">
@@ -233,7 +233,7 @@ export default function DosEmulator(props: {
       }
       const canvas = canvasRef.current;
 
-      canvas.requestPointerLock();
+      void canvas.requestPointerLock();
     };
 
     const handleMouseDown = (evt: MouseEvent) => {
@@ -259,9 +259,7 @@ export default function DosEmulator(props: {
         This might have the consequence that the always have the wrong measurement if the initial measurement is off.
         */
 
-        if (movementOrigin === null) {
-          movementOrigin = { x: evt.movementX, y: evt.movementY };
-        }
+        movementOrigin ??= { x: evt.movementX, y: evt.movementY };
 
         const deltaX = evt.movementX - movementOrigin.x;
         const deltaY = evt.movementY - movementOrigin.y;
@@ -287,7 +285,7 @@ export default function DosEmulator(props: {
 
     setIsLoading(true);
 
-    runner
+    void runner
       .start(
         {
           canvas: canvasRef.current,

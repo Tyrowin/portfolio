@@ -60,7 +60,7 @@ export function generateMaze(width: number, height: number): Area {
     const bx = dx === 0;
     const by = dy === 0;
 
-    if (!(bx || by) && bx && by) {
+    if (bx && by) {
       return false;
     }
 
@@ -188,7 +188,7 @@ export class Area {
     private end: Point
   ) {
     this.width = this.grid[0]?.length ?? 0;
-    this.height = this.grid.length ?? 0;
+    this.height = this.grid.length;
   }
 
   public getGrid(): AreaTile[][] {

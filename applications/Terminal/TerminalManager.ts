@@ -525,9 +525,17 @@ export class TerminalManager implements TerminalConnector {
     const terminalContainer = this.domElement;
 
     // Build on a private api, just like the FitAddon of xterm itself :ˆ)
-    const core = (this.terminal as any)._core;
+    const core = (
+      this.terminal as unknown as {
+        _core: {
+          _renderService: {
+            dimensions: { css: { cell: { height: number; width: number } } };
+          };
+        };
+      }
+    )._core;
     const dimensions = core._renderService.dimensions;
-    const cell: { height: number; width: number } = dimensions.css.cell;
+    const cell = dimensions.css.cell;
 
     const cols = Math.floor(terminalContainer.clientWidth / cell.width);
     const rows = Math.floor(terminalContainer.clientHeight / cell.height);

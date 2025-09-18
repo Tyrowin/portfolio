@@ -16,8 +16,6 @@ export abstract class CanvasGraph implements Graph {
   protected parent: HTMLCanvasElement | null = null;
   protected context: CanvasRenderingContext2D | null = null;
 
-  constructor() {}
-
   public resize(width: number, height: number): void {
     if (this.parent === null) {
       return;

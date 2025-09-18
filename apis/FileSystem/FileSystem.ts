@@ -307,9 +307,7 @@ export function getIconFromNode(node: FileSystemNode): ApplicationIcon {
   switch (node.kind) {
     case 'application':
     case 'hyperlink':
-      return (
-        node.icon ?? { src: '/icons/folder-icon.png', alt: 'Hyperlink icon' }
-      );
+      return node.icon;
     case 'directory': {
       if (node.icon) {
         return node.icon;
@@ -777,10 +775,7 @@ export class FileSystem {
   }
 
   public subscribe(node: FileSystemNode, listener: NodeListener): Action<void> {
-    if (!this.nodeListeners[node.id]) {
-      this.nodeListeners[node.id] = [];
-    }
-
+    this.nodeListeners[node.id] ??= [];
     this.nodeListeners[node.id].push(listener);
 
     return () => {
@@ -799,10 +794,6 @@ export class FileSystem {
 
   public propagateNodeEvent(node: FileSystemNode, type: NodeEventType) {
     const listeners = this.nodeListeners[node.id];
-    if (!listeners) {
-      return;
-    }
-
     for (const listener of listeners) {
       listener(type);
     }
@@ -810,11 +801,6 @@ export class FileSystem {
 
   public getNode(path: string): Result<FileSystemNode> {
     const node = this.lookupTable[getAbsolutePath(path)];
-
-    if (!node) {
-      return Err(Error('Node not found'));
-    }
-
     return Ok(node);
   }
 
@@ -822,7 +808,8 @@ export class FileSystem {
     Object.entries(this.lookupTable)
       .filter(([key]) => key.startsWith(prefix))
       .forEach(([path, node]) => {
-        delete this.lookupTable[path];
+        // Remove old path
+        Reflect.deleteProperty(this.lookupTable, path);
 
         const newLookupPath = constructPath(node);
         this.lookupTable[newLookupPath] = node;
@@ -1199,10 +1186,7 @@ export class FileSystem {
 
     if (resultNode.kind === 'directory') {
       const path = constructPath(node);
-
-      if (this.lookupTable[path]) {
-        delete this.lookupTable[path];
-      }
+      Reflect.deleteProperty(this.lookupTable, path);
     }
   }
 }

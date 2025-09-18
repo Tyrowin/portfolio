@@ -33,7 +33,7 @@ function RenderMenu(menuEntries: MenuEntry) {
 
   function renderMenuItem(item: MenuItem) {
     switch (item.kind) {
-      case 'action':
+      case 'action': {
         const menuAction = () => {
           item.action();
           setOpen(false);
@@ -44,20 +44,18 @@ function RenderMenu(menuEntries: MenuEntry) {
             {item.value}
           </button>
         );
+      }
       case 'spacer':
         return <hr />;
     }
   }
 
   function onClickMenuTitle() {
-    if (!ref.current) {
-      return;
-    }
     if (isOpen) {
       return;
     }
 
-    const head = ref.current;
+    const head = ref.current!;
     const handleClickAfterOpeningMenu = (evt: PointerEvent) => {
       onClickAfterOpeningMenu(evt, head);
     };
@@ -113,7 +111,7 @@ function RenderMenu(menuEntries: MenuEntry) {
   );
 }
 
-function renderDate(date: Date | undefined, t: any) {
+function renderDate(date: Date | undefined, t: (key: string) => string) {
   if (date === undefined) {
     return <></>;
   }
@@ -161,7 +159,7 @@ function languageSelection() {
 
   const entry: MenuEntry = {
     displayOptions: {},
-    name: t(`tags.${locale}` as any),
+    name: t(`tags.${locale}`),
     items: [
       {
         kind: 'action',

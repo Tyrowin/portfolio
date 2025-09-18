@@ -104,9 +104,6 @@ export function SortingAlgorithmContainer(
 
     const barGraph = graph.current;
 
-    if (!barGraph) {
-      return;
-    }
     if (!barGraph.bind(graphRef.current)) {
       return;
     }
@@ -125,7 +122,7 @@ export function SortingAlgorithmContainer(
 
     return () => {
       observer.disconnect();
-      abortController.current?.abort();
+      abortController.current.abort();
     };
   }, []);
 
@@ -139,8 +136,8 @@ export function SortingAlgorithmContainer(
 
     let isSorted = false;
 
-    entrypoint(view.current, abortController.current.signal).then(() => {
-      verifySort(view.current, abortController.current.signal).then(() => {
+    void entrypoint(view.current, abortController.current.signal).then(() => {
+      void verifySort(view.current, abortController.current.signal).then(() => {
         isSorted = true;
         setSorting(false);
       });

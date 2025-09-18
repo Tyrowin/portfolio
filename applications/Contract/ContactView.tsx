@@ -1,4 +1,3 @@
-import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './ContactView.module.css';
 import type { FormEvent } from 'react';
@@ -46,12 +45,7 @@ function EnglishContent() {
   );
 }
 
-export default function ContactApplicationView(props: WindowProps) {
-  const {
-    application: _application,
-    args: _args,
-    windowContext: _windowContext,
-  } = props;
+export default function ContactApplicationView() {
   const nameRef = useRef<HTMLInputElement>(null);
 
   const t = useTranslations('contact');
@@ -69,7 +63,9 @@ export default function ContactApplicationView(props: WindowProps) {
   const [loading, setLoading] = useState(false);
   const [processed, setProcessed] = useState(false);
 
-  function handleChange(e: any) {
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
     setInputFields({ ...inputFields, [e.target.name]: e.target.value });
   }
 
@@ -139,7 +135,7 @@ export default function ContactApplicationView(props: WindowProps) {
     setProcessed(false);
 
     if (isFormValid()) {
-      sendEmail().then(() => {
+      void sendEmail().then(() => {
         resetInput();
       });
     } else {

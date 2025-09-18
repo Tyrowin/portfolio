@@ -37,7 +37,7 @@ export const isSafari = (): boolean =>
  * They also implement the touch events in a slightly different way, so we need to be able to differentiate between these browser
  */
 export function isPhoneSafari(): boolean {
-  if (!isSafari) {
+  if (!isSafari()) {
     return false;
   }
 

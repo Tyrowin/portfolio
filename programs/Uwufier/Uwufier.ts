@@ -1,5 +1,4 @@
 import type { Shell } from '@/applications/Terminal/Shell';
-import type { SystemAPIs } from '@/components/OperatingSystem';
 import type { ProgramConfig } from '../Programs';
 import { getParameters } from '../Programs';
 import { PRNG } from '@/data/PRNG';
@@ -246,7 +245,7 @@ function transform(text: string): string {
   return words.join(' ');
 }
 
-function Uwufy(shell: Shell, args: string[], _apis: SystemAPIs): void {
+function Uwufy(shell: Shell, args: string[]): void {
   const text = getParameters(args).join(' ');
 
   shell.getTerminal().writeResponse(transform(text));

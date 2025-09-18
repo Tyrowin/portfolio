@@ -12,7 +12,7 @@ interface SendEmailRequestData {
 
 const contactSchema = z.object({
   name: z.string().min(1),
-  email: z.string().email().min(5),
+  email: z.email().min(5),
   company: z.string().optional(),
   message: z.string().min(1),
 });
@@ -40,14 +40,18 @@ async function sendEmailToMe(request: SendEmailRequestData): Promise<void> {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: unknown = await request.json();
     const validatedRequest = contactSchema.safeParse(body);
 
     if (!validatedRequest.success) {
-      return NextResponse.json(
-        { error: validatedRequest.error.flatten().fieldErrors },
-        { status: 400 }
-      );
+      const errorTree = z.treeifyError(validatedRequest.error);
+      const fieldErrors: Record<string, string[]> = {};
+      if (errorTree.properties) {
+        for (const [key, value] of Object.entries(errorTree.properties)) {
+          fieldErrors[key] = value.errors;
+        }
+      }
+      return NextResponse.json({ error: fieldErrors }, { status: 400 });
     }
 
     await sendEmailToMe(validatedRequest.data);

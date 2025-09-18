@@ -145,7 +145,9 @@ export default function FinderView(props: WindowProps) {
     const template = t('filesystem.new_directory');
     const name = generateUniqueNameForDirectory(dir.value, template);
 
-    const noop = () => {};
+    const noop = () => {
+      // No operation
+    };
 
     application.compositor
       .prompt(windowContext.id, t('finder.create_directory_instructions'), name)
@@ -179,7 +181,9 @@ export default function FinderView(props: WindowProps) {
     const template = t('filesystem.new_file');
     const name = generateUniqueNameForDirectory(dir.value, template);
 
-    const noop = () => {};
+    const noop = () => {
+      // No operation
+    };
 
     application.compositor
       .prompt(windowContext.id, t('finder.create_text_file_instructions'), name)

@@ -167,7 +167,7 @@ export class WindowCompositor {
   }
 
   public getById(windowId: number): Window | null {
-    return this.windowNodeLookup[windowId]?.value;
+    return this.windowNodeLookup[windowId].value;
   }
 
   public setSize(width: number, height: number) {
@@ -254,11 +254,6 @@ export class WindowCompositor {
   public focus(windowId: number, force = false) {
     const node = this.windowNodeLookup[windowId];
 
-    if (!node) {
-      console.error('Node not found');
-      return;
-    }
-
     // The window is already on top, so don't update the stack
     if (!force && node === this.windows.getHead()) {
       return;
@@ -278,9 +273,6 @@ export class WindowCompositor {
   ) {
     const node = this.windowNodeLookup[window.id];
 
-    if (!node) {
-      return;
-    }
     node.value = window;
 
     const moved = updateOptions?.moved ?? false;
@@ -291,9 +283,6 @@ export class WindowCompositor {
 
   public close(windowId: number): void {
     const node = this.windowNodeLookup[windowId];
-    if (!node) {
-      return;
-    }
 
     const window = node.value;
 
@@ -305,7 +294,7 @@ export class WindowCompositor {
     window.application.on(createWindowCloseEvent(windowId), { id: windowId });
 
     this.windows.unlink(node);
-    delete this.windowNodeLookup[windowId];
+    Reflect.deleteProperty(this.windowNodeLookup, windowId);
 
     const prev = this.findPreviousNodeOfSameApplication(window.application);
 
@@ -322,9 +311,6 @@ export class WindowCompositor {
 
   public async alert(windowId: number, alert: string) {
     const node = this.windowNodeLookup[windowId];
-    if (!node) {
-      throw new Error('Window node not found');
-    }
 
     const window = node.value;
 
@@ -349,7 +335,7 @@ export class WindowCompositor {
         cleanup();
         return;
       })
-      .catch(reason => {
+      .catch((reason: unknown) => {
         cleanup();
         throw reason;
       });
@@ -361,9 +347,6 @@ export class WindowCompositor {
     defaultValue?: string
   ): Promise<string> {
     const node = this.windowNodeLookup[windowId];
-    if (!node) {
-      throw new Error('Window node not found');
-    }
 
     const window = node.value;
 
@@ -389,7 +372,7 @@ export class WindowCompositor {
         cleanup();
         return value;
       })
-      .catch(reason => {
+      .catch((reason: unknown) => {
         cleanup();
         throw reason;
       });
@@ -397,9 +380,6 @@ export class WindowCompositor {
 
   public minimize(windowId: number): void {
     const node = this.windowNodeLookup[windowId];
-    if (!node) {
-      return;
-    }
 
     const window = node.value;
     window.minimized = true;
@@ -424,9 +404,6 @@ export class WindowCompositor {
 
   public maximize(windowId: number): void {
     const node = this.windowNodeLookup[windowId];
-    if (!node) {
-      return;
-    }
 
     const window = node.value;
     window.minimized = false;

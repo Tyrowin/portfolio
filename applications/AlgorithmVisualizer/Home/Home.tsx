@@ -15,7 +15,7 @@ export function SortingGenerationStrategyDropdown(
   id: string,
   value: string,
   onChange: (strategy: SortingDataGenerationStrategy) => void,
-  t: any
+  t: ReturnType<typeof useTranslations>
 ) {
   const entries: DataGenerationEntry<SortingDataGenerationStrategy>[] = [
     {
@@ -39,7 +39,7 @@ export function PathFindingGenerationStrategyDropdown(
   id: string,
   value: string,
   onChange: (strategy: PathFindingDataGenerationStrategy) => void,
-  t: any
+  t: ReturnType<typeof useTranslations>
 ) {
   const entries: DataGenerationEntry<PathFindingDataGenerationStrategy>[] = [
     {

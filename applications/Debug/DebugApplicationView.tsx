@@ -12,9 +12,9 @@ function getTargetUrl(time: number): string {
 }
 
 export default function DebugApplicationView(props: WindowProps) {
-  const { application, windowContext: _windowContext } = props;
+  const { application } = props;
 
-  const [time, _] = useState(Date.now());
+  const [time] = useState(Date.now());
   const url = getTargetUrl(time);
 
   function onClickButton() {
@@ -22,7 +22,7 @@ export default function DebugApplicationView(props: WindowProps) {
   }
 
   useEffect(() => {
-    return () => {};
+    // No cleanup needed
   }, []);
 
   return (

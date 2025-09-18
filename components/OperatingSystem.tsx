@@ -8,7 +8,7 @@ import {
   createBaseFileSystem,
   removeDebugAppFromFileSystem,
 } from '@/apis/FileSystem/FileSystem';
-import type { MutableRefObject } from 'react';
+
 import React, { useEffect, useRef } from 'react';
 import { MenuBar } from './MenuBar';
 import { Desktop } from './Desktop/Desktop';
@@ -51,12 +51,8 @@ const applicationManager = new ApplicationManager(
   apis
 );
 
-function handleParentResponsesClosure(
-  _initialCamera: MutableRefObject<Camera | null>,
-  _camera: MutableRefObject<Camera | null>,
-  _apis: SystemAPIs
-) {
-  return function (_event: MessageEvent) {
+function handleParentResponsesClosure() {
+  return function () {
     // RPC functionality removed - no longer needed without web app
     // const response = parseMessageFromParent(event);
     // if (!response.ok) { return; }
@@ -244,11 +240,7 @@ export const OperatingSystem = () => {
       disableBrowserZoomTouchInteraction(ref.current);
     }
 
-    const handleParentEvent = handleParentResponsesClosure(
-      initialCamera,
-      camera,
-      apis
-    );
+    const handleParentEvent = handleParentResponsesClosure();
     window.addEventListener('message', handleParentEvent, false);
 
     // sendRequestToParent({ method: 'mounted' }); // RPC removed

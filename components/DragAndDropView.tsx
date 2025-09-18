@@ -13,16 +13,11 @@ export function DragAndDropView(props: { apis: SystemAPIs }) {
   function onDragEvent(data: DragAndDropData) {
     switch (data.action) {
       case 'start':
-      case 'move':
+      case 'move': {
         const selectedFiles: FolderIconEntry[] = data.files.nodes.map(entry => {
           const [x, y] = [data.x - entry.offset.x, data.y - entry.offset.y];
-
           return {
-            entry: {
-              node: entry.item,
-              x,
-              y,
-            },
+            entry: { node: entry.item, x, y },
             x,
             y,
             selected: false,
@@ -30,12 +25,13 @@ export function DragAndDropView(props: { apis: SystemAPIs }) {
             editing: { active: false, value: entry.item.name },
           };
         });
-
         setFiles(selectedFiles);
         break;
-      case 'drop':
+      }
+      case 'drop': {
         setFiles([]);
         break;
+      }
     }
   }
 

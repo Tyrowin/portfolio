@@ -97,11 +97,6 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
   function fetchAudioFragmentFromCacheOrCreate(
     source: string
   ): HTMLAudioElement {
-    const cacheEntry = audioCache.current[source];
-    if (cacheEntry) {
-      return cacheEntry;
-    }
-
     const audioFragment = new Audio(source);
     audioCache.current[source] = audioFragment;
 
@@ -136,10 +131,6 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
 
     const code = evt.code;
 
-    if (!activeSounds.current[code]) {
-      return;
-    }
-
     const audioSource = activeSounds.current[code].onUp;
 
     if (audioSource) {
@@ -172,10 +163,6 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
       evt.button === PrimaryMouseButton
         ? PointerPrimaryKey
         : PointerSecondaryKey;
-
-    if (!activeSounds.current[key]) {
-      return;
-    }
 
     const audioSource = activeSounds.current[key].onUp;
     if (audioSource) {

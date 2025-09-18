@@ -99,14 +99,12 @@ export class DosWebGLRenderer {
 
     ci.events().onFrame((rgb, rgba) => {
       if (!isActive()) {
-        ci.exit();
+        void ci.exit();
       }
 
-      frame = rgb != null ? rgb : rgba;
-      frameFormat = rgb != null ? gl.RGB : gl.RGBA;
-      if (requestAnimationFrameId === null) {
-        requestAnimationFrameId = requestAnimationFrame(updateTexture);
-      }
+      frame = rgb ?? rgba;
+      frameFormat = rgb ? gl.RGB : gl.RGBA;
+      requestAnimationFrameId ??= requestAnimationFrame(updateTexture);
     });
 
     const updateTexture = () => {

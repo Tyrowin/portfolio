@@ -21,7 +21,11 @@ function findEndOfQuote(
       }
       case DoubleQuote:
       case SingleQuote: {
-        if (type === 'double' || type === 'single') {
+        // Only terminate if the encountered quote matches the originally opened quote type
+        const isMatchingQuote =
+          (type === 'double' && char === DoubleQuote) ||
+          (type === 'single' && char === SingleQuote);
+        if (isMatchingQuote) {
           return index;
         }
       }

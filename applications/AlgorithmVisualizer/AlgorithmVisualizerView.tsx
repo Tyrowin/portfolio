@@ -89,8 +89,6 @@ function RenderSubView(
 }
 
 export default function AlgorithmVisualizerView(props: WindowProps) {
-  const { application: _application, windowContext: _windowContext } = props;
-
   const [subView, setSubView] = useState<AlgorithmSubView>('home');
   const [algorithmOptions, setAlgorithmOptions] =
     useState<AlgorithmOptions | null>(null);

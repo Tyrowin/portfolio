@@ -45,7 +45,7 @@ export default function ImageViewerView(props: WindowProps) {
     }
     const image = imageNode.value;
 
-    const unsubscribe = fs.subscribe(image, _evt => {
+    const unsubscribe = fs.subscribe(image, () => {
       updateWindowTitle(image);
     });
 

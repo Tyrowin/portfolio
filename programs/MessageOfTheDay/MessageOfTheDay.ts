@@ -1,12 +1,7 @@
-import type { SystemAPIs } from '@/components/OperatingSystem';
 import type { ProgramConfig } from '../Programs';
 import type { Shell } from '@/applications/Terminal/Shell';
 
-function MessageOfTheDay(
-  shell: Shell,
-  _args: string[],
-  _apis: SystemAPIs
-): void {
+function MessageOfTheDay(shell: Shell): void {
   shell
     .getTerminal()
     .writeResponseLines([

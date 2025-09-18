@@ -25,10 +25,7 @@ export class ChainIterator<T> implements Iterable<Node<T>> {
     this.originalNode = this.node;
   }
 
-  private getNextIterator(
-    node: Node<T>,
-    direction: 'fromTail' | 'fromHead'
-  ): Node<T> | null {
+  private getNextIterator(node: Node<T>): Node<T> | null {
     switch (this.direction) {
       case 'fromTail':
         return node.next;
@@ -37,7 +34,7 @@ export class ChainIterator<T> implements Iterable<Node<T>> {
     }
   }
 
-  [Symbol.iterator](): Iterator<Node<T>, any, undefined> {
+  [Symbol.iterator](): Iterator<Node<T>> {
     let value: Node<T>;
     this.node = this.originalNode;
 
@@ -50,7 +47,7 @@ export class ChainIterator<T> implements Iterable<Node<T>> {
 
         value = this.node;
 
-        this.node = this.getNextIterator(this.node, this.direction);
+        this.node = this.getNextIterator(this.node);
 
         return { done: false, value };
       },
@@ -65,7 +62,7 @@ export class ChainIterator<T> implements Iterable<Node<T>> {
         return node.value;
       }
 
-      node = this.getNextIterator(node, this.direction);
+      node = this.getNextIterator(node);
     }
 
     return null;
@@ -90,9 +87,7 @@ export class Chain<T> {
     }
 
     this.head = node;
-    if (this.tail === null) {
-      this.tail = node;
-    }
+    this.tail ??= node;
 
     this.items++;
 
@@ -149,9 +144,7 @@ export class Chain<T> {
     }
 
     this.tail = node;
-    if (this.head === null) {
-      this.head = node;
-    }
+    this.head ??= node;
 
     this.items++;
 

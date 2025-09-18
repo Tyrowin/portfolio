@@ -83,10 +83,7 @@ export abstract class Application {
   abstract config(): ApplicationConfig;
   abstract menuEntries(): MenuEntry[];
 
-  protected baseHandler(
-    event: ApplicationEvent,
-    _windowContext?: WindowContext
-  ): void {
+  protected baseHandler(event: ApplicationEvent): void {
     if (event.kind === 'all-windows-closed') {
       this.manager.quit();
       return;
@@ -102,10 +99,7 @@ export abstract class Application {
     windowId: number,
     listener: ApplicationWindowListener
   ): Action<void> {
-    if (!this.windowListeners[windowId]) {
-      this.windowListeners[windowId] = [];
-    }
-
+    this.windowListeners[windowId] ??= [];
     this.windowListeners[windowId].push(listener);
 
     return () => {
@@ -127,10 +121,6 @@ export abstract class Application {
 
   sendEventToView(windowId: number, event: ApplicationWindowEvent) {
     const listeners = this.windowListeners[windowId];
-    if (!listeners) {
-      return;
-    }
-
     for (const listener of listeners) {
       listener(event);
     }

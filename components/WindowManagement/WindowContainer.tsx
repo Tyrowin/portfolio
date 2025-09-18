@@ -206,7 +206,7 @@ const Resizable = (props: {
     };
   };
 
-  function onPointerUp(evt: PointerEvent) {
+  function onPointerUp() {
     window.removeEventListener('pointerup', onPointerUp);
     window.removeEventListener('pointermove', onPointerMove);
 
@@ -453,10 +453,6 @@ const WindowHeader = (
   }
 
   function handleDoubleClickOnHeader(): void {
-    if (lastTimeHeaderClicked.current === null) {
-      return;
-    }
-
     const now = Date.now();
     const timeDifference = now - lastTimeHeaderClicked.current;
 
@@ -537,7 +533,7 @@ const WindowHeader = (
     windowCompositor.update(windowData);
   }
 
-  function onPointerUp(evt: PointerEvent) {
+  function onPointerUp() {
     window.removeEventListener('pointermove', onPointerMove);
     window.removeEventListener('pointerup', onPointerUp);
 

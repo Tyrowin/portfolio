@@ -85,7 +85,7 @@ export class LocalWindowCompositor {
 
     this.compositor.close(windowId);
 
-    delete this.instances[windowId];
+    Reflect.deleteProperty(this.instances, windowId);
   }
 
   public async alert(windowId: number, alert: string): Promise<void> {
