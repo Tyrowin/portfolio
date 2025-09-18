@@ -18,17 +18,21 @@ export interface FilteredProject {
   icon?: string;
 }
 
-const projects: FilteredProject[] = (siteOwner.projects ?? []).map((p: ProjectEntry) => ({
-  id: p.id,
-  name: p.name,
-  description: p.description,
-  year: p.year,
-  stack: p.stack ?? [],
-  icon: p.icon,
-  link: undefined, // site config uses links[] instead; single link optional here
-}));
+const projects: FilteredProject[] = (siteOwner.projects ?? []).map(
+  (p: ProjectEntry) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    year: p.year,
+    stack: p.stack ?? [],
+    icon: p.icon,
+    link: undefined, // site config uses links[] instead; single link optional here
+  })
+);
 
-export function filterProjects(opts: ProjectFilterOptions = {}): FilteredProject[] {
+export function filterProjects(
+  opts: ProjectFilterOptions = {}
+): FilteredProject[] {
   const { year, stackIncludesAll, stackIncludesAny, query, limit } = opts;
   let result = projects;
 
@@ -38,18 +42,24 @@ export function filterProjects(opts: ProjectFilterOptions = {}): FilteredProject
 
   if (stackIncludesAll?.length) {
     const allLower = stackIncludesAll.map(s => s.toLowerCase());
-    result = result.filter(p => allLower.every(req => p.stack.map(s => s.toLowerCase()).includes(req)));
+    result = result.filter(p =>
+      allLower.every(req => p.stack.map(s => s.toLowerCase()).includes(req))
+    );
   }
 
   if (stackIncludesAny?.length) {
     const anyLower = stackIncludesAny.map(s => s.toLowerCase());
-    result = result.filter(p => p.stack.some(s => anyLower.includes(s.toLowerCase())));
+    result = result.filter(p =>
+      p.stack.some(s => anyLower.includes(s.toLowerCase()))
+    );
   }
 
   if (query?.trim()) {
     const q = query.trim().toLowerCase();
-    result = result.filter(p =>
-      p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
+    result = result.filter(
+      p =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q)
     );
   }
 
@@ -60,7 +70,9 @@ export function filterProjects(opts: ProjectFilterOptions = {}): FilteredProject
   return result;
 }
 
-export function groupProjectsByYear(filtered: FilteredProject[] = projects): Record<number, FilteredProject[]> {
+export function groupProjectsByYear(
+  filtered: FilteredProject[] = projects
+): Record<number, FilteredProject[]> {
   return filtered.reduce<Record<number, FilteredProject[]>>((acc, p) => {
     (acc[p.year] ??= []).push(p);
     return acc;
@@ -71,11 +83,14 @@ export function groupProjectsByYear(filtered: FilteredProject[] = projects): Rec
 // Consumers can memoize externally if combining filters.
 import { useMemo } from 'react';
 export function useProjects(options: ProjectFilterOptions = {}) {
-  return useMemo(() => filterProjects(options), [
-    options.year,
-    JSON.stringify(options.stackIncludesAll ?? []),
-    JSON.stringify(options.stackIncludesAny ?? []),
-    options.query,
-    options.limit
-  ]);
+  return useMemo(
+    () => filterProjects(options),
+    [
+      options.year,
+      JSON.stringify(options.stackIncludesAll ?? []),
+      JSON.stringify(options.stackIncludesAny ?? []),
+      options.query,
+      options.limit,
+    ]
+  );
 }

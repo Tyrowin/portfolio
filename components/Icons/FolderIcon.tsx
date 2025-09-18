@@ -152,10 +152,12 @@ function contentAwareSplitTitle(
   return limitLineOutput(lines);
 }
 
-function RenderTitle(props: { title: string }) {
-  const { title } = props;
+function RenderTitle(props: {
+  title: string;
+  variant?: 'desktop' | 'finder' | 'dock';
+}) {
+  const { title, variant } = props;
   const lines = contentAwareSplitTitle(CharactersPerLine, MaximumLines, title);
-
   const elements = lines.map((x, index) => {
     if (x.length === 0) {
       return (
@@ -164,14 +166,17 @@ function RenderTitle(props: { title: string }) {
         </span>
       );
     }
-
     return (
       <span className={styles.titleLine} key={index}>
         {x}
       </span>
     );
   });
-  return <div className={styles.title}>{elements}</div>;
+  let variantClass = styles.title;
+  if (variant === 'finder') variantClass += ' ' + styles.finderTitle;
+  if (variant === 'desktop') variantClass += ' ' + styles.desktopTitle;
+  if (variant === 'dock') variantClass += ' ' + styles.dockTooltip;
+  return <div className={variantClass}>{elements}</div>;
 }
 
 function calculateZIndex(entry: FolderIconEntry, index: number): number {
@@ -194,8 +199,9 @@ export interface FolderIconEntry {
 export default function FolderIcon(props: {
   folderIconEntry: FolderIconEntry;
   index: number;
+  variant?: 'desktop' | 'finder' | 'dock';
 }) {
-  const { folderIconEntry: folderIconEntry, index } = props;
+  const { folderIconEntry: folderIconEntry, index, variant } = props;
   const entry = folderIconEntry.entry;
   const file = entry.node;
 
@@ -203,7 +209,7 @@ export default function FolderIcon(props: {
   const title = folderIconEntry.editing.active ? (
     <EditTitle entry={folderIconEntry} />
   ) : (
-    <RenderTitle title={file.name + file.filenameExtension} />
+    <RenderTitle title={file.name + file.filenameExtension} variant={variant} />
   );
   const icon = getIconFromNode(entry.node);
 

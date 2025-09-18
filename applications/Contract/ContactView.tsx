@@ -1,3 +1,5 @@
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { FC } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './ContactView.module.css';
 import type { FormEvent } from 'react';
@@ -42,7 +44,10 @@ function EnglishContent(props: { email: string }) {
   );
 }
 
-export default function ContactApplicationView() {
+const ContactApplicationView: FC<WindowProps> = () => {
+  // Pass props to root if needed, e.g. <div {...props}>
+  // You can destructure props if needed
+  // const { application, args, windowContext } = props;
   const owner = getOwner();
   const nameRef = useRef<HTMLInputElement>(null);
 
@@ -296,4 +301,6 @@ export default function ContactApplicationView() {
       </div>
     </div>
   );
-}
+};
+
+export default ContactApplicationView;

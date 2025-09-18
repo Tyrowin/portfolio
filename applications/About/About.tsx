@@ -59,14 +59,12 @@ export class AboutApplication extends Application {
       title: 'About',
       application: this,
       args: event.args,
-      generator: () => {
-        return View;
-      },
+      generator: View,
     });
   }
 
   on(event: ApplicationEvent, windowContext?: WindowContext): void {
-    this.baseHandler(event, windowContext);
+    this.baseHandler(event);
 
     if (event.kind === 'about-open-contact-event') {
       this.manager.open('/Applications/Contact.app');

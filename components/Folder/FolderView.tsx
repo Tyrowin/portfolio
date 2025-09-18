@@ -10,10 +10,14 @@ import type {
 import { calculateNodePosition } from '@/apis/FileSystem/FileSystem';
 import type { RefObject, MutableRefObject } from 'react';
 import { useState, useRef, useEffect } from 'react';
-import dynamic from 'next/dynamic';
 import styles from '@/components/Folder/FolderView.module.css';
 import type { FolderIconEntry } from '../Icons/FolderIcon';
-import { FolderIconHitBox, IconHeight, IconWidth } from '../Icons/FolderIcon';
+import {
+  FolderIconHitBox,
+  IconHeight,
+  IconWidth,
+  default as FolderIcon,
+} from '../Icons/FolderIcon';
 import type { Point, Rectangle } from '@/applications/math';
 import {
   pointIndexInsideAnyRectangles,
@@ -37,8 +41,6 @@ import type { Result } from '@/lib/result';
 import { Err, Ok } from '@/lib/result';
 import type { SystemAPIs } from '../OperatingSystem';
 import { constructPath } from '@/apis/FileSystem/util';
-
-const FolderIcon = dynamic(() => import('../Icons/FolderIcon'));
 
 interface SelectionBox {
   open: boolean;
@@ -75,20 +77,21 @@ interface FolderViewProps {
   onFileOpen: (file: FileSystemNode, rename: boolean) => void;
   localIconPosition?: boolean;
   allowOverflow?: boolean;
+  iconVariant?: 'desktop' | 'finder' | 'dock';
 }
 
 export interface FolderViewHandles {
   getCurrentDirectory: () => void;
 }
 
-export function FolderView(props: FolderViewProps) {
-  const {
-    directory,
-    apis,
-    onFileOpen,
-    localIconPosition,
-    allowOverflow: propOverflow,
-  } = props;
+export function FolderView({
+  directory,
+  apis,
+  onFileOpen,
+  localIconPosition,
+  allowOverflow: propOverflow,
+  iconVariant = 'finder',
+}: FolderViewProps) {
   const fs = apis.fileSystem;
 
   const useLocalIconPosition = localIconPosition ?? false;
@@ -1063,7 +1066,14 @@ export function FolderView(props: FolderViewProps) {
   }, [directory]);
 
   const icons = files.map((entry, index) => {
-    return <FolderIcon key={index} folderIconEntry={entry} index={index} />;
+    return (
+      <FolderIcon
+        key={index}
+        folderIconEntry={entry}
+        index={index}
+        variant={iconVariant}
+      />
+    );
   });
 
   const selectionBox = SelectionBox(box);

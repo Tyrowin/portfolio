@@ -105,10 +105,18 @@ export const siteOwner: SiteOwnerConfig = {
   phone: '072-312 68 13',
   location: 'Göteborg, Sverige',
   socials: [
-    { platform: 'linkedin', url: 'https://www.linkedin.com/in/malte-mindedal/', label: 'LinkedIn' },
+    {
+      platform: 'linkedin',
+      url: 'https://www.linkedin.com/in/malte-mindedal/',
+      label: 'LinkedIn',
+    },
     { platform: 'github', url: 'https://github.com/Tyrowin', label: 'GitHub' },
     { platform: 'x', url: 'https://x.com/Tyrowin', label: 'X / Twitter' },
-    { platform: 'email', url: 'mailto:malte.mindedal@gmail.com', label: 'Email' },
+    {
+      platform: 'email',
+      url: 'mailto:malte.mindedal@gmail.com',
+      label: 'Email',
+    },
   ],
   avatar: {
     src: '/images/me.jpg', // Placeholder – replace with new headshot path e.g. '/images/malte.jpg'
@@ -142,8 +150,7 @@ export const siteOwner: SiteOwnerConfig = {
           title: 'Driftingenjör',
           company: 'Stena Fastigheter AB',
           location: 'Göteborg',
-          body:
-            'Analys och verifiering av IMD-teknik i hyres- och bostadsrätter. Besök hos hyresgäster för kontroll av IMD-teknik (vatten- och elmätare). Testning av funktionalitet, felsökning av IMD-utröstning. Konfigurering av M-bus gateways på plats tillsammans med entreprenörer.',
+          body: 'Analys och verifiering av IMD-teknik i hyres- och bostadsrätter. Besök hos hyresgäster för kontroll av IMD-teknik (vatten- och elmätare). Testning av funktionalitet, felsökning av IMD-utröstning. Konfigurering av M-bus gateways på plats tillsammans med entreprenörer.',
           technologies: ['IMD', 'M-bus'],
         },
         {
@@ -151,8 +158,7 @@ export const siteOwner: SiteOwnerConfig = {
           title: 'Back-End utvecklare LIA',
           company: 'Stena Fastigheter AB',
           location: 'Göteborg',
-          body:
-            'Programmering mot API för automatisk hämtning av data. Användning av Azure cloud tjänster för databaslagring och API-nycklar. Avkodning av hexadecimala M-bus meddelanden. Hantering av dataflöden och format för compliance. Automation av provisionering av nya sensorer.',
+          body: 'Programmering mot API för automatisk hämtning av data. Användning av Azure cloud tjänster för databaslagring och API-nycklar. Avkodning av hexadecimala M-bus meddelanden. Hantering av dataflöden och format för compliance. Automation av provisionering av nya sensorer.',
           technologies: ['Azure', 'API', 'M-bus', 'Automation'],
         },
       ],
@@ -162,8 +168,7 @@ export const siteOwner: SiteOwnerConfig = {
           title: 'IoT Developer (Fullstack Focus)',
           institution: 'KYH',
           location: 'Göteborg',
-          body:
-            '2 års YH-utbildning fokuserad på utveckling och problemlösning inom inbyggda system och sensorer. Kurser i Python, C++ och SQL. Examensarbete: V2X – trafiksäkerhet och miljöfördelar i ITS.',
+          body: '2 års YH-utbildning fokuserad på utveckling och problemlösning inom inbyggda system och sensorer. Kurser i Python, C++ och SQL. Examensarbete: V2X – trafiksäkerhet och miljöfördelar i ITS.',
         },
         {
           period: 'Aug 2021 - May 2022',
@@ -203,8 +208,7 @@ export const siteOwner: SiteOwnerConfig = {
           title: 'Operations Engineer',
           company: 'Stena Fastigheter AB',
           location: 'Gothenburg',
-          body:
-            'Analysis and verification of IMD technology in rental and condominium apartments. Tenant visits for IMD (water & electricity meters) inspection. Functionality testing and troubleshooting. Configuration of on-site M-bus gateways with contractors.',
+          body: 'Analysis and verification of IMD technology in rental and condominium apartments. Tenant visits for IMD (water & electricity meters) inspection. Functionality testing and troubleshooting. Configuration of on-site M-bus gateways with contractors.',
           technologies: ['IMD', 'M-bus'],
         },
         {
@@ -212,8 +216,7 @@ export const siteOwner: SiteOwnerConfig = {
           title: 'Back-End Developer (Internship)',
           company: 'Stena Fastigheter AB',
           location: 'Gothenburg',
-          body:
-            'API programming for automated data retrieval. Use of Azure cloud services for database storage and API key handling. Decoding hexadecimal M-bus messages from specific water meters. Managing data flows and formats for system compliance. Automating provisioning of newly installed sensors for water, electricity and energy readings.',
+          body: 'API programming for automated data retrieval. Use of Azure cloud services for database storage and API key handling. Decoding hexadecimal M-bus messages from specific water meters. Managing data flows and formats for system compliance. Automating provisioning of newly installed sensors for water, electricity and energy readings.',
           technologies: ['Azure', 'API', 'M-bus', 'Automation'],
         },
       ],
@@ -223,8 +226,7 @@ export const siteOwner: SiteOwnerConfig = {
           title: 'IoT Developer (Fullstack Focus)',
           institution: 'KYH',
           location: 'Gothenburg',
-          body:
-            '2-year higher vocational program focusing on embedded systems & sensors. Courses in Python, C++ and SQL. Thesis: V2X – traffic safety and environmental benefits in ITS.',
+          body: '2-year higher vocational program focusing on embedded systems & sensors. Courses in Python, C++ and SQL. Thesis: V2X – traffic safety and environmental benefits in ITS.',
         },
         {
           period: 'Aug 2021 - May 2022',
@@ -238,8 +240,7 @@ export const siteOwner: SiteOwnerConfig = {
           title: 'Secondary Education – Passenger Car Technician',
           institution: 'Motorbranchens Tekniska Gymnasium',
           location: 'Gothenburg',
-          body:
-            'Vocational degree with university entrance qualification. Focus on electrification and advanced troubleshooting in modern vehicles.',
+          body: 'Vocational degree with university entrance qualification. Focus on electrification and advanced troubleshooting in modern vehicles.',
         },
       ],
       skills: {
@@ -257,15 +258,16 @@ export const siteOwner: SiteOwnerConfig = {
       id: 'sensor-platform',
       name: 'IoT Sensor Data Platform',
       year: 2024,
-      description: 'Data ingestion & processing pipeline for M-Bus / sensor telemetry with automated provisioning and Azure-based storage & API layer.',
+      description:
+        'Data ingestion & processing pipeline for M-Bus / sensor telemetry with automated provisioning and Azure-based storage & API layer.',
       localizedDescriptions: {
         en: 'Enterprise-grade IoT data platform for automated sensor telemetry ingestion, processing, and storage. Built with Azure cloud services, featuring M-Bus protocol decoding, automated device provisioning, and RESTful API endpoints for real-time data access. Handles thousands of daily sensor readings from water, electricity, and energy meters with high reliability and scalability.',
-        sv: 'IoT-dataplattform i företagsklass för automatiserad sensortelemetri-insamling, bearbetning och lagring. Byggd med Azure-molntjänster med M-Bus-protokollavkodning, automatisk enhetsprovisionering och RESTful API-endpoints för realtidsdataåtkomst. Hanterar tusentals dagliga sensoravläsningar från vatten-, el- och energimätare med hög tillförlitlighet och skalbarhet.'
+        sv: 'IoT-dataplattform i företagsklass för automatiserad sensortelemetri-insamling, bearbetning och lagring. Byggd med Azure-molntjänster med M-Bus-protokollavkodning, automatisk enhetsprovisionering och RESTful API-endpoints för realtidsdataåtkomst. Hanterar tusentals dagliga sensoravläsningar från vatten-, el- och energimätare med hög tillförlitlighet och skalbarhet.',
       },
       stack: ['Azure', 'Python', 'API', 'M-Bus', 'Automation'],
       icon: '/icons/project-portfolio-2021.png',
       links: [
-        { type: 'github', url: 'https://github.com/Tyrowin/sensor-platform' }
+        { type: 'github', url: 'https://github.com/Tyrowin/sensor-platform' },
       ],
       status: 'completed',
       featured: true,
@@ -274,16 +276,15 @@ export const siteOwner: SiteOwnerConfig = {
       id: 'pyfetch',
       name: 'PyFetch HTTP Client',
       year: 2023,
-      description: 'Lightweight command-line interface and Python library for making HTTP requests with comprehensive features.',
+      description:
+        'Lightweight command-line interface and Python library for making HTTP requests with comprehensive features.',
       localizedDescriptions: {
         en: 'Lightweight HTTP client built in Python featuring both CLI and library interfaces. Supports all major HTTP methods (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS) with JSON data handling, customizable timeouts, automatic retries, and verbose debugging mode. Includes progress bars for large downloads, comprehensive error handling, and detailed response formatting. Built with focus on simplicity and developer experience.',
-        sv: 'Lättviktig HTTP-klient byggd i Python med både CLI- och biblioteksgränssnitt. Stöder alla större HTTP-metoder (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS) med JSON-datahantering, anpassningsbara timeouts, automatiska återförsök och utförligt debug-läge. Inkluderar progress-staplar för stora nedladdningar, omfattande felhantering och detaljerad svarsformatering. Byggd med fokus på enkelhet och utvecklarupplevelse.'
+        sv: 'Lättviktig HTTP-klient byggd i Python med både CLI- och biblioteksgränssnitt. Stöder alla större HTTP-metoder (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS) med JSON-datahantering, anpassningsbara timeouts, automatiska återförsök och utförligt debug-läge. Inkluderar progress-staplar för stora nedladdningar, omfattande felhantering och detaljerad svarsformatering. Byggd med fokus på enkelhet och utvecklarupplevelse.',
       },
       stack: ['Python', 'CLI', 'HTTP', 'JSON'],
       icon: '/icons/project-pcparts.png',
-      links: [
-        { type: 'github', url: 'https://github.com/Tyrowin/pyfetch' }
-      ],
+      links: [{ type: 'github', url: 'https://github.com/Tyrowin/pyfetch' }],
       status: 'completed',
       featured: false,
     },
@@ -291,15 +292,19 @@ export const siteOwner: SiteOwnerConfig = {
       id: 'build-your-own-redis',
       name: 'Build Your Own Redis (C++)',
       year: 2025,
-      description: 'C++ implementation of a toy Redis clone handling basic commands like PING, SET and GET through Redis protocol.',
+      description:
+        'C++ implementation of a toy Redis clone handling basic commands like PING, SET and GET through Redis protocol.',
       localizedDescriptions: {
         en: 'Educational C++ project implementing a Redis clone from scratch as part of the CodeCrafters challenge. Features basic Redis commands (PING, SET, GET), event loop implementation, and Redis protocol parsing. Built to understand low-level network programming, memory management, and database internals. Demonstrates proficiency in C++ systems programming and understanding of key-value store architecture.',
-        sv: 'Utbildningsprojekt i C++ som implementerar en Redis-klon från grunden som en del av CodeCrafters-utmaningen. Har grundläggande Redis-kommandon (PING, SET, GET), event loop-implementering och Redis-protokollparsning. Byggd för att förstå lågnivå-nätverksprogrammering, minneshantering och databasinterna. Visar färdigheter i C++ systemprogrammering och förståelse för nyckel-värde-lagringsarkitektur.'
+        sv: 'Utbildningsprojekt i C++ som implementerar en Redis-klon från grunden som en del av CodeCrafters-utmaningen. Har grundläggande Redis-kommandon (PING, SET, GET), event loop-implementering och Redis-protokollparsning. Byggd för att förstå lågnivå-nätverksprogrammering, minneshantering och databasinterna. Visar färdigheter i C++ systemprogrammering och förståelse för nyckel-värde-lagringsarkitektur.',
       },
       stack: ['C++', 'Redis Protocol', 'Event Loops', 'Systems Programming'],
       icon: '/icons/skills/redis.svg',
       links: [
-        { type: 'github', url: 'https://github.com/Tyrowin/codecrafters-redis-cpp' }
+        {
+          type: 'github',
+          url: 'https://github.com/Tyrowin/codecrafters-redis-cpp',
+        },
       ],
       status: 'completed',
       featured: false,
@@ -308,16 +313,17 @@ export const siteOwner: SiteOwnerConfig = {
       id: 'portfolio-os',
       name: 'Desktop Portfolio (This site)',
       year: 2025,
-      description: 'Windowed desktop metaphor portfolio built with Next.js, virtual file system, terminal & multi-application architecture.',
+      description:
+        'Windowed desktop metaphor portfolio built with Next.js, virtual file system, terminal & multi-application architecture.',
       localizedDescriptions: {
         en: 'Interactive desktop-style portfolio website featuring a complete windowed operating system experience. Built with Next.js and TypeScript, includes a virtual file system, working terminal with custom shell commands, drag-and-drop functionality, and multiple applications. Features internationalization (Swedish/English), responsive design, and modern web technologies while maintaining the nostalgic feel of classic desktop environments.',
-        sv: 'Interaktiv portfolio-webbplats i skrivbordsstil med en komplett fönsterbaserad operativsystemupplevelse. Byggd med Next.js och TypeScript, inkluderar ett virtuellt filsystem, fungerande terminal med anpassade shell-kommandon, drag-and-drop-funktionalitet och flera applikationer. Har internationalisering (svenska/engelska), responsiv design och moderna webbteknologier samtidigt som den behåller känslan av klassiska skrivbordsmiljöer.'
+        sv: 'Interaktiv portfolio-webbplats i skrivbordsstil med en komplett fönsterbaserad operativsystemupplevelse. Byggd med Next.js och TypeScript, inkluderar ett virtuellt filsystem, fungerande terminal med anpassade shell-kommandon, drag-and-drop-funktionalitet och flera applikationer. Har internationalisering (svenska/engelska), responsiv design och moderna webbteknologier samtidigt som den behåller känslan av klassiska skrivbordsmiljöer.',
       },
       stack: ['Next.js', 'TypeScript', 'React', 'CSS3', 'HTML'],
       icon: '/icons/project-portfolio-2024.png',
       links: [
         { type: 'github', url: 'https://github.com/Tyrowin/portfolio' },
-        { type: 'website', url: 'https://maltemindedal.dev' }
+        { type: 'website', url: 'https://maltemindedal.dev' },
       ],
       status: 'completed',
       featured: true,
@@ -326,10 +332,11 @@ export const siteOwner: SiteOwnerConfig = {
       id: 'v2x-thesis',
       name: 'V2X Traffic Safety Research',
       year: 2022,
-      description: 'Thesis project analyzing Vehicle-to-Everything communication benefits for traffic safety and environmental impact in Intelligent Transportation Systems.',
+      description:
+        'Thesis project analyzing Vehicle-to-Everything communication benefits for traffic safety and environmental impact in Intelligent Transportation Systems.',
       localizedDescriptions: {
         en: 'Comprehensive research project examining V2X (Vehicle-to-Everything) communication technologies and their potential impact on traffic safety and environmental sustainability. The study analyzes current ITS (Intelligent Transportation Systems) implementations, evaluates communication protocols, and models potential improvements in accident prevention and emissions reduction through connected vehicle technologies.',
-        sv: 'Omfattande forskningsprojekt som undersöker V2X-kommunikationsteknologier (Vehicle-to-Everything) och deras potentiella inverkan på trafiksäkerhet och miljöhållbarhet. Studien analyserar nuvarande ITS-implementationer (Intelligenta Transportsystem), utvärderar kommunikationsprotokoll och modellerar potentiella förbättringar inom olycksförebyggande och utsläppsminskning genom uppkopplade fordonsteknologier.'
+        sv: 'Omfattande forskningsprojekt som undersöker V2X-kommunikationsteknologier (Vehicle-to-Everything) och deras potentiella inverkan på trafiksäkerhet och miljöhållbarhet. Studien analyserar nuvarande ITS-implementationer (Intelligenta Transportsystem), utvärderar kommunikationsprotokoll och modellerar potentiella förbättringar inom olycksförebyggande och utsläppsminskning genom uppkopplade fordonsteknologier.',
       },
       stack: ['Research', 'ITS', 'V2X', 'Analysis'],
       icon: '/icons/project-j-script.png',
@@ -350,7 +357,8 @@ export function getOwnerContent(locale: string): LocalizedOwnerContent {
     return content;
   }
   return (
-    owner.localized.find(l => l.locale === owner.fallbackLocale) ?? owner.localized[0]
+    owner.localized.find(l => l.locale === owner.fallbackLocale) ??
+    owner.localized[0]
   );
 }
 

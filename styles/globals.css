@@ -16,6 +16,13 @@
     url('/fonts/noto_serif_toto.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Chicago';
+  src: url('/fonts/chicago.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 html,
 body {
   padding: 0;

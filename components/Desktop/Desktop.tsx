@@ -38,8 +38,7 @@ const applicationReducer = (windowCompositor: WindowCompositor) => {
             break;
           }
 
-          const application = window.generator();
-          const entry = { window, application };
+          const entry = { window, application: window.generator };
 
           state = [...state, entry];
         }
@@ -141,6 +140,7 @@ export const Desktop = (props: {
         onFileOpen={onFileOpen}
         localIconPosition={true}
         allowOverflow={false}
+        iconVariant="desktop"
       />
 
       <div ref={parentNode} className={styles.applicationContainer}>

@@ -5,7 +5,6 @@ import { Application } from '../ApplicationManager';
 import type { LocalApplicationManager } from '../LocalApplicationManager';
 import type {
   Window,
-  WindowContext,
 } from '@/components/WindowManagement/WindowCompositor';
 import type {
   ApplicationEvent,
@@ -60,9 +59,7 @@ export class DoomApplication extends Application {
       title: 'Doom',
       application: this,
       args: event.args,
-      generator: () => {
-        return View;
-      },
+      generator: View,
     });
   }
 
@@ -74,8 +71,8 @@ export class DoomApplication extends Application {
     this.compositor.focus(this.currentWindow.id);
   }
 
-  on(event: ApplicationEvent, windowContext?: WindowContext): void {
-    this.baseHandler(event, windowContext);
+  on(event: ApplicationEvent): void {
+    this.baseHandler(event);
 
     if (event.kind === 'application-open') {
       if (!this.currentWindow) {

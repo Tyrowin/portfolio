@@ -1,5 +1,4 @@
 import type { LocalWindowCompositor } from '@/components/WindowManagement/LocalWindowCompositor';
-import type { WindowContext } from '@/components/WindowManagement/WindowCompositor';
 import type { ApplicationEvent } from '../ApplicationEvents';
 import type { ApplicationConfig, MenuEntry } from '../ApplicationManager';
 import { Application } from '../ApplicationManager';
@@ -43,8 +42,8 @@ export class AlgorithmVisualizer extends Application {
     ];
   }
 
-  on(event: ApplicationEvent, windowContext?: WindowContext): void {
-    this.baseHandler(event, windowContext);
+  on(event: ApplicationEvent): void {
+    this.baseHandler(event);
 
     const y = 70;
     const width = 700;
@@ -60,9 +59,7 @@ export class AlgorithmVisualizer extends Application {
         title: 'Algorithm visualizer',
         application: this,
         args: event.args,
-        generator: () => {
-          return View;
-        },
+        generator: View,
       });
     }
   }

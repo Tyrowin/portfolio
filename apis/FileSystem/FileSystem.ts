@@ -374,7 +374,12 @@ export function createBaseFileSystem(): FileSystem {
     true
   );
 
-  const desktop = fileSystem.addDirectory(userDirectory, 'Desktop', false, true);
+  const desktop = fileSystem.addDirectory(
+    userDirectory,
+    'Desktop',
+    false,
+    true
+  );
   const documents = fileSystem.addDirectory(
     userDirectory,
     'Documents',

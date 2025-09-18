@@ -3,7 +3,6 @@ import type { ApplicationConfig, MenuEntry } from '../ApplicationManager';
 import { Application } from '../ApplicationManager';
 import type { LocalApplicationManager } from '../LocalApplicationManager';
 import type { SystemAPIs } from '@/components/OperatingSystem';
-import type { WindowContext } from '@/components/WindowManagement/WindowCompositor';
 import type { ApplicationEvent } from '../ApplicationEvents';
 import dynamic from 'next/dynamic';
 
@@ -43,8 +42,8 @@ export class SkillsApplication extends Application {
     ];
   }
 
-  on(event: ApplicationEvent, windowContext?: WindowContext): void {
-    this.baseHandler(event, windowContext);
+  on(event: ApplicationEvent): void {
+    this.baseHandler(event);
 
     if (event.kind === 'application-open') {
       const y = 95;
@@ -60,9 +59,7 @@ export class SkillsApplication extends Application {
         title: 'Skills',
         application: this,
         args: event.args,
-        generator: () => {
-          return View;
-        },
+        generator: View,
       });
     }
   }

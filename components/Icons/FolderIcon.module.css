@@ -30,6 +30,24 @@
   display: block;
   text-align: center;
   user-select: none;
+  font-family: 'Chicago', monospace;
+  font-size: 12px;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
+}
+
+.finderTitle {
+  color: #000;
+}
+
+.desktopTitle {
+  color: #fff;
+}
+
+.dockTooltip {
+  color: #fff;
 }
 
 .titleLine {
@@ -46,4 +64,5 @@
   display: block;
   font-size: 0.8rem;
   line-height: 16px;
+  color: #fff;
 }

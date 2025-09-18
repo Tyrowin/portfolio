@@ -74,6 +74,12 @@
   color: #202020;
 
   z-index: 9999;
+  font-family: 'Chicago', monospace;
+  font-size: 14px;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
 }
 
 .header.mobile {
@@ -131,6 +137,12 @@
 
 .header-buttons button {
   margin-left: 1px;
+  font-family: 'Chicago', monospace;
+  font-size: 14px;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
 }
 
 .mobile .header-buttons button {
@@ -172,6 +184,12 @@
 .action-container span {
   display: block;
   padding: 16px;
+  font-family: 'Chicago', monospace;
+  font-size: 14px;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
 }
 
 .action-container input {
@@ -186,4 +204,10 @@
 
 .action-buttons button {
   margin-left: 3px;
+  font-family: 'Chicago', monospace;
+  font-size: 14px;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
 }

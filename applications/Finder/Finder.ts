@@ -62,9 +62,7 @@ export class Finder extends Application {
       title: 'Finder',
       application: this,
       args: path,
-      generator: () => {
-        return View;
-      },
+      generator: View,
     });
 
     window.minimalHeight = 250;
@@ -79,7 +77,8 @@ export class Finder extends Application {
       }
 
       const defaultUser = getOwner().username;
-      const path = event.args.length !== 0 ? event.args : `/Users/${defaultUser}/`;
+      const path =
+        event.args.length !== 0 ? event.args : `/Users/${defaultUser}/`;
       this.openNewWindow(path);
     }
 

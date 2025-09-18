@@ -1,3 +1,5 @@
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { FC } from 'react';
 import Image from 'next/image';
 import styles from './SkillsView.module.css';
 import { useTranslations } from 'next-intl';
@@ -27,7 +29,8 @@ function SkillEntry(props: {
   );
 }
 
-export default function SkillsView() {
+const SkillsView: FC<WindowProps> = () => {
+  // Pass props to root if needed, e.g. <div {...props}>
   const t = useTranslations('skills');
   const locale = useLocale();
   const content = getOwnerContent(locale);
@@ -121,4 +124,6 @@ export default function SkillsView() {
       </div>
     </div>
   );
-}
+};
+
+export default SkillsView;

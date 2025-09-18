@@ -27,7 +27,7 @@ export interface WindowProps {
   windowContext: WindowContext;
 }
 export type WindowApplication = React.ComponentType<WindowProps>;
-export type WindowApplicationGenerator = () => WindowApplication;
+export type WindowApplicationGenerator = React.ComponentType<WindowProps>;
 
 const DefaultWindowWidth = 400;
 const DefaultWindowHeight = 80;

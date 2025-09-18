@@ -118,7 +118,7 @@ export class Shell {
     private terminal: TerminalConnector,
     private applicationManager: BaseApplicationManager,
     private apis: SystemAPIs
-  ) { }
+  ) {}
 
   public getTerminal(): TerminalConnector {
     return this.terminal;
