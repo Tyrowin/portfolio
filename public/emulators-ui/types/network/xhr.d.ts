@@ -1,4 +1,7 @@
-export declare function resolveBundle(url: string, options?: {
+export declare function resolveBundle(
+  url: string,
+  options?: {
     httpCache?: boolean;
     onprogress?: (progress: number) => void;
-}): Promise<Uint8Array>;
+  }
+): Promise<Uint8Array>;

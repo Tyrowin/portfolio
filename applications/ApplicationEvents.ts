@@ -1,41 +1,44 @@
-export type ApplicationOpenEvent = {
-  kind: 'application-open',
+export interface ApplicationOpenEvent {
+  kind: 'application-open';
+  isFirst: boolean;
+  args: string;
+}
+
+export interface ApplicationQuitEvent {
+  kind: 'application-quit';
+}
+
+export interface ApplicationKillEvent {
+  kind: 'application-kill';
+}
+
+export interface WindowOpenEvent {
+  kind: 'window-open';
+  windowId: number;
+}
+
+export interface WindowCloseEvent {
+  kind: 'window-close';
+  windowId: number;
+}
+
+export interface AllWindowsClosedEvent {
+  kind: 'all-windows-closed';
+}
+
+export interface FinderOpenFileEvent {
+  kind: 'finder-open-file-event';
+  path: string;
+}
+
+export interface AboutOpenContactEvent {
+  kind: 'about-open-contact-event';
+}
+
+export function createApplicationOpenEvent(
   isFirst: boolean,
   args: string
-}
-
-export type ApplicationQuitEvent = {
-  kind: 'application-quit',
-}
-
-export type ApplicationKillEvent = {
-  kind: 'application-kill'
-}
-
-export type WindowOpenEvent = {
-  kind: 'window-open',
-  windowId: number
-}
-
-export type WindowCloseEvent = {
-  kind: 'window-close',
-  windowId: number
-}
-
-export type AllWindowsClosedEvent = {
-  kind: 'all-windows-closed',
-}
-
-export type FinderOpenFileEvent = {
-  kind: 'finder-open-file-event',
-  path: string
-}
-
-export type AboutOpenContactEvent = {
-  kind: 'about-open-contact-event',
-}
-
-export function createApplicationOpenEvent(isFirst: boolean, args: string): ApplicationOpenEvent {
+): ApplicationOpenEvent {
   return { kind: 'application-open', isFirst, args };
 }
 
@@ -59,20 +62,31 @@ export function createAllWindowsClosedEvent(): AllWindowsClosedEvent {
   return { kind: 'all-windows-closed' };
 }
 
-type BaseApplicationEvents = ApplicationOpenEvent | ApplicationQuitEvent | ApplicationKillEvent | WindowOpenEvent | WindowCloseEvent | AllWindowsClosedEvent;
+type BaseApplicationEvents =
+  | ApplicationOpenEvent
+  | ApplicationQuitEvent
+  | ApplicationKillEvent
+  | WindowOpenEvent
+  | WindowCloseEvent
+  | AllWindowsClosedEvent;
 type FinderApplicationEvents = FinderOpenFileEvent;
 type AboutApplicationEvents = AboutOpenContactEvent;
 
-export type ApplicationEvent = BaseApplicationEvents | FinderApplicationEvents | AboutApplicationEvents;
+export type ApplicationEvent =
+  | BaseApplicationEvents
+  | FinderApplicationEvents
+  | AboutApplicationEvents;
 
-export type ApplicationWindowMessage = {
-  kind: 'message',
-  message: string
+export interface ApplicationWindowMessage {
+  kind: 'message';
+  message: string;
 }
 
-export type FinderChangePath = {
-  kind: 'finder-change-path',
-  path: string
+export interface FinderChangePath {
+  kind: 'finder-change-path';
+  path: string;
 }
 
-export type ApplicationWindowEvent = ApplicationWindowMessage | FinderChangePath;
+export type ApplicationWindowEvent =
+  | ApplicationWindowMessage
+  | FinderChangePath;

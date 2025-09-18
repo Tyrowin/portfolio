@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { SortView, SortViewEntry, verifySort } from './SortingView';
+import type { SortViewEntry } from './SortingView';
+import { SortView, verifySort } from './SortingView';
 import { BarGraph } from '@/components/GraphViewer/GraphViewer';
 import {
   DataGenerationEntriesInput,
@@ -7,7 +8,7 @@ import {
 } from '../../Home/Home';
 import styles from './AlgorithmContainer.module.css';
 import { useTranslations } from 'next-intl';
-import { SortingAlgorithmContainerProps } from './Containers';
+import type { SortingAlgorithmContainerProps } from './Containers';
 
 export type SortingDataGenerationStrategy =
   | 'randomly-distributed'
@@ -15,7 +16,7 @@ export type SortingDataGenerationStrategy =
   | 'sorted-right-to-left';
 
 function generateRandomData(entries: number): SortViewEntry[] {
-  let data: SortViewEntry[] = [];
+  const data: SortViewEntry[] = [];
 
   for (let i = 0; i < entries; i++) {
     data.push({ value: i, color: 'white' });
@@ -31,7 +32,7 @@ function generateRandomData(entries: number): SortViewEntry[] {
 }
 
 function generateSortedDataLeftToRight(entries: number): SortViewEntry[] {
-  let data: SortViewEntry[] = [];
+  const data: SortViewEntry[] = [];
 
   for (let i = 0; i < entries; i++) {
     data.push({ value: i, color: 'white' });
@@ -41,7 +42,7 @@ function generateSortedDataLeftToRight(entries: number): SortViewEntry[] {
 }
 
 function generateSortedDataRightToLeft(entries: number): SortViewEntry[] {
-  let data: SortViewEntry[] = [];
+  const data: SortViewEntry[] = [];
 
   for (let i = entries; i > 0; i--) {
     data.push({ value: i, color: 'white' });
@@ -103,9 +104,6 @@ export function SortingAlgorithmContainer(
 
     const barGraph = graph.current;
 
-    if (!barGraph) {
-      return;
-    }
     if (!barGraph.bind(graphRef.current)) {
       return;
     }
@@ -124,7 +122,7 @@ export function SortingAlgorithmContainer(
 
     return () => {
       observer.disconnect();
-      abortController.current?.abort();
+      abortController.current.abort();
     };
   }, []);
 
@@ -138,8 +136,8 @@ export function SortingAlgorithmContainer(
 
     let isSorted = false;
 
-    entrypoint(view.current, abortController.current.signal).then(() => {
-      verifySort(view.current, abortController.current.signal).then(() => {
+    void entrypoint(view.current, abortController.current.signal).then(() => {
+      void verifySort(view.current, abortController.current.signal).then(() => {
         isSorted = true;
         setSorting(false);
       });
@@ -217,7 +215,7 @@ export function SortingAlgorithmContainer(
   );
 
   return (
-    <div className={styles['parent']} ref={parent}>
+    <div className={styles.parent} ref={parent}>
       <canvas className={styles['algo-visualization']} ref={graphRef}></canvas>
 
       <div className={styles['data-container']}>
@@ -273,7 +271,9 @@ export function SortingAlgorithmContainer(
 
         <button
           className={styles['button-link']}
-          onClick={() => params.changeParent('home')}
+          onClick={() => {
+            params.changeParent('home');
+          }}
         >
           {t('return_to_overview')}
         </button>

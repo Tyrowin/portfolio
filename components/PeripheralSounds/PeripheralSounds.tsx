@@ -1,15 +1,15 @@
-import { useEffect, useRef } from "react";
-import { SystemAPIs } from "../OperatingSystem";
-import { isSafari } from "../util";
-import { SoundService } from "@/apis/Sound/Sound";
+import { useEffect, useRef } from 'react';
+import type { SystemAPIs } from '../OperatingSystem';
+import { isSafari } from '../util';
+import type { SoundService } from '@/apis/Sound/Sound';
 
-type AudioFragment = {
-  onDown?: string,
-  onUp?: string,
+interface AudioFragment {
+  onDown?: string;
+  onUp?: string;
 }
 
-const PointerPrimaryKey = "pointer_primary";
-const PointerSecondaryKey = "pointer_secondary";
+const PointerPrimaryKey = 'pointer_primary';
+const PointerSecondaryKey = 'pointer_secondary';
 
 const PrimaryMouseButton = 0x00;
 
@@ -29,15 +29,33 @@ const RegularKeyAudioFragments: AudioFragment[] = [
 ];
 
 const LeftMouseButtonAudioFragments: AudioFragment[] = [
-  { onDown: '/sounds/left_mouse_down_1.mp3', onUp: '/sounds/left_mouse_up_1.mp3' },
-  { onDown: '/sounds/left_mouse_down_2.mp3', onUp: '/sounds/left_mouse_up_2.mp3' },
-  { onDown: '/sounds/left_mouse_down_3.mp3', onUp: '/sounds/left_mouse_up_3.mp3' },
+  {
+    onDown: '/sounds/left_mouse_down_1.mp3',
+    onUp: '/sounds/left_mouse_up_1.mp3',
+  },
+  {
+    onDown: '/sounds/left_mouse_down_2.mp3',
+    onUp: '/sounds/left_mouse_up_2.mp3',
+  },
+  {
+    onDown: '/sounds/left_mouse_down_3.mp3',
+    onUp: '/sounds/left_mouse_up_3.mp3',
+  },
 ];
 
 const RightMouseButtonAudioFragments: AudioFragment[] = [
-  { onDown: '/sounds/right_mouse_down_1.mp3', onUp: '/sounds/right_mouse_up_1.mp3' },
-  { onDown: '/sounds/right_mouse_down_2.mp3', onUp: '/sounds/right_mouse_up_2.mp3' },
-  { onDown: '/sounds/right_mouse_down_3.mp3', onUp: '/sounds/right_mouse_up_3.mp3' },
+  {
+    onDown: '/sounds/right_mouse_down_1.mp3',
+    onUp: '/sounds/right_mouse_up_1.mp3',
+  },
+  {
+    onDown: '/sounds/right_mouse_down_2.mp3',
+    onUp: '/sounds/right_mouse_up_2.mp3',
+  },
+  {
+    onDown: '/sounds/right_mouse_down_3.mp3',
+    onUp: '/sounds/right_mouse_up_3.mp3',
+  },
 ];
 
 function chooseRandomAudioFragment(fragments: AudioFragment[]): AudioFragment {
@@ -46,16 +64,23 @@ function chooseRandomAudioFragment(fragments: AudioFragment[]): AudioFragment {
 
 function chooseRandomKeyboardAudioFragment(code: string): AudioFragment {
   switch (code) {
-    case "Space": return chooseRandomAudioFragment(SpaceBarKeyAudioFragments);
-    case "ShiftLeft":
-    case "ShiftRight":
+    case 'Space':
+      return chooseRandomAudioFragment(SpaceBarKeyAudioFragments);
+    case 'ShiftLeft':
+    case 'ShiftRight':
       return chooseRandomAudioFragment(ShiftKeyAudioFragments);
-    default: return chooseRandomAudioFragment(RegularKeyAudioFragments);
+    default:
+      return chooseRandomAudioFragment(RegularKeyAudioFragments);
   }
 }
 
-export function playKeyDownSound(soundService: SoundService, code: string): void {
-  if (['VolumeUp', 'VolumeDown'].includes(code)) { return; }
+export function playKeyDownSound(
+  soundService: SoundService,
+  code: string
+): void {
+  if (['VolumeUp', 'VolumeDown'].includes(code)) {
+    return;
+  }
 
   const sound = chooseRandomKeyboardAudioFragment(code);
   const audio = new Audio(sound.onDown);
@@ -69,10 +94,9 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
   const audioCache = useRef<Record<string, HTMLAudioElement>>({});
   const activeSounds = useRef<Record<string, AudioFragment>>({});
 
-  function fetchAudioFragmentFromCacheOrCreate(source: string): HTMLAudioElement {
-    const cacheEntry = audioCache.current[source];
-    if (cacheEntry) { return cacheEntry; }
-
+  function fetchAudioFragmentFromCacheOrCreate(
+    source: string
+  ): HTMLAudioElement {
     const audioFragment = new Audio(source);
     audioCache.current[source] = audioFragment;
 
@@ -80,11 +104,15 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
   }
 
   function onKeyDown(evt: KeyboardEvent) {
-    if (evt.repeat) { return; }
+    if (evt.repeat) {
+      return;
+    }
 
     const code = evt.code;
 
-    if (['VolumeUp', 'VolumeDown'].includes(code)) { return; }
+    if (['VolumeUp', 'VolumeDown'].includes(code)) {
+      return;
+    }
 
     activeSounds.current[code] = chooseRandomKeyboardAudioFragment(code);
 
@@ -97,13 +125,19 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
   }
 
   function onKeyUp(evt: KeyboardEvent) {
-    if (evt.repeat) { return; }
-    
+    if (evt.repeat) {
+      return;
+    }
+
     const code = evt.code;
 
-    if (!activeSounds.current[code]) { return; }
+    const activeSound = activeSounds.current[code];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!activeSound) {
+      return;
+    }
 
-    const audioSource = activeSounds.current[code].onUp;
+    const audioSource = activeSound.onUp;
 
     if (audioSource) {
       const audioFragment = fetchAudioFragmentFromCacheOrCreate(audioSource);
@@ -112,8 +146,14 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
   }
 
   function onPointerDown(evt: PointerEvent) {
-    const key = evt.button === PrimaryMouseButton ? PointerPrimaryKey : PointerSecondaryKey;
-    const fragments = evt.button === PrimaryMouseButton ? LeftMouseButtonAudioFragments : RightMouseButtonAudioFragments;
+    const key =
+      evt.button === PrimaryMouseButton
+        ? PointerPrimaryKey
+        : PointerSecondaryKey;
+    const fragments =
+      evt.button === PrimaryMouseButton
+        ? LeftMouseButtonAudioFragments
+        : RightMouseButtonAudioFragments;
 
     activeSounds.current[key] = chooseRandomAudioFragment(fragments);
     const audioSource = activeSounds.current[key].onDown;
@@ -125,11 +165,18 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
   }
 
   function onPointerUp(evt: PointerEvent) {
-    const key = evt.button === PrimaryMouseButton ? PointerPrimaryKey : PointerSecondaryKey;
+    const key =
+      evt.button === PrimaryMouseButton
+        ? PointerPrimaryKey
+        : PointerSecondaryKey;
 
-    if (!activeSounds.current[key]) { return; }
+    const activeSound = activeSounds.current[key];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!activeSound) {
+      return;
+    }
 
-    const audioSource = activeSounds.current[key].onUp;
+    const audioSource = activeSound.onUp;
     if (audioSource) {
       const audioFragment = fetchAudioFragmentFromCacheOrCreate(audioSource);
       soundService.playAudioFragment(audioFragment, 1.0);
@@ -139,7 +186,9 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
   useEffect(() => {
     // Safari audio is very delayed compared to other browsers, I don't know why (possibly a browser implementation)
     // So for this reason I will disable it by default
-    if (isSafari()) { return; }
+    if (isSafari()) {
+      return;
+    }
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -150,11 +199,11 @@ export function PeripheralSounds(props: { apis: SystemAPIs }) {
     return () => {
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
-      
+
       window.removeEventListener('pointerdown', onPointerDown);
       window.removeEventListener('pointerup', onPointerUp);
-    }
+    };
   }, []);
 
-  return <></>
+  return <></>;
 }

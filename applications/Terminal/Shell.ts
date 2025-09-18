@@ -1,21 +1,25 @@
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { BaseApplicationManager } from "../ApplicationManager";
-import { TerminalConnector } from "./TerminalApplicationView";
-import ansiColors from "ansi-colors";
-import { parseCommand } from "@/apis/FileSystem/CommandEncoding";
-import { getAbsolutePathFromArgs, getFileNameParts } from "@/programs/Programs";
-import { Err, Ok, Result } from "@/lib/result";
-import { FileSystem } from "@/apis/FileSystem/FileSystem";
-import { isUniqueFile, pathLastEntry, pathPop } from "@/apis/FileSystem/util";
-import { stripAnsi } from "./TerminalManager";
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { BaseApplicationManager } from '../ApplicationManager';
+import type { TerminalConnector } from './TerminalApplicationView';
+import ansiColors from 'ansi-colors';
+import { parseCommand } from '@/apis/FileSystem/CommandEncoding';
+import { getAbsolutePathFromArgs, getFileNameParts } from '@/programs/Programs';
+import type { Result } from '@/lib/result';
+import { Err, Ok } from '@/lib/result';
+import type { FileSystem } from '@/apis/FileSystem/FileSystem';
+import { isUniqueFile, pathLastEntry, pathPop } from '@/apis/FileSystem/util';
+import { stripAnsi } from './TerminalManager';
 
-export const HomeDirectory = '/Users/joey/'
+export const HomeDirectory = '/Users/joey/';
 
-type CommandOutput = { type: 'stdout' } | { type: 'pipe' } | { type: 'output_redirection', filename: string };
+type CommandOutput =
+  | { type: 'stdout' }
+  | { type: 'pipe' }
+  | { type: 'output_redirection'; filename: string };
 
-type Command = {
-  slice: string,
-  output: CommandOutput
+interface Command {
+  slice: string;
+  output: CommandOutput;
 }
 
 function parseRedirection(fullCommand: string): Command[] {
@@ -32,12 +36,12 @@ function parseRedirection(fullCommand: string): Command[] {
     // Output functions, set last to the current index and transform the result
     function stdout(slice: string): Command {
       last = index;
-      return { slice, output: { type: 'stdout'} };
+      return { slice, output: { type: 'stdout' } };
     }
 
     function pipe(slice: string): Command {
       last = index;
-      return { slice, output: { type: 'pipe'} };
+      return { slice, output: { type: 'pipe' } };
     }
 
     function outputRedirection(slice: string, filename: string): Command {
@@ -45,7 +49,9 @@ function parseRedirection(fullCommand: string): Command[] {
       return { slice, output: { type: 'output_redirection', filename } };
     }
 
-    if (last === fullCommand.length) { return null; }
+    if (last === fullCommand.length) {
+      return null;
+    }
 
     let isPipe = false;
     let isOutputRedirection = false;
@@ -58,12 +64,14 @@ function parseRedirection(fullCommand: string): Command[] {
 
       index++;
 
-      if (isPipe || isOutputRedirection) { break; }
+      if (isPipe || isOutputRedirection) {
+        break;
+      }
     }
 
     const isAtEnd = index === fullCommand.length;
 
-    let slice = fullCommand.slice(last, isAtEnd ? index : index - 1).trim();
+    const slice = fullCommand.slice(last, isAtEnd ? index : index - 1).trim();
 
     if (isPipe) {
       last = index;
@@ -87,10 +95,10 @@ function parseRedirection(fullCommand: string): Command[] {
     return stdout(slice);
   }
 
-  let slices: Command[] = [];
+  const slices: Command[] = [];
   let slice: Command | null = null;
 
-  while (slice = getNextSlice()) {
+  while ((slice = getNextSlice())) {
     slices.push(slice);
   }
 
@@ -98,11 +106,11 @@ function parseRedirection(fullCommand: string): Command[] {
 }
 
 export class Shell {
-  private promptString = `${ansiColors.white("{hostname}")} ${ansiColors.magentaBright("::")} ${ansiColors.greenBright("{path}")} ${ansiColors.blueBright("%")} `;
+  private promptString = `${ansiColors.white('{hostname}')} ${ansiColors.magentaBright('::')} ${ansiColors.greenBright('{path}')} ${ansiColors.blueBright('%')} `;
 
-  private hostname: string = "j-os";
+  private hostname = 'j-os';
   private path: string = HomeDirectory;
-  private relativePath: string = '~';
+  private relativePath = '~';
 
   constructor(
     private terminal: TerminalConnector,
@@ -128,7 +136,7 @@ export class Shell {
 
   public getPromptString(): string {
     return this.promptString
-      .replace("{hostname}", this.hostname)
+      .replace('{hostname}', this.hostname)
       .replace('{path}', this.getRelativePath());
   }
 
@@ -136,23 +144,32 @@ export class Shell {
     const TopItems = 3;
 
     const pathItems = path.split('/').filter(x => x.length > 0);
-    if (pathItems.length === 0) { return "/" };
+    if (pathItems.length === 0) {
+      return '/';
+    }
 
     const topItems = pathItems.slice(-TopItems);
 
-    const isHomeDirectory = pathItems.length >= 2 && pathItems[0] === "Users" && pathItems[1] === "joey";
+    const isHomeDirectory =
+      pathItems.length >= 2 &&
+      pathItems[0] === 'Users' &&
+      pathItems[1] === 'joey';
     const pathItemsDelta = pathItems.length - topItems.length;
 
     if (isHomeDirectory && pathItemsDelta <= 1) {
       const itemsToRemove = 2 - pathItemsDelta;
 
-      for (let i = 0; i < itemsToRemove; i++) { topItems.shift(); }
+      for (let i = 0; i < itemsToRemove; i++) {
+        topItems.shift();
+      }
 
-      topItems.unshift("~");
+      topItems.unshift('~');
     }
 
     if (isHomeDirectory) {
-      if (topItems.length === 1) { return '~'; }
+      if (topItems.length === 1) {
+        return '~';
+      }
 
       return `${topItems.join('/')}/`;
     } else {
@@ -176,36 +193,58 @@ export class Shell {
   public process(command: string): void {
     const fs = this.apis.fileSystem;
 
-    function handleCommand(applicationName: string, shell: Shell, args: string[], apis: SystemAPIs): void {
-
+    function handleCommand(
+      applicationName: string,
+      shell: Shell,
+      args: string[],
+      apis: SystemAPIs
+    ): void {
       // Get a program from the /bin directory
       const binaryDirResult = apis.fileSystem.getDirectory('/bin');
-      if (!binaryDirResult.ok) { return; }
+      if (!binaryDirResult.ok) {
+        return;
+      }
 
       const binaryDir = binaryDirResult.value;
 
       for (const program of binaryDir.children.iterFromHead()) {
         const fileSystemNode = program.value.node;
 
-        if (fileSystemNode.kind !== 'program') { continue; }
-        if (fileSystemNode.name !== applicationName) { continue; }
+        if (fileSystemNode.kind !== 'program') {
+          continue;
+        }
+        if (fileSystemNode.name !== applicationName) {
+          continue;
+        }
 
         fileSystemNode.program(shell, args, apis);
 
         return;
       }
 
-      shell.getTerminal().writeResponse(`jsh: command not found: ${applicationName}`);
+      shell
+        .getTerminal()
+        .writeResponse(`jsh: command not found: ${applicationName}`);
     }
 
-    function createNewOutputFile(fs: FileSystem, path: string, content: string): Result<null, string> {
+    function createNewOutputFile(
+      fs: FileSystem,
+      path: string,
+      content: string
+    ): Result<null, string> {
       const rootPath = pathPop(path);
       const fileName = pathLastEntry(path);
 
-      if (!fileName) { return Err('output redirection: Invalid file name'); }
+      if (!fileName) {
+        return Err('output redirection: Invalid file name');
+      }
 
       const rootDirectoryResult = fs.getDirectory(rootPath);
-      if (!rootDirectoryResult.ok) { return Err(`output redirection: ${rootPath}: No such file or directory`);  }
+      if (!rootDirectoryResult.ok) {
+        return Err(
+          `output redirection: ${rootPath}: No such file or directory`
+        );
+      }
 
       const root = rootDirectoryResult.value;
 
@@ -224,20 +263,35 @@ export class Shell {
       return Ok(null);
     }
 
-    function appendToExistingOutputFile(fs: FileSystem, path: string, content: string): Result<null, string> {
+    function appendToExistingOutputFile(
+      fs: FileSystem,
+      path: string,
+      content: string
+    ): Result<null, string> {
       const nodeResult = fs.getNode(path);
-      if (!nodeResult.ok) { return Err('output redirection: Invalid file to append content to'); }
+      if (!nodeResult.ok) {
+        return Err('output redirection: Invalid file to append content to');
+      }
 
       const node = nodeResult.value;
 
-      if(node.kind !== 'textfile') { return Err('output redirection: Invalid file or directory it needs to be a text file')}
+      if (node.kind !== 'textfile') {
+        return Err(
+          'output redirection: Invalid file or directory it needs to be a text file'
+        );
+      }
 
       node.content += content;
 
       return Ok(null);
     }
 
-    function writeOutputToFile(shell: Shell, fileName: string, output: string[], fs: FileSystem): Result<null, string> {
+    function writeOutputToFile(
+      shell: Shell,
+      fileName: string,
+      output: string[],
+      fs: FileSystem
+    ): Result<null, string> {
       const path = getAbsolutePathFromArgs(fileName, shell);
       const nodeResult = fs.getNode(path);
 
@@ -254,25 +308,33 @@ export class Shell {
 
     for (const [index, part] of redirection.entries()) {
       const previous = index > 0 ? redirection[index - 1] : null;
-      const previousWasPipe = previous ? previous.output.type === 'pipe' : false;
+      const previousWasPipe = previous
+        ? previous.output.type === 'pipe'
+        : false;
 
-      const previousStdout  = previous ? `"${this.terminal.getResponseLines().join('\r\n')}"` : '';
+      const previousStdout = previous
+        ? `"${this.terminal.getResponseLines().join('\r\n')}"`
+        : '';
 
-      const stdin = previousWasPipe ? part.slice + " " + previousStdout : part.slice;
+      const stdin = previousWasPipe
+        ? part.slice + ' ' + previousStdout
+        : part.slice;
       const args = parseCommand(stdin);
 
       const type = part.output.type;
-      const applicationName = args[0]?.toLocaleLowerCase() ?? null;
+      const applicationName = args[0]?.toLocaleLowerCase();
 
-      if (applicationName === null) { return; }
+      if (!applicationName) {
+        return;
+      }
 
       switch (type) {
-        case "pipe":
-        case "output_redirection": {
+        case 'pipe':
+        case 'output_redirection': {
           this.terminal.disableOutput();
           break;
         }
-        case "stdout": {
+        case 'stdout': {
           this.terminal.enableOutput();
           break;
         }
@@ -291,7 +353,7 @@ export class Shell {
           if (title.length === 0) {
             this.terminal.writeResponseLines([
               'jsh: ps requires a value to be set',
-              'possible variables: {hostname}, {path}'
+              'possible variables: {hostname}, {path}',
             ]);
           } else {
             this.promptString = title + ' ';
@@ -306,11 +368,16 @@ export class Shell {
 
       if (part.output.type === 'output_redirection') {
         const outputFile = getAbsolutePathFromArgs(part.output.filename, this);
-        const result = writeOutputToFile(this, outputFile, this.terminal.getResponseLines(), fs);
+        const result = writeOutputToFile(
+          this,
+          outputFile,
+          this.terminal.getResponseLines(),
+          fs
+        );
 
         if (!result.ok) {
           this.terminal.enableOutput();
-          this.getTerminal().writeResponse(result.value);
+          this.getTerminal().writeResponse(result.error);
         }
       }
     }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './MenuBar.module.css';
-import {
+import type {
   ApplicationManager,
   ApplicationManagerEvent,
   MenuEntry,
@@ -12,7 +12,7 @@ import { useRouter, usePathname } from '@/i18n/navigation';
 import React from 'react';
 
 function renderApplicationMenu(menuItems: MenuEntry[]) {
-  let items = menuItems;
+  const items = menuItems;
 
   if (items.length === 0) {
     items.push({
@@ -33,7 +33,7 @@ function RenderMenu(menuEntries: MenuEntry) {
 
   function renderMenuItem(item: MenuItem) {
     switch (item.kind) {
-      case 'action':
+      case 'action': {
         const menuAction = () => {
           item.action();
           setOpen(false);
@@ -44,22 +44,21 @@ function RenderMenu(menuEntries: MenuEntry) {
             {item.value}
           </button>
         );
+      }
       case 'spacer':
         return <hr />;
     }
   }
 
   function onClickMenuTitle() {
-    if (!ref.current) {
-      return;
-    }
     if (isOpen) {
       return;
     }
 
-    const head = ref.current;
-    const handleClickAfterOpeningMenu = (evt: PointerEvent) =>
+    const head = ref.current!;
+    const handleClickAfterOpeningMenu = (evt: PointerEvent) => {
       onClickAfterOpeningMenu(evt, head);
+    };
 
     function onClickAfterOpeningMenu(evt: PointerEvent, head: HTMLElement) {
       function isClickInMenu(evt: PointerEvent, head: HTMLElement): boolean {
@@ -112,7 +111,7 @@ function RenderMenu(menuEntries: MenuEntry) {
   );
 }
 
-function renderDate(date: Date | undefined, t: any) {
+function renderDate(date: Date | undefined, t: (key: string) => string) {
   if (date === undefined) {
     return <></>;
   }
@@ -158,19 +157,23 @@ function languageSelection() {
   const englishEntry = `EN - ${t('english')}`;
   const swedishEntry = `SV - ${t('swedish')}`;
 
-  let entry: MenuEntry = {
+  const entry: MenuEntry = {
     displayOptions: {},
-    name: t(`tags.${locale}` as any),
+    name: t(`tags.${locale}`),
     items: [
       {
         kind: 'action',
         value: englishEntry,
-        action: () => changeLanguage('en'),
+        action: () => {
+          changeLanguage('en');
+        },
       },
       {
         kind: 'action',
         value: swedishEntry,
-        action: () => changeLanguage('sv'),
+        action: () => {
+          changeLanguage('sv');
+        },
       },
     ],
   };
@@ -178,9 +181,9 @@ function languageSelection() {
   return RenderMenu(entry);
 }
 
-type MenuBarProps = {
+interface MenuBarProps {
   manager: ApplicationManager;
-};
+}
 
 const DateAndTime = () => {
   const t = useTranslations('date');
@@ -189,7 +192,9 @@ const DateAndTime = () => {
 
   useEffect(() => {
     setDate(new Date());
-    const interval = setInterval(() => setDate(new Date()), 1000);
+    const interval = setInterval(() => {
+      setDate(new Date());
+    }, 1000);
 
     return () => {
       clearInterval(interval);

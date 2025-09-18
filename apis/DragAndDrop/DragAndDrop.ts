@@ -1,40 +1,42 @@
-import { FileSystemNode } from "@/apis/FileSystem/FileSystem";
-import { Point } from "@/applications/math";
-import { Action } from "@/components/util";
+import type { FileSystemNode } from '@/apis/FileSystem/FileSystem';
+import type { Point } from '@/applications/math';
+import type { Action } from '@/components/util';
 
-export const FileSystemItemDragEnter = "fs_item_drag_enter";
-export const FileSystemItemDragMove  = "fs_item_drag_move";
-export const FileSystemItemDragLeave = "fs_item_drag_leave";
-export const FileSystemItemDragDrop = "fs_item_drag_drop";
+export const FileSystemItemDragEnter = 'fs_item_drag_enter';
+export const FileSystemItemDragMove = 'fs_item_drag_move';
+export const FileSystemItemDragLeave = 'fs_item_drag_leave';
+export const FileSystemItemDragDrop = 'fs_item_drag_drop';
 
 export interface ItemDragNode {
-  item: FileSystemNode,
-  position: Point,
-  offset: Point
+  item: FileSystemNode;
+  position: Point;
+  offset: Point;
 }
 
 export interface FileSystemItemDragData {
-  nodes: ItemDragNode[],
-};
+  nodes: ItemDragNode[];
+}
 
 export type FileSystemItemDragEvent = CustomEvent<FileSystemItemDragData>;
 
 export type DragAndDropListener = (data: DragAndDropData) => void;
 
 export interface DragAndDropData {
-  action: 'start' | 'move' | 'drop',
-  files: FileSystemItemDragData,
-  x: number,
-  y: number,
+  action: 'start' | 'move' | 'drop';
+  files: FileSystemItemDragData;
+  x: number;
+  y: number;
 }
 
 class DragAndDropContext {
-  private listeners: (DragAndDropListener)[] = [];
+  private listeners: DragAndDropListener[] = [];
 
   public subscribe(listener: DragAndDropListener): Action<void> {
-    this.listeners.push(listener)
+    this.listeners.push(listener);
 
-    return () => { this.unsubscribe(listener); }
+    return () => {
+      this.unsubscribe(listener);
+    };
   }
 
   public unsubscribe(listener: DragAndDropListener) {
@@ -54,14 +56,17 @@ class DragAndDropContext {
 }
 
 export class DragAndDropSession {
-  constructor(private context: DragAndDropContext, private files: FileSystemItemDragData) {}
+  constructor(
+    private context: DragAndDropContext,
+    private files: FileSystemItemDragData
+  ) {}
 
   public start(x: number, y: number) {
     this.context.propagate({
       action: 'start',
       files: this.files,
       x,
-      y
+      y,
     });
   }
 
@@ -70,7 +75,7 @@ export class DragAndDropSession {
       action: 'move',
       files: this.files,
       x,
-      y
+      y,
     });
   }
 
@@ -79,7 +84,7 @@ export class DragAndDropSession {
       action: 'drop',
       files: this.files,
       x,
-      y
+      y,
     });
   }
 }

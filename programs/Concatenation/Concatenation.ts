@@ -1,18 +1,23 @@
-import { SystemAPIs } from "@/components/OperatingSystem"
-import { ProgramConfig, getAbsolutePathFromArgs } from "../Programs"
-import { Shell } from "@/applications/Terminal/Shell";
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { ProgramConfig } from '../Programs';
+import { getAbsolutePathFromArgs } from '../Programs';
+import type { Shell } from '@/applications/Terminal/Shell';
 
 function Concatenation(shell: Shell, args: string[], apis: SystemAPIs): void {
   const fs = apis.fileSystem;
   const path = args[1] ?? null;
 
-  if (!path) { return; }
+  if (!path) {
+    return;
+  }
 
   const absolutePath = getAbsolutePathFromArgs(path, shell);
   const nodeResult = fs.getNode(absolutePath);
 
   if (!nodeResult.ok) {
-    shell.getTerminal().writeResponse(`cat: no such file or directory: ${path}`);
+    shell
+      .getTerminal()
+      .writeResponse(`cat: no such file or directory: ${path}`);
     return;
   }
 
@@ -20,30 +25,30 @@ function Concatenation(shell: Shell, args: string[], apis: SystemAPIs): void {
   const kind = node.kind;
 
   switch (kind) {
-    case "directory":
+    case 'directory':
       shell.getTerminal().writeResponse(`cat: ${path}: Is a directory`);
       break;
-    case "image":
+    case 'image':
       shell.getTerminal().writeResponse(`cat: ${path}: Is an image`);
       break;
-    case "textfile":
+    case 'textfile':
       shell.getTerminal().writeResponseLines(node.content.split('\n'));
       break;
-    case "application":
+    case 'application':
       shell.getTerminal().writeResponse(`cat: ${path}: Is an application`);
       break;
-    case "hyperlink":
+    case 'hyperlink':
       shell.getTerminal().writeResponse(`cat: ${path}: Is a hyperlink`);
       break;
-    case "program":
+    case 'program':
       shell.getTerminal().writeResponse(`cat: ${path}: Is a program`);
       break;
   }
 }
 
 export class ConcatenationConfig implements ProgramConfig {
-  public readonly appName = "cat"
-  public readonly program = Concatenation
+  public readonly appName = 'cat';
+  public readonly program = Concatenation;
 }
 
 export const catConfig = new ConcatenationConfig();

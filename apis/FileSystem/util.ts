@@ -1,11 +1,13 @@
-import { FileSystemDirectory, FileSystemNode } from "./FileSystem";
+import type { FileSystemDirectory, FileSystemNode } from './FileSystem';
 
 export function constructPath(node: FileSystemNode): string {
   let currentNode: FileSystemNode = node;
-  let directories = [];
+  const directories = [];
 
   // Adds a backwards slash to end end of the path, if it is a directory
-  if (node.kind === 'directory') { directories.push(''); }
+  if (node.kind === 'directory') {
+    directories.push('');
+  }
 
   while (currentNode.parent !== null) {
     directories.push(currentNode.name);
@@ -22,7 +24,9 @@ export function constructPath(node: FileSystemNode): string {
 export function pathParts(path: string): string[] {
   const nodes = path.split('/').filter(x => x.length > 0);
 
-  if (nodes.length < 1 ) { return ["/"]; }
+  if (nodes.length < 1) {
+    return ['/'];
+  }
 
   return nodes;
 }
@@ -30,7 +34,9 @@ export function pathParts(path: string): string[] {
 // Pops the last entry off the path, so it should always return a directory path
 export function pathPop(path: string): string {
   const nodes = path.split('/').filter(x => x.length > 0);
-  if (nodes.length <= 1) { return "/" };
+  if (nodes.length <= 1) {
+    return '/';
+  }
 
   nodes.pop();
 
@@ -39,43 +45,69 @@ export function pathPop(path: string): string {
 
 export function pathLastEntry(path: string): string | null {
   const nodes = path.split('/').filter(x => x.length > 0);
-  if (nodes.length < 0) { return null; }
+  if (nodes.length < 0) {
+    return null;
+  }
 
   return nodes[nodes.length - 1];
 }
 
 export function pathShift(path: string): string {
-  return "";
+  const parts = path.split('/').filter(x => x.length > 0);
+  if (parts.length <= 1) {
+    return '/';
+  }
+  parts.shift();
+  return `/${parts.join('/')}${path.endsWith('/') ? '/' : ''}`;
 }
 
-export function isUniqueFile(parent: FileSystemDirectory, name: string): boolean {
-  if (name === '') { return false; }
+export function isUniqueFile(
+  parent: FileSystemDirectory,
+  name: string
+): boolean {
+  if (name === '') {
+    return false;
+  }
 
   for (const child of parent.children.iterFromHead()) {
     const node = child.value.node;
 
-    if (node.name === name) { return false; }
+    if (node.name === name) {
+      return false;
+    }
   }
 
   return true;
 }
 
-export function generateUniqueNameForDirectory(directory: FileSystemDirectory, template: string): string {
-  function existsInDirectory(directory: FileSystemDirectory, name: string): boolean {
+export function generateUniqueNameForDirectory(
+  directory: FileSystemDirectory,
+  template: string
+): string {
+  function existsInDirectory(
+    directory: FileSystemDirectory,
+    name: string
+  ): boolean {
     for (const node of directory.children.iterFromTail()) {
       const nodeName = node.value.node.name;
 
-      if (nodeName === name) { return true; }
+      if (nodeName === name) {
+        return true;
+      }
     }
 
     return false;
   }
 
-  if (!existsInDirectory(directory, template)) { return template; }
+  if (!existsInDirectory(directory, template)) {
+    return template;
+  }
 
   let iteration = 1;
 
-  while (existsInDirectory(directory, `${template} ${++iteration}`)) {}
+  while (existsInDirectory(directory, `${template} ${String(++iteration)}`)) {
+    // Continue searching for unique name
+  }
 
-  return `${template} ${iteration}`;
+  return `${template} ${String(iteration)}`;
 }

@@ -1,19 +1,25 @@
-import { Result } from "@/lib/result";
-import { ApplicationManager, BaseApplicationManager } from "./ApplicationManager";
+import type { Result } from '@/lib/result';
+import type {
+  ApplicationManager,
+  BaseApplicationManager,
+} from './ApplicationManager';
 
 export class LocalApplicationManager implements BaseApplicationManager {
-  constructor(private processId: number, private manager: ApplicationManager) {}
+  constructor(
+    private processId: number,
+    private manager: ApplicationManager
+  ) {}
 
-  open(argument: string): Result<number, Error> {
+  open(argument: string): Result<number> {
     return this.manager.open(argument);
   }
 
   // There is no concept of ring level security in this operating system :^)
   kill(processId: number): void {
-    return this.manager.kill(processId);
+    this.manager.kill(processId);
   }
 
   quit(): void {
-    return this.kill(this.processId);
+    this.kill(this.processId);
   }
 }

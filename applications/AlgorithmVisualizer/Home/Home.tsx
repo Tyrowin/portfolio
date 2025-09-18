@@ -1,17 +1,21 @@
-import { KeyboardEvent, useState } from 'react';
-import { AlgorithmSubView, SubViewParams } from '../AlgorithmVisualizerView';
+import type { KeyboardEvent } from 'react';
+import { useState } from 'react';
+import type {
+  AlgorithmSubView,
+  SubViewParams,
+} from '../AlgorithmVisualizerView';
 
 import styles from './Home.module.css';
-import { SortingDataGenerationStrategy } from '../Algorithms/Containers/SortingAlgorithmContainer';
+import type { SortingDataGenerationStrategy } from '../Algorithms/Containers/SortingAlgorithmContainer';
 import { useTranslations } from 'next-intl';
-import { AlgorithmOptions } from '../Algorithms/Containers/Containers';
-import { PathFindingDataGenerationStrategy } from '../Algorithms/Containers/PathFindingAlgorithmContainer';
+import type { AlgorithmOptions } from '../Algorithms/Containers/Containers';
+import type { PathFindingDataGenerationStrategy } from '../Algorithms/Containers/PathFindingAlgorithmContainer';
 
 export function SortingGenerationStrategyDropdown(
   id: string,
   value: string,
   onChange: (strategy: SortingDataGenerationStrategy) => void,
-  t: any
+  t: ReturnType<typeof useTranslations>
 ) {
   const entries: DataGenerationEntry<SortingDataGenerationStrategy>[] = [
     {
@@ -35,7 +39,7 @@ export function PathFindingGenerationStrategyDropdown(
   id: string,
   value: string,
   onChange: (strategy: PathFindingDataGenerationStrategy) => void,
-  t: any
+  t: ReturnType<typeof useTranslations>
 ) {
   const entries: DataGenerationEntry<PathFindingDataGenerationStrategy>[] = [
     {
@@ -55,10 +59,10 @@ export function PathFindingGenerationStrategyDropdown(
   return DataGenerationStrategyDropDown(id, entries, value, onChange);
 }
 
-export type DataGenerationEntry<T> = {
+export interface DataGenerationEntry<T> {
   title: string;
   strategy: T;
-};
+}
 
 export function DataGenerationStrategyDropDown<T>(
   id: string,
@@ -68,7 +72,7 @@ export function DataGenerationStrategyDropDown<T>(
 ) {
   // There are some nasty cast in this piece of code, but we handle all the inputs / outputs ourself, the generic T is required to be castable to a string
 
-  let options = entries.map((x) => {
+  const options = entries.map(x => {
     return (
       <option key={x.strategy as string} value={x.strategy as string}>
         {x.title}
@@ -82,7 +86,9 @@ export function DataGenerationStrategyDropDown<T>(
         id={id}
         className="system-button"
         value={value}
-        onChange={(e) => onChange(e.target.value as T)}
+        onChange={e => {
+          onChange(e.target.value as T);
+        }}
       >
         {options}
       </select>
@@ -128,11 +134,15 @@ export function DataGenerationEntriesInput(
       id={id}
       type="number"
       className="system-text-input"
-      onKeyDown={(evt) => filterInput(evt)}
+      onKeyDown={evt => {
+        filterInput(evt);
+      }}
       value={safeValue}
       min={1}
       style={{ width: '80px' }}
-      onChange={(evt) => onInputChange(evt.target.value)}
+      onChange={evt => {
+        onInputChange(evt.target.value);
+      }}
     />
   );
 }
@@ -168,7 +178,9 @@ export default function HomeSubView(params: SubViewParams) {
       <>
         <button
           className={`${styles['project-button']} xl-system-button`}
-          onClick={() => params.changeParent(target, options)}
+          onClick={() => {
+            params.changeParent(target, options);
+          }}
         >
           <span>{name}</span>
         </button>
@@ -178,10 +190,7 @@ export default function HomeSubView(params: SubViewParams) {
 
   return (
     <>
-      <div
-        data-subpage
-        className={`${styles['subpage']} ${styles['home-page']}`}
-      >
+      <div data-subpage className={`${styles.subpage} ${styles['home-page']}`}>
         <div data-subpage-content>
           <h1>Sorting</h1>
           {NavigationButton('Bubble sort', 'bubble-sort')}

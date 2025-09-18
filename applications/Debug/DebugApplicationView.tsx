@@ -1,4 +1,4 @@
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
+import type { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import { useEffect, useState } from 'react';
 
 function getTargetUrl(time: number): string {
@@ -12,31 +12,33 @@ function getTargetUrl(time: number): string {
 }
 
 export default function DebugApplicationView(props: WindowProps) {
-  const { application, windowContext } = props;
+  const { application } = props;
 
-  const [time, _] = useState(Date.now());
+  const [time] = useState(Date.now());
   const url = getTargetUrl(time);
-  
+
   function onClickButton() {
     application.apis.sound.play('/sounds/meow.mp3', 0.25);
   }
 
-  useEffect(() => { 
-    return () => { }
+  useEffect(() => {
+    // No cleanup needed
   }, []);
 
   return (
     <>
       <button onClick={onClickButton}>click me</button>
-      <div style={{
-        width: '100%',
-        height: '100%',
-        display: 'block',
-        background: `url(${url})`,
-        backgroundSize: 'contain',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}></div>
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'block',
+          background: `url(${url})`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      ></div>
     </>
-  )
-} 
+  );
+}

@@ -13,7 +13,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  
+
   pointer-events: none;
   width: 100%;
   /* TODO: Change this to the eventual height of the dock */

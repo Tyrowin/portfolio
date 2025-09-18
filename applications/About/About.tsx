@@ -1,10 +1,17 @@
-import { LocalWindowCompositor } from "@/components/WindowManagement/LocalWindowCompositor";
-import { WindowContext, Window } from "@/components/WindowManagement/WindowCompositor";
-import { ApplicationEvent, ApplicationOpenEvent } from "../ApplicationEvents";
-import { Application, ApplicationConfig, MenuEntry } from "../ApplicationManager";
-import { LocalApplicationManager } from "../LocalApplicationManager";
+import type { LocalWindowCompositor } from '@/components/WindowManagement/LocalWindowCompositor';
+import type {
+  WindowContext,
+  Window,
+} from '@/components/WindowManagement/WindowCompositor';
+import type {
+  ApplicationEvent,
+  ApplicationOpenEvent,
+} from '../ApplicationEvents';
+import type { ApplicationConfig, MenuEntry } from '../ApplicationManager';
+import { Application } from '../ApplicationManager';
+import type { LocalApplicationManager } from '../LocalApplicationManager';
 import dynamic from 'next/dynamic';
-import { SystemAPIs } from "@/components/OperatingSystem";
+import type { SystemAPIs } from '@/components/OperatingSystem';
 
 const View = dynamic(() => import('./AboutView'));
 
@@ -29,27 +36,32 @@ export class AboutApplication extends Application {
   }
 
   menuEntries(): MenuEntry[] {
-    return [{
-      displayOptions: { boldText: true },
-      name: 'About',
-      items: []
-    }]
+    return [
+      {
+        displayOptions: { boldText: true },
+        name: 'About',
+        items: [],
+      },
+    ];
   }
 
   private createNewWindow(event: ApplicationOpenEvent): Window {
-    const y       = 100;
-    const width   = window.innerWidth * 0.75;
-    const height  = window.innerHeight * 0.75 - y;
-    const x       = (window.innerWidth - width) / 2;
+    const y = 100;
+    const width = window.innerWidth * 0.75;
+    const height = window.innerHeight * 0.75 - y;
+    const x = (window.innerWidth - width) / 2;
 
     return this.compositor.open({
-      x, y,
+      x,
+      y,
       height,
       width,
-      title: "About",
+      title: 'About',
       application: this,
       args: event.args,
-      generator: () => { return View; }
+      generator: () => {
+        return View;
+      },
     });
   }
 
@@ -62,10 +74,12 @@ export class AboutApplication extends Application {
 
     if (event.kind === 'application-open') {
       this.createNewWindow(event);
-    };
+    }
 
     if (event.kind === 'application-quit') {
-      if (!windowContext) { return; }
+      if (!windowContext) {
+        return;
+      }
     }
   }
 }

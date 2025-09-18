@@ -1,5 +1,5 @@
 /* These files are copied from the web project, we can make them shared but that takes a bit of effort */
-import { BoundingBox } from "./BoundingBox";
+import { BoundingBox } from './BoundingBox';
 
 export type TouchDataSource = 'start' | 'move' | 'end';
 
@@ -26,7 +26,7 @@ export class TouchData {
   ) {}
 
   static fromTouchEvent(source: TouchDataSource, evt: TouchEvent): TouchData {
-    let touches = [];
+    const touches = [];
 
     for (const touch of evt.touches) {
       const elem = TouchElement.fromTouch(touch);
@@ -34,7 +34,7 @@ export class TouchData {
     }
 
     return new TouchData(source, touches);
-  };
+  }
 
   hasTouchesDown(amount: number): boolean {
     return this.touches.length === amount;
@@ -50,10 +50,11 @@ export class TouchData {
 
   // Takes the average between all the touches
   pointerCoordinates(): PointerCoordinates {
-    let x = 0, y = 0;
-    let div = this.touches.length;
+    let x = 0,
+      y = 0;
+    const div = this.touches.length;
 
-    for (let touch of this.touches) {
+    for (const touch of this.touches) {
       x += touch.x;
       y += touch.y;
     }

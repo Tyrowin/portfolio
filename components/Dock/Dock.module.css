@@ -14,7 +14,11 @@
 
 .dockContainer {
   display: flex;
-  box-shadow: inset -1px -1px #0a0a0a,inset 1px 1px #c8c8c8,inset -2px -2px grey,inset 2px 2px #fff;
+  box-shadow:
+    inset -1px -1px #0a0a0a,
+    inset 1px 1px #c8c8c8,
+    inset -2px -2px grey,
+    inset 2px 2px #fff;
   padding: 4px;
   margin: 4px;
   background-color: #c0c0c0;

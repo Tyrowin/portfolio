@@ -1,7 +1,7 @@
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import { useTranslations, useLocale } from 'next-intl';
 import styles from './ContactView.module.css';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import type { FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { isEmail, isEmpty } from '@/components/util';
 import Image from 'next/image';
 
@@ -45,8 +45,7 @@ function EnglishContent() {
   );
 }
 
-export default function ContactApplicationView(props: WindowProps) {
-  const { application, args, windowContext } = props;
+export default function ContactApplicationView() {
   const nameRef = useRef<HTMLInputElement>(null);
 
   const t = useTranslations('contact');
@@ -64,7 +63,9 @@ export default function ContactApplicationView(props: WindowProps) {
   const [loading, setLoading] = useState(false);
   const [processed, setProcessed] = useState(false);
 
-  function handleChange(e: any) {
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
     setInputFields({ ...inputFields, [e.target.name]: e.target.value });
   }
 
@@ -96,7 +97,7 @@ export default function ContactApplicationView(props: WindowProps) {
   }
 
   function validateForm(): ValidationError[] {
-    let errors: ValidationError[] = [];
+    const errors: ValidationError[] = [];
 
     if (isEmpty(inputFields.name)) {
       errors.push('empty-name');
@@ -119,7 +120,7 @@ export default function ContactApplicationView(props: WindowProps) {
     const errors = validateForm();
 
     function setError(error: ValidationError) {
-      setErrors((errors) => new Set(errors).add(error));
+      setErrors(errors => new Set(errors).add(error));
     }
 
     for (const error of errors) {
@@ -134,7 +135,9 @@ export default function ContactApplicationView(props: WindowProps) {
     setProcessed(false);
 
     if (isFormValid()) {
-      sendEmail().then(() => resetInput());
+      void sendEmail().then(() => {
+        resetInput();
+      });
     } else {
       handleFromErrors();
     }
@@ -151,7 +154,7 @@ export default function ContactApplicationView(props: WindowProps) {
   return (
     <div className="content-outer">
       <div className="content">
-        <div className={styles['center']}>
+        <div className={styles.center}>
           <div className={styles['center-content']}>
             <div className={styles['contact-header']}>
               <h1>Contact</h1>
@@ -198,9 +201,7 @@ export default function ContactApplicationView(props: WindowProps) {
             <form onSubmit={onSubmit}>
               {processed ? (
                 <div
-                  className={[styles['form-row'], styles['processed']].join(
-                    ' '
-                  )}
+                  className={[styles['form-row'], styles.processed].join(' ')}
                 >
                   <span>{t('processed')}</span>
                 </div>
@@ -243,7 +244,7 @@ export default function ContactApplicationView(props: WindowProps) {
                   onChange={handleChange}
                 />
                 {errors.has('invalid-email') ? (
-                  <span>{t('contact.error.invalid-email')}</span>
+                  <span>{t('error.invalid-email')}</span>
                 ) : (
                   <></>
                 )}
@@ -288,7 +289,7 @@ export default function ContactApplicationView(props: WindowProps) {
                   value={t('send')}
                 />
 
-                <div className={styles['instructions']}>
+                <div className={styles.instructions}>
                   <span>{t('message_forwarding_instructions')}</span>
                   <span className={styles['required-instructions']}>
                     <span className={styles.required}>*</span> = {t('required')}

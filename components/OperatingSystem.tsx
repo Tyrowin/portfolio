@@ -8,17 +8,19 @@ import {
   createBaseFileSystem,
   removeDebugAppFromFileSystem,
 } from '@/apis/FileSystem/FileSystem';
-import React, { MutableRefObject, useEffect, useRef } from 'react';
+
+import React, { useEffect, useRef } from 'react';
 import { MenuBar } from './MenuBar';
 import { Desktop } from './Desktop/Desktop';
 import { Dock } from './Dock/Dock';
-import { FileSystem } from '@/apis/FileSystem/FileSystem';
+import type { FileSystem } from '@/apis/FileSystem/FileSystem';
 import styles from './OperatingSystem.module.css';
 import { DragAndDropView } from './DragAndDropView';
 // RPC imports removed - no longer needed without web app
 // import { parseMessageFromParent, sendRequestToParent } from "rpc";
-import { Camera } from '@/data/Camera';
-import { PointerCoordinates, TouchData } from '@/data/TouchData';
+import type { Camera } from '@/data/Camera';
+import type { PointerCoordinates } from '@/data/TouchData';
+import { TouchData } from '@/data/TouchData';
 import { clamp, isPhoneSafari, isTouchMoveCamera, isTouchZoom } from './util';
 import { SoundService } from '@/apis/Sound/Sound';
 import { SystemService } from '@/apis/System/System';
@@ -32,13 +34,13 @@ const sound = new SoundService();
 const system = new SystemService();
 const screen = new ScreenService();
 
-export type SystemAPIs = {
+export interface SystemAPIs {
   dragAndDrop: DragAndDropService;
   fileSystem: FileSystem;
   sound: SoundService;
   system: SystemService;
   screen: ScreenService;
-};
+}
 
 const apis: SystemAPIs = { dragAndDrop, fileSystem, sound, system, screen };
 
@@ -49,12 +51,8 @@ const applicationManager = new ApplicationManager(
   apis
 );
 
-function handleParentResponsesClosure(
-  initialCamera: MutableRefObject<Camera | null>,
-  camera: MutableRefObject<Camera | null>,
-  apis: SystemAPIs
-) {
-  return function (event: MessageEvent) {
+function handleParentResponsesClosure() {
+  return function () {
     // RPC functionality removed - no longer needed without web app
     // const response = parseMessageFromParent(event);
     // if (!response.ok) { return; }
@@ -97,7 +95,7 @@ export const OperatingSystem = () => {
 
   function handleTouchStartEvent(evt: TouchEvent) {
     if (isPhoneSafari()) {
-      let target = clickedInteractiveWindowElement(evt.target as HTMLElement);
+      const target = clickedInteractiveWindowElement(evt.target as HTMLElement);
       if (target) {
         evt.preventDefault();
       }
@@ -121,8 +119,8 @@ export const OperatingSystem = () => {
     const sensitivity = 0.005;
     const originCoords = touchOrigin.current.pointerCoordinates();
 
-    let vertical = (coords.y - originCoords.y) * sensitivity;
-    let horizontal = -(coords.x - originCoords.x) * sensitivity;
+    const vertical = (coords.y - originCoords.y) * sensitivity;
+    const horizontal = -(coords.x - originCoords.x) * sensitivity;
 
     return [
       camera.horizontalOffset + horizontal,
@@ -196,7 +194,7 @@ export const OperatingSystem = () => {
       return;
     }
 
-    const cam = camera.current;
+    // const cam = camera.current;
 
     // sendRequestToParent({
     //   method: 'set_camera_parameters_request',
@@ -242,11 +240,7 @@ export const OperatingSystem = () => {
       disableBrowserZoomTouchInteraction(ref.current);
     }
 
-    const handleParentEvent = handleParentResponsesClosure(
-      initialCamera,
-      camera,
-      apis
-    );
+    const handleParentEvent = handleParentResponsesClosure();
     window.addEventListener('message', handleParentEvent, false);
 
     // sendRequestToParent({ method: 'mounted' }); // RPC removed

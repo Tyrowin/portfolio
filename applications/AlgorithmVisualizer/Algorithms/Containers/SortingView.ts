@@ -1,15 +1,20 @@
-import { sleep } from "../../Util";
+import { sleep } from '../../Util';
 
 export type SortViewEntryColor = 'white' | 'red' | 'green';
 
-export type SortViewEntry = {
-  value: number,
-  color: SortViewEntryColor,
+export interface SortViewEntry {
+  value: number;
+  color: SortViewEntryColor;
 }
 
-export async function verifySort(view: SortView, abortSignal: AbortSignal): Promise<boolean> {
+export async function verifySort(
+  view: SortView,
+  abortSignal: AbortSignal
+): Promise<boolean> {
   for (let i = 1; i < view.size(); i++) {
-    if (abortSignal.aborted) { return false; }
+    if (abortSignal.aborted) {
+      return false;
+    }
 
     if (view.entry(i).value < view.entry(i - 1).value) {
       return false;
@@ -31,13 +36,12 @@ export async function verifySort(view: SortView, abortSignal: AbortSignal): Prom
   return true;
 }
 
-
 export class SortView {
-  private dirty: boolean = false;
-  private highestValue: number = 0;
-  private delayMs: number = 5;
+  private dirty = false;
+  private highestValue = 0;
+  private delayMs = 5;
 
-  private accessCount: number = 0;
+  private accessCount = 0;
 
   public accessIndicesList: number[] = [];
 
@@ -48,8 +52,8 @@ export class SortView {
   private findHighestValue(): number {
     let max = 0;
 
-    for (let i = 0; i < this.data.length; i++) {
-      max = Math.max(this.data[i].value, max);
+    for (const item of this.data) {
+      max = Math.max(item.value, max);
     }
 
     return max;
@@ -62,15 +66,15 @@ export class SortView {
   }
 
   public cleanColors(): void {
-    for (let i = 0; i < this.data.length; i++) {
-      this.data[i].color = 'white';
+    for (const item of this.data) {
+      item.color = 'white';
     }
 
     this.dirty = true;
   }
 
   public rerender(): boolean {
-    let dirty = this.dirty;
+    const dirty = this.dirty;
 
     this.dirty = false;
 
@@ -88,14 +92,18 @@ export class SortView {
     this.maskSound(idx);
     this.maskSound(idy);
 
-    let temp = this.data[idx];
+    const temp = this.data[idx];
     this.data[idx] = this.data[idy];
     this.data[idy] = temp;
 
     await this.onAccess();
   }
 
-  public async set(id: number, item: SortViewEntry, color?: SortViewEntryColor): Promise<void> {
+  public async set(
+    id: number,
+    item: SortViewEntry,
+    color?: SortViewEntryColor
+  ): Promise<void> {
     this.dirty = true;
 
     this.data[id] = item;

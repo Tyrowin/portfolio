@@ -1,4 +1,10 @@
-import { CameraZoomDistanceResponse } from "rpc";
+interface CameraZoomDistanceResponse {
+  min_distance: number;
+  max_distance: number;
+  current_distance: number;
+  horizontal_offset: number;
+  max_horizontal_offset: number;
+}
 
 export class Camera {
   constructor(
@@ -10,10 +16,12 @@ export class Camera {
     public readonly maxHorizontalOffset: number,
 
     public verticalOffset: number,
-    public readonly maxVerticalOffset: number,
+    public readonly maxVerticalOffset: number
   ) {}
 
-  public static handleParentResponse(response: CameraZoomDistanceResponse): Camera {
+  public static handleParentResponse(
+    response: CameraZoomDistanceResponse
+  ): Camera {
     const minZoom = response.min_distance;
     const maxZoom = response.max_distance;
     const currentZoom = response.current_distance;
@@ -38,22 +46,22 @@ export class Camera {
   get horizontal() {
     return {
       max: this.maxHorizontalOffset,
-      current: this.horizontalOffset
-    }
+      current: this.horizontalOffset,
+    };
   }
 
   get vertical() {
     return {
       max: this.maxVerticalOffset,
-      current: this.verticalOffset
-    }
+      current: this.verticalOffset,
+    };
   }
 
   get zoom() {
     return {
       min: this.minZoom,
       max: this.maxZoom,
-      current: this.currentZoom
-    }
+      current: this.currentZoom,
+    };
   }
 }

@@ -1,4 +1,4 @@
-import { Point } from "../math";
+import type { Point } from '../math';
 
 export async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -9,10 +9,15 @@ export function equals(a: Point, b: Point) {
 }
 
 export function adjacentEdges(point: Point): Point[] {
-  let results: Point[] = [];
+  const results: Point[] = [];
 
   // For directions, go up, right, down, left
-  for (let edge of [[0, 1], [1, 0], [0, -1], [-1, 0]]) {
+  for (const edge of [
+    [0, 1],
+    [1, 0],
+    [0, -1],
+    [-1, 0],
+  ]) {
     const [edgeX, edgeY] = edge;
 
     const x = point.x + edgeX;

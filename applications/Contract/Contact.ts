@@ -1,9 +1,16 @@
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { LocalWindowCompositor } from "@/components/WindowManagement/LocalWindowCompositor";
-import { Application, ApplicationConfig, MenuEntry } from "../ApplicationManager";
-import { LocalApplicationManager } from "../LocalApplicationManager";
-import { Window, WindowContext } from "@/components/WindowManagement/WindowCompositor";
-import { ApplicationEvent, ApplicationOpenEvent } from "../ApplicationEvents";
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { LocalWindowCompositor } from '@/components/WindowManagement/LocalWindowCompositor';
+import type { ApplicationConfig, MenuEntry } from '../ApplicationManager';
+import { Application } from '../ApplicationManager';
+import type { LocalApplicationManager } from '../LocalApplicationManager';
+import type {
+  Window,
+  WindowContext,
+} from '@/components/WindowManagement/WindowCompositor';
+import type {
+  ApplicationEvent,
+  ApplicationOpenEvent,
+} from '../ApplicationEvents';
 import dynamic from 'next/dynamic';
 
 const View = dynamic(() => import('./ContactView'));
@@ -13,7 +20,11 @@ export class ContactConfig implements ApplicationConfig {
   public readonly dockPriority = null;
   public readonly path = '/Applications/';
   public readonly appName = 'Contact.app';
-  public readonly appIcon = { src: '/icons/contact-app.png', alt: 'Contact application' };
+  public readonly appIcon = {
+    src: '/icons/contact-app.png',
+    alt: 'Contact application',
+  };
+
   public readonly entrypoint = (
     compositor: LocalWindowCompositor,
     manager: LocalApplicationManager,
@@ -31,37 +42,44 @@ export class ContactApplication extends Application {
   }
 
   menuEntries(): MenuEntry[] {
-    return [{
-      displayOptions: { boldText: true },
-      name: 'Contact',
-      items: []
-    }];
+    return [
+      {
+        displayOptions: { boldText: true },
+        name: 'Contact',
+        items: [],
+      },
+    ];
   }
 
   private createNewWindow(event: ApplicationOpenEvent): Window {
-    const y       = 90;
-    const width   = window.innerWidth * 0.6;
-    const height  = 600;
-    const x       = (window.innerWidth - width) / 2;
+    const y = 90;
+    const width = window.innerWidth * 0.6;
+    const height = 600;
+    const x = (window.innerWidth - width) / 2;
 
     return this.compositor.open({
-      x, y,
+      x,
+      y,
       height,
       width,
-      title: `Contact`,
+      title: 'Contact',
       application: this,
       args: event.args,
-      generator: () => { return View; }
+      generator: () => {
+        return View;
+      },
     });
   }
 
   private focusWindow(): void {
-    if (!this.currentWindow) { return; }
+    if (!this.currentWindow) {
+      return;
+    }
 
     this.compositor.focus(this.currentWindow.id);
   }
 
-  on(event: ApplicationEvent, windowContext?: WindowContext | undefined): void {
+  on(event: ApplicationEvent, windowContext?: WindowContext): void {
     this.baseHandler(event, windowContext);
 
     if (event.kind === 'application-open') {
@@ -70,7 +88,7 @@ export class ContactApplication extends Application {
       } else {
         this.focusWindow();
       }
-    };
+    }
 
     if (event.kind === 'application-quit') {
       this.currentWindow = null;

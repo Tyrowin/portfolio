@@ -1,12 +1,17 @@
-import { Action } from "../util";
-import { WindowCompositor, WindowConfig, Window, FilterPredicate } from "./WindowCompositor";
-import { WindowEvent, WindowEventHandler, toSingleWindowEvent } from "./WindowEvents";
+import type { Action } from '../util';
+import type {
+  WindowCompositor,
+  WindowConfig,
+  Window,
+  FilterPredicate,
+} from './WindowCompositor';
+import type { WindowEvent, WindowEventHandler } from './WindowEvents';
+import { toSingleWindowEvent } from './WindowEvents';
 
 export class LocalWindowCompositor {
-
   private instances: Record<number, Window> = {};
 
-  constructor(private compositor: WindowCompositor) { }
+  constructor(private compositor: WindowCompositor) {}
 
   public focus(windowId: number) {
     this.compositor.focus(windowId);
@@ -20,29 +25,45 @@ export class LocalWindowCompositor {
     return window;
   }
 
-  public subscribe(windowId: number, handler: WindowEventHandler): Action<void> {
+  public subscribe(
+    windowId: number,
+    handler: WindowEventHandler
+  ): Action<void> {
     function filterOnWindowId(evt: WindowEvent): boolean {
       const event = toSingleWindowEvent(evt);
 
-      if (!event) { return false; }
+      if (!event) {
+        return false;
+      }
 
       return event.windowId == windowId;
     }
 
-    return this.compositor.subscribeWithFilter(filterOnWindowId, handler)
+    return this.compositor.subscribeWithFilter(filterOnWindowId, handler);
   }
 
-  public subscribeWithFilter(windowId: number, predicate: FilterPredicate, handler: WindowEventHandler): Action<void> {
+  public subscribeWithFilter(
+    windowId: number,
+    predicate: FilterPredicate,
+    handler: WindowEventHandler
+  ): Action<void> {
     function filterOnWindowIdAndPredicate(evt: WindowEvent): boolean {
       const event = toSingleWindowEvent(evt);
 
-      if (!event) { return false; }
-      if (event.windowId !== windowId) { return false; }
+      if (!event) {
+        return false;
+      }
+      if (event.windowId !== windowId) {
+        return false;
+      }
 
       return predicate(evt);
     }
 
-    return this.compositor.subscribeWithFilter(filterOnWindowIdAndPredicate, handler);
+    return this.compositor.subscribeWithFilter(
+      filterOnWindowIdAndPredicate,
+      handler
+    );
   }
 
   public getById(windowId: number): Window | null {
@@ -50,24 +71,32 @@ export class LocalWindowCompositor {
   }
 
   public update(window: Window): void {
-    if (!(window.id in this.instances)) { return; }
+    if (!(window.id in this.instances)) {
+      return;
+    }
 
     this.compositor.update(window);
   }
 
   public close(windowId: number): void {
-    if (!(windowId in this.instances)) { return; }
+    if (!(windowId in this.instances)) {
+      return;
+    }
 
     this.compositor.close(windowId);
 
-    delete this.instances[windowId];
+    Reflect.deleteProperty(this.instances, windowId);
   }
 
   public async alert(windowId: number, alert: string): Promise<void> {
-    return await this.compositor.alert(windowId, alert);
+    await this.compositor.alert(windowId, alert);
   }
 
-  public async prompt(windowId: number, prompt: string, defaultValue?: string): Promise<string> {
+  public async prompt(
+    windowId: number,
+    prompt: string,
+    defaultValue?: string
+  ): Promise<string> {
     return await this.compositor.prompt(windowId, prompt, defaultValue);
   }
 

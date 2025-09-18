@@ -1,4 +1,3 @@
-import { WindowProps } from '@/components/WindowManagement/WindowCompositor';
 import Image from 'next/image';
 import styles from './SkillsView.module.css';
 import { useTranslations } from 'next-intl';
@@ -26,7 +25,7 @@ function SkillEntry(props: {
   );
 }
 
-export default function SkillsView(props: WindowProps) {
+export default function SkillsView() {
   const t = useTranslations('skills');
 
   return (
@@ -34,7 +33,7 @@ export default function SkillsView(props: WindowProps) {
       <div className="content">
         <div className="content-inner">
           <div className={styles['skills-content']}>
-            <h1>{t('skills.programming_languages')}</h1>
+            <h1>{t('programming_languages')}</h1>
 
             <ul>
               <li>
@@ -90,7 +89,7 @@ export default function SkillsView(props: WindowProps) {
               </li>
             </ul>
 
-            <h1>{t('skills.frameworks')}</h1>
+            <h1>{t('frameworks')}</h1>
             <ul>
               <li>
                 <SkillEntry
@@ -127,7 +126,7 @@ export default function SkillsView(props: WindowProps) {
               </li>
             </ul>
 
-            <h1>{t('skills.databases')}</h1>
+            <h1>{t('databases')}</h1>
             <ul>
               <li>
                 <SkillEntry
@@ -155,7 +154,7 @@ export default function SkillsView(props: WindowProps) {
               </li>
             </ul>
 
-            <h1>{t('skills.devops')}</h1>
+            <h1>{t('devops')}</h1>
             <ul>
               <li>
                 <SkillEntry
@@ -186,7 +185,7 @@ export default function SkillsView(props: WindowProps) {
               </li>
             </ul>
 
-            <h1>{t('skills.tools')}</h1>
+            <h1>{t('tools')}</h1>
             <ul>
               <li>
                 <SkillEntry

@@ -1,10 +1,10 @@
-import { ApplicationIcon } from "@/apis/FileSystem/FileSystem";
-import { SystemAPIs } from "@/components/OperatingSystem";
-import { LocalWindowCompositor } from "@/components/WindowManagement/LocalWindowCompositor";
-import { Application, ApplicationConfig, MenuEntry } from "../ApplicationManager";
-import { LocalApplicationManager } from "../LocalApplicationManager";
-import { WindowContext } from "@/components/WindowManagement/WindowCompositor";
-import { ApplicationEvent } from "../ApplicationEvents";
+import type { SystemAPIs } from '@/components/OperatingSystem';
+import type { LocalWindowCompositor } from '@/components/WindowManagement/LocalWindowCompositor';
+import type { ApplicationConfig, MenuEntry } from '../ApplicationManager';
+import { Application } from '../ApplicationManager';
+import type { LocalApplicationManager } from '../LocalApplicationManager';
+import type { WindowContext } from '@/components/WindowManagement/WindowCompositor';
+import type { ApplicationEvent } from '../ApplicationEvents';
 import dynamic from 'next/dynamic';
 
 const View = dynamic(() => import('./ImageViewerView'));
@@ -14,7 +14,11 @@ export class ImageViewerConfig implements ApplicationConfig {
   public readonly dockPriority = null;
   public readonly path = '/Applications/';
   public readonly appName = 'Image.app';
-  public readonly appIcon = { src: '/icons/image-icon.png', alt: 'Image application' };
+  public readonly appIcon = {
+    src: '/icons/image-icon.png',
+    alt: 'Image application',
+  };
+
   public readonly entrypoint = (
     compositor: LocalWindowCompositor,
     manager: LocalApplicationManager,
@@ -30,14 +34,16 @@ export class ImageViewerApplication extends Application {
   }
 
   menuEntries(): MenuEntry[] {
-    return [{
-      displayOptions: { boldText: true },
-      name: 'Image',
-      items: []
-    }];
+    return [
+      {
+        displayOptions: { boldText: true },
+        name: 'Image',
+        items: [],
+      },
+    ];
   }
 
-  on(event: ApplicationEvent, windowContext?: WindowContext | undefined): void {
+  on(event: ApplicationEvent, windowContext?: WindowContext): void {
     this.baseHandler(event, windowContext);
 
     if (event.kind === 'application-open') {
@@ -46,11 +52,13 @@ export class ImageViewerApplication extends Application {
         y: 200,
         height: 400,
         width: 400,
-        title: `Image`,
+        title: 'Image',
         application: this,
         args: event.args,
-        generator: () => { return View; }
+        generator: () => {
+          return View;
+        },
       });
-    };
+    }
   }
 }

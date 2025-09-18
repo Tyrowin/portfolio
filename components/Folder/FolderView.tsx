@@ -1,53 +1,94 @@
-import { DirectoryContent, DirectoryEntry, NodeEventType, NodeRenameEvent, DirectorySettings, FileSystemDirectory, FileSystemNode, calculateNodePosition} from '@/apis/FileSystem/FileSystem';
-import { forwardRef, useState, useRef, useEffect, RefObject, MutableRefObject, useImperativeHandle } from 'react';
+import type {
+  DirectoryContent,
+  DirectoryEntry,
+  NodeEventType,
+  NodeRenameEvent,
+  DirectorySettings,
+  FileSystemDirectory,
+  FileSystemNode,
+} from '@/apis/FileSystem/FileSystem';
+import { calculateNodePosition } from '@/apis/FileSystem/FileSystem';
+import type { RefObject, MutableRefObject } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import styles from '@/components/Folder/FolderView.module.css';
-import { FolderIconEntry, FolderIconHitBox, IconHeight, IconWidth } from '../Icons/FolderIcon';
-import { Point, Rectangle, pointIndexInsideAnyRectangles, pointInsideAnyRectangles, rectangleAnyIntersection } from '@/applications/math';
+import type { FolderIconEntry } from '../Icons/FolderIcon';
+import { FolderIconHitBox, IconHeight, IconWidth } from '../Icons/FolderIcon';
+import type { Point, Rectangle } from '@/applications/math';
+import {
+  pointIndexInsideAnyRectangles,
+  pointInsideAnyRectangles,
+  rectangleAnyIntersection,
+} from '@/applications/math';
 import { Chain } from '../../data/Chain';
-import { DragAndDropSession, FileSystemItemDragData, FileSystemItemDragDrop, FileSystemItemDragEnter, FileSystemItemDragEvent, FileSystemItemDragLeave, FileSystemItemDragMove } from '@/apis/DragAndDrop/DragAndDrop';
+import type {
+  DragAndDropSession,
+  FileSystemItemDragData,
+  FileSystemItemDragEvent,
+} from '@/apis/DragAndDrop/DragAndDrop';
+import {
+  FileSystemItemDragDrop,
+  FileSystemItemDragEnter,
+  FileSystemItemDragLeave,
+  FileSystemItemDragMove,
+} from '@/apis/DragAndDrop/DragAndDrop';
 import { clamp } from '../util';
-import { Err, Ok, Result } from "@/lib/result";
-import { SystemAPIs } from '../OperatingSystem';
-import { constructPath, generateUniqueNameForDirectory } from '@/apis/FileSystem/util';
+import type { Result } from '@/lib/result';
+import { Err, Ok } from '@/lib/result';
+import type { SystemAPIs } from '../OperatingSystem';
+import { constructPath } from '@/apis/FileSystem/util';
 
 const FolderIcon = dynamic(() => import('../Icons/FolderIcon'));
 
 interface SelectionBox {
-  open: boolean,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
+  open: boolean;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 function SelectionBox(box: SelectionBox) {
   if (!box.open) {
-    return <></>
+    return <></>;
   }
 
-  return <div className={styles['selection-box']} style={{width: box.width, height: box.height, top: box.y, left: box.x}}></div>
+  return (
+    <div
+      className={styles['selection-box']}
+      style={{ width: box.width, height: box.height, top: box.y, left: box.x }}
+    ></div>
+  );
 }
 
 const DraggingThreshold = 5;
 
 type Interaction = 'pointer' | 'touch';
-type ClickedIcon = { iconEntry: FolderIconEntry, clickedOnTheIcon: boolean }
-
-type FolderViewProps = {
-  directory: string,
-  apis: SystemAPIs,
-  onFileOpen: (file: FileSystemNode, rename: boolean) => void,
-  localIconPosition?: boolean,
-  allowOverflow?: boolean
+interface ClickedIcon {
+  iconEntry: FolderIconEntry;
+  clickedOnTheIcon: boolean;
 }
 
-export type FolderViewHandles = {
-  getCurrentDirectory: () => void
+interface FolderViewProps {
+  directory: string;
+  apis: SystemAPIs;
+  onFileOpen: (file: FileSystemNode, rename: boolean) => void;
+  localIconPosition?: boolean;
+  allowOverflow?: boolean;
+}
+
+export interface FolderViewHandles {
+  getCurrentDirectory: () => void;
 }
 
 export function FolderView(props: FolderViewProps) {
-  const { directory, apis, onFileOpen, localIconPosition, allowOverflow: propOverflow } = props;
+  const {
+    directory,
+    apis,
+    onFileOpen,
+    localIconPosition,
+    allowOverflow: propOverflow,
+  } = props;
   const fs = apis.fileSystem;
 
   const useLocalIconPosition = localIconPosition ?? false;
@@ -59,7 +100,7 @@ export function FolderView(props: FolderViewProps) {
   function updateFiles(files: Chain<FolderIconEntry>) {
     localFiles.current = files;
     setFiles(files.toArray());
-  } 
+  }
 
   const ref: RefObject<HTMLDivElement> = useRef(null);
   const iconContainer: RefObject<HTMLDivElement> = useRef(null);
@@ -70,16 +111,27 @@ export function FolderView(props: FolderViewProps) {
   const selectionBoxStart = useRef({ x: 0, y: 0 });
 
   const isDragging = useRef(false);
-  const previousClickedFile = useRef<{ file: ClickedIcon | null, timestamp: number }>({ file: null, timestamp: 0 });
+  const previousClickedFile = useRef<{
+    file: ClickedIcon | null;
+    timestamp: number;
+  }>({ file: null, timestamp: 0 });
 
   const fileDraggingOrigin = useRef({ x: 0, y: 0 });
   const fileDraggingFolderOrigin = useRef<Point>();
 
-  const fileDraggingSelection  = useRef<FolderIconEntry[]>([]);
-  const fileDraggingCurrentNode: MutableRefObject<Element | undefined> = useRef();
-  const fileDraggingSession: MutableRefObject<DragAndDropSession | null> = useRef(null);
+  const fileDraggingSelection = useRef<FolderIconEntry[]>([]);
+  const fileDraggingCurrentNode: MutableRefObject<Element | undefined> =
+    useRef();
+  const fileDraggingSession: MutableRefObject<DragAndDropSession | null> =
+    useRef(null);
 
-  const [box, setBox] = useState<SelectionBox>({ open: false, x: 0, y: 0, width: 0, height: 0 });
+  const [box, setBox] = useState<SelectionBox>({
+    open: false,
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
 
   function getLocalCoordinates(point: Point): Point {
     const dimensions = ref.current!.getBoundingClientRect();
@@ -87,34 +139,48 @@ export function FolderView(props: FolderViewProps) {
     const localX = point.x - dimensions.left;
     const localY = point.y - dimensions.top;
 
-    return { x: localX, y: localY};
+    return { x: localX, y: localY };
   }
 
-  function getXCoordInIconContainer(x: number, container: HTMLDivElement): number {
+  function getXCoordInIconContainer(
+    x: number,
+    container: HTMLDivElement
+  ): number {
     return container.scrollLeft + x;
   }
 
-  function getYCoordInIconContainer(y: number, container: HTMLDivElement): number {
+  function getYCoordInIconContainer(
+    y: number,
+    container: HTMLDivElement
+  ): number {
     return container.scrollTop + y;
   }
 
-  function getCoordinatesInIconContainer(point: Point, container: HTMLDivElement): Point {
+  function getCoordinatesInIconContainer(
+    point: Point,
+    container: HTMLDivElement
+  ): Point {
     return {
       x: getXCoordInIconContainer(point.x, container),
-      y: getYCoordInIconContainer(point.y, container)
+      y: getYCoordInIconContainer(point.y, container),
     };
   }
 
   function selectFile(position: Point) {
     const files = localFiles.current;
-    
-    if (!iconContainer.current) { return; }
+
+    if (!iconContainer.current) {
+      return;
+    }
     const container = iconContainer.current;
-    const point = getCoordinatesInIconContainer(getLocalCoordinates(position), container);
+    const point = getCoordinatesInIconContainer(
+      getLocalCoordinates(position),
+      container
+    );
 
     let hasSelected = false;
 
-    for (let node of files.iterFromHead()) {
+    for (const node of files.iterFromHead()) {
       const file = node.value;
       const hitBox = FolderIconHitBox(file);
 
@@ -122,7 +188,7 @@ export function FolderView(props: FolderViewProps) {
       const toggleSelected = selected && !hasSelected;
 
       file.selected = toggleSelected;
-      
+
       if (toggleSelected) {
         files.moveToHead(node);
         hasSelected = true;
@@ -136,23 +202,31 @@ export function FolderView(props: FolderViewProps) {
     const files = localFiles.current;
     const origin = selectionBoxStart.current;
 
-    if (!iconContainer.current) { return; }
+    if (!iconContainer.current) {
+      return;
+    }
     const container = iconContainer.current;
 
     const current = getLocalCoordinates(position);
-    
-    const topLeftPoint = { x: Math.min(origin.x, current.x), y: Math.min(origin.y, current.y) };
-    const bottomRightPoint = { x: Math.max(origin.x, current.x), y: Math.max(origin.y, current.y) };
+
+    const topLeftPoint = {
+      x: Math.min(origin.x, current.x),
+      y: Math.min(origin.y, current.y),
+    };
+    const bottomRightPoint = {
+      x: Math.max(origin.x, current.x),
+      y: Math.max(origin.y, current.y),
+    };
 
     const selectionRect: Rectangle = {
       x1: getXCoordInIconContainer(topLeftPoint.x, container),
       x2: getXCoordInIconContainer(bottomRightPoint.x, container),
       y1: getYCoordInIconContainer(topLeftPoint.y, container),
-      y2: getYCoordInIconContainer(bottomRightPoint.y, container)
+      y2: getYCoordInIconContainer(bottomRightPoint.y, container),
     };
 
-    for (let node of files.iterFromHead()) {
-      const file = node.value; 
+    for (const node of files.iterFromHead()) {
+      const file = node.value;
       const hitBox = FolderIconHitBox(file);
       file.selected = rectangleAnyIntersection(selectionRect, hitBox);
     }
@@ -163,9 +237,14 @@ export function FolderView(props: FolderViewProps) {
   function clickedFile(position: Point): ClickedIcon | undefined {
     const files = localFiles.current;
 
-    if (!iconContainer.current) { return; }
+    if (!iconContainer.current) {
+      return;
+    }
     const container = iconContainer.current;
-    const point = getCoordinatesInIconContainer(getLocalCoordinates(position), container);
+    const point = getCoordinatesInIconContainer(
+      getLocalCoordinates(position),
+      container
+    );
 
     for (const node of files.iterFromTail()) {
       const file = node.value;
@@ -191,7 +270,9 @@ export function FolderView(props: FolderViewProps) {
     for (const node of files.iterFromTail()) {
       const file = node.value;
 
-      if (file.selected) { selectedFiles.push(file); }
+      if (file.selected) {
+        selectedFiles.push(file);
+      }
     }
 
     fileDraggingSelection.current = selectedFiles;
@@ -199,43 +280,62 @@ export function FolderView(props: FolderViewProps) {
   }
 
   function onFileDraggingMove(evt: PointerEvent) {
-    if (!iconContainer.current) { return; }
+    if (!iconContainer.current) {
+      return;
+    }
 
     const scrollOffsetX = iconContainer.current.scrollLeft;
     const scrollOffsetY = iconContainer.current.scrollTop;
 
-    const deltaX = Math.abs(fileDraggingOrigin.current.x - evt.clientX - scrollOffsetX);
-    const deltaY = Math.abs(fileDraggingOrigin.current.y - evt.clientY - scrollOffsetY);
+    const deltaX = Math.abs(
+      fileDraggingOrigin.current.x - evt.clientX - scrollOffsetX
+    );
+    const deltaY = Math.abs(
+      fileDraggingOrigin.current.y - evt.clientY - scrollOffsetY
+    );
 
     const origin = fileDraggingFolderOrigin.current;
 
-    if (!origin) { return; }
+    if (!origin) {
+      return;
+    }
 
     const data: FileSystemItemDragData = {
       nodes: fileDraggingSelection.current.map(folderIcon => {
-      
         const offset = {
           x: origin.x - folderIcon.x,
           y: origin.y - folderIcon.y,
         };
 
-        return { item: folderIcon.entry.node, position: { x: 0, y: 0}, offset };
-      })
+        return {
+          item: folderIcon.entry.node,
+          position: { x: 0, y: 0 },
+          offset,
+        };
+      }),
     };
 
-    const passesDraggingThreshold = deltaX > DraggingThreshold || deltaY > DraggingThreshold;
+    const passesDraggingThreshold =
+      deltaX > DraggingThreshold || deltaY > DraggingThreshold;
 
     if (passesDraggingThreshold && !isDragging.current) {
       isDragging.current = true;
 
       // Propagate drag start event
       // NOTE(Joey): Not sure why the scrollOffset{x/y} need to be multiplied by 2
-      fileDraggingSession.current = dragAndDrop.start(data, evt.clientX - scrollOffsetX * 2, evt.clientY - scrollOffsetY * 2);
+      fileDraggingSession.current = dragAndDrop.start(
+        data,
+        evt.clientX - scrollOffsetX * 2,
+        evt.clientY - scrollOffsetY * 2
+      );
     }
-    
+
     if (isDragging.current && fileDraggingSession.current) {
       // Propagate drag move event
-      fileDraggingSession.current.move(evt.clientX - scrollOffsetX * 2, evt.clientY - scrollOffsetY * 2);
+      fileDraggingSession.current.move(
+        evt.clientX - scrollOffsetX * 2,
+        evt.clientY - scrollOffsetY * 2
+      );
 
       // Get the current target element
       const elements = document.elementsFromPoint(evt.clientX, evt.clientY);
@@ -243,17 +343,17 @@ export function FolderView(props: FolderViewProps) {
       let dropPoint = null;
 
       for (const element of elements) {
-        if (element.hasAttribute("data-drop-point")) {
+        if (element.hasAttribute('data-drop-point')) {
           dropPoint = element;
           break;
         }
 
-        if (element.hasAttribute("data-window-root")) {
+        if (element.hasAttribute('data-window-root')) {
           break;
-        } 
+        }
       }
 
-      if (!dropPoint) { 
+      if (!dropPoint) {
         fileDraggingCurrentNode.current = undefined;
         return;
       }
@@ -268,15 +368,24 @@ export function FolderView(props: FolderViewProps) {
         };
       }
 
-      const moveEvent = new CustomEvent(FileSystemItemDragMove, { detail: data, bubbles: false }); 
-      dropPoint?.dispatchEvent(moveEvent);
+      const moveEvent = new CustomEvent(FileSystemItemDragMove, {
+        detail: data,
+        bubbles: false,
+      });
+      dropPoint.dispatchEvent(moveEvent);
 
       if (dropPoint !== fileDraggingCurrentNode.current) {
-        const enterEvent = new CustomEvent(FileSystemItemDragEnter, { detail: data, bubbles: false }); 
-        const leaveEvent = new CustomEvent(FileSystemItemDragLeave, { detail: data, bubbles: false }); 
+        const enterEvent = new CustomEvent(FileSystemItemDragEnter, {
+          detail: data,
+          bubbles: false,
+        });
+        const leaveEvent = new CustomEvent(FileSystemItemDragLeave, {
+          detail: data,
+          bubbles: false,
+        });
 
         fileDraggingCurrentNode.current?.dispatchEvent(leaveEvent);
-        dropPoint?.dispatchEvent(enterEvent);
+        dropPoint.dispatchEvent(enterEvent);
 
         fileDraggingCurrentNode.current = dropPoint;
       }
@@ -290,7 +399,7 @@ export function FolderView(props: FolderViewProps) {
     const coords = fileDraggingCurrentNode.current?.getBoundingClientRect();
     const origin = fileDraggingFolderOrigin.current;
 
-    if (!origin || !coords) {   
+    if (!origin || !coords) {
       fileDraggingSession.current?.drop(evt.clientX, evt.clientY);
       return;
     }
@@ -312,10 +421,13 @@ export function FolderView(props: FolderViewProps) {
           };
 
           return { item: folderIcon.entry.node, position, offset };
-        })
-      }
+        }),
+      };
 
-      const dropEventLeave = new CustomEvent(FileSystemItemDragDrop, { detail: data, bubbles: false });
+      const dropEventLeave = new CustomEvent(FileSystemItemDragDrop, {
+        detail: data,
+        bubbles: false,
+      });
       fileDraggingCurrentNode.current.dispatchEvent(dropEventLeave);
     }
 
@@ -329,9 +441,17 @@ export function FolderView(props: FolderViewProps) {
   function renameFile(iconEntry: FolderIconEntry) {
     // Check if we can rename the file first
     const fileSystemNode = iconEntry.entry.node;
-    if (!fileSystemNode.editable) { return; }
+    if (!fileSystemNode.editable) {
+      return;
+    }
 
-    iconEntry.editing = { active: true, value: iconEntry.entry.node.name, onSave: () => { stopRenamingFiles(); }};
+    iconEntry.editing = {
+      active: true,
+      value: iconEntry.entry.node.name,
+      onSave: () => {
+        stopRenamingFiles();
+      },
+    };
 
     updateFiles(localFiles.current);
   }
@@ -339,24 +459,23 @@ export function FolderView(props: FolderViewProps) {
   function stopRenamingFiles() {
     const files = localFiles.current;
 
-    let update = false;
-
     for (const file of files.iterFromTail()) {
       if (file.value.editing.active) {
         fs.renameNode(file.value.entry.node, file.value.editing.value);
-        
+
         file.value.editing.active = false;
       }
     }
 
-    if (update) {
-      updateFiles(files);
-    }
+    // updateFiles would be called here if update was truthy
+    // Currently update is always falsy based on the logic above
   }
 
   function onTouchDown(evt: TouchEvent) {
     evt.preventDefault();
-    if (evt.touches.length > 1) { return; }
+    if (evt.touches.length > 1) {
+      return;
+    }
 
     const touch = evt.touches[0];
     const position = { x: touch.clientX, y: touch.clientY };
@@ -365,7 +484,9 @@ export function FolderView(props: FolderViewProps) {
   }
 
   function onPointerDown(evt: PointerEvent) {
-    if (evt.pointerType === 'touch') { return; }
+    if (evt.pointerType === 'touch') {
+      return;
+    }
 
     const position = { x: evt.clientX, y: evt.clientY };
 
@@ -373,15 +494,20 @@ export function FolderView(props: FolderViewProps) {
   }
 
   function handleInteractionStart(position: Point, interaction: Interaction) {
-    if (!ref.current) { return; }
-    if (!iconContainer.current) { return; }
-    
+    if (!ref.current) {
+      return;
+    }
+    if (!iconContainer.current) {
+      return;
+    }
+
     const file = clickedFile(position);
 
     if (file) {
       const coords = iconContainer.current.getBoundingClientRect();
 
-      const deltaX = position.x - coords.left - iconContainer.current.scrollLeft;
+      const deltaX =
+        position.x - coords.left - iconContainer.current.scrollLeft;
       const deltaY = position.y - coords.top - iconContainer.current.scrollTop;
 
       fileDraggingFolderOrigin.current = { x: deltaX, y: deltaY };
@@ -393,8 +519,11 @@ export function FolderView(props: FolderViewProps) {
 
       onFileDraggingStart(position);
 
-      const sameFile = previousClickedFile.current.file?.iconEntry === file.iconEntry;
-      const sameHitBox = previousClickedFile.current.file?.clickedOnTheIcon === file.clickedOnTheIcon;
+      const sameFile =
+        previousClickedFile.current.file?.iconEntry === file.iconEntry;
+      const sameHitBox =
+        previousClickedFile.current.file?.clickedOnTheIcon ===
+        file.clickedOnTheIcon;
       const clickedOnIcon = file.clickedOnTheIcon;
 
       const openFolder = sameFile && clickedOnIcon;
@@ -404,17 +533,15 @@ export function FolderView(props: FolderViewProps) {
         stopRenamingFiles();
 
         onFileOpen(file.iconEntry.entry.node, false);
-        
+
         previousClickedFile.current = { file: null, timestamp: 0 };
-      } else 
-      if (renameFolder) {
+      } else if (renameFolder) {
         renameFile(file.iconEntry);
 
         previousClickedFile.current = { file: null, timestamp: 0 };
-      } else {        
+      } else {
         previousClickedFile.current = { file, timestamp: Date.now() };
       }
-      
     } else {
       stopRenamingFiles();
 
@@ -442,7 +569,9 @@ export function FolderView(props: FolderViewProps) {
   }
 
   function moveSelectionBoxViaPointer(evt: PointerEvent) {
-    if (evt.pointerType === 'touch') { return; }
+    if (evt.pointerType === 'touch') {
+      return;
+    }
 
     const position = { x: evt.clientX, y: evt.clientY };
 
@@ -460,8 +589,14 @@ export function FolderView(props: FolderViewProps) {
     const origin = selectionBoxStart.current;
     const current = getLocalCoordinates(position);
 
-    const topLeftPoint = { x: Math.min(origin.x, current.x), y: Math.min(origin.y, current.y) };
-    const bottomRightPoint = { x: Math.max(origin.x, current.x), y: Math.max(origin.y, current.y) };
+    const topLeftPoint = {
+      x: Math.min(origin.x, current.x),
+      y: Math.min(origin.y, current.y),
+    };
+    const bottomRightPoint = {
+      x: Math.max(origin.x, current.x),
+      y: Math.max(origin.y, current.y),
+    };
 
     const x = topLeftPoint.x;
     const y = topLeftPoint.y;
@@ -475,7 +610,9 @@ export function FolderView(props: FolderViewProps) {
   }
 
   function closeSelectionBoxViaPointer(evt: PointerEvent) {
-    if (evt.pointerType === 'touch') { return; }
+    if (evt.pointerType === 'touch') {
+      return;
+    }
 
     const position = { x: evt.clientX, y: evt.clientY };
 
@@ -483,7 +620,9 @@ export function FolderView(props: FolderViewProps) {
   }
 
   function closeSelectionBoxViaTouch(evt: TouchEvent) {
-    if (evt.touches.length > 0) { return; }
+    if (evt.touches.length > 0) {
+      return;
+    }
 
     const touch = evt.changedTouches[0];
     const point = { x: touch.clientX, y: touch.clientY };
@@ -526,24 +665,31 @@ export function FolderView(props: FolderViewProps) {
         dragging: false,
         x: node.value.x,
         y: node.value.y,
-        editing: { active: false, value: node.value.node.name }
+        editing: { active: false, value: node.value.node.name },
       });
     }
 
-    updateFiles(chain);    
+    updateFiles(chain);
   }
 
-  function reloadLocalFiles(directory: FileSystemDirectory, type: NodeEventType) {
-    if (type.kind === 'refresh') { return; }
-    if (!ref.current) { return; }
-    
+  function reloadLocalFiles(
+    directory: FileSystemDirectory,
+    type: NodeEventType
+  ) {
+    if (type.kind === 'refresh') {
+      return;
+    }
+    if (!ref.current) {
+      return;
+    }
+
     const container = ref.current;
 
     const existingChain = localFiles.current;
     const lookup = new Map<number, FolderIconEntry>();
     const newChain = new Chain<FolderIconEntry>();
 
-    let newDirectoryEntries: DirectoryEntry[] = [];
+    const newDirectoryEntries: DirectoryEntry[] = [];
 
     // Create a quick lookup table, so we don't have to look sequentially through the chain
     // I <3 linked list look up times
@@ -568,7 +714,7 @@ export function FolderView(props: FolderViewProps) {
         dragging: false,
         x: existingValue.x,
         y: existingValue.y,
-        editing: { active: false, value: node.value.node.name }
+        editing: { active: false, value: node.value.node.name },
       });
     }
 
@@ -576,7 +722,7 @@ export function FolderView(props: FolderViewProps) {
       view: 'icons',
       width: container.clientWidth,
       height: container.clientHeight,
-      overflowBehavior: 'overlay'
+      overflowBehavior: 'overlay',
     };
 
     for (const entry of newDirectoryEntries) {
@@ -587,7 +733,11 @@ export function FolderView(props: FolderViewProps) {
         sortOrigin: 'top-right',
       };
 
-      const pos = calculateNodePosition(desktopSettings, content, newChain.toArray());
+      const pos = calculateNodePosition(
+        desktopSettings,
+        content,
+        newChain.toArray()
+      );
 
       newChain.append({
         entry,
@@ -595,7 +745,7 @@ export function FolderView(props: FolderViewProps) {
         dragging: false,
         x: pos.x,
         y: pos.y,
-        editing: { active: false, value: entry.node.name }
+        editing: { active: false, value: entry.node.name },
       });
     }
 
@@ -610,15 +760,20 @@ export function FolderView(props: FolderViewProps) {
     }
   }
 
-  function reloadFiles(directory: string, type: NodeEventType): FileSystemDirectory | null {
-    if (type.kind === 'rename') {      
+  function reloadFiles(
+    directory: string,
+    type: NodeEventType
+  ): FileSystemDirectory | null {
+    if (type.kind === 'rename') {
       reloadRenamedDirectory(type);
 
       return null;
     }
 
     const dir = fs.getDirectory(directory);
-    if (!dir.ok) { return null; }
+    if (!dir.ok) {
+      return null;
+    }
 
     currentDirectory.current = constructPath(dir.value);
 
@@ -634,30 +789,34 @@ export function FolderView(props: FolderViewProps) {
   function loadFiles(directory: string) {
     const action = (type: NodeEventType) => {
       return reloadFiles(directory, type);
-    }
+    };
 
-    const result = action({kind: 'update'});
-    
+    const result = action({ kind: 'update' });
+
     if (result) {
       return fs.subscribe(result, action);
     }
   }
 
-  function fileMoveToggleSelected(files: Chain<FolderIconEntry>, evt: FileSystemItemDragEvent) {
-    const selectedFiles: Set<number> = new Set();
+  function fileMoveToggleSelected(
+    files: Chain<FolderIconEntry>,
+    evt: FileSystemItemDragEvent
+  ) {
+    const selectedFiles = new Set<number>();
 
-    const first = evt.detail.nodes[0] ?? null;
-    if (!first) { return; }
+    const first = evt.detail.nodes[0];
 
     for (const node of evt.detail.nodes) {
       selectedFiles.add(node.item.id);
     }
 
-    for (let node of files.iterFromTail()) {
+    for (const node of files.iterFromTail()) {
       const desktopEntry = node.value;
       const file = desktopEntry.entry.node;
 
-      if (selectedFiles.has(file.id)) { continue; }
+      if (selectedFiles.has(file.id)) {
+        continue;
+      }
       if (file.kind !== 'directory') {
         desktopEntry.selected = false;
         continue;
@@ -667,8 +826,8 @@ export function FolderView(props: FolderViewProps) {
 
       const pos = {
         x: first.position.x + first.offset.x,
-        y: first.position.y + first.offset.y
-      }
+        y: first.position.y + first.offset.y,
+      };
 
       desktopEntry.selected = pointInsideAnyRectangles(pos, hitBox);
     }
@@ -682,31 +841,38 @@ export function FolderView(props: FolderViewProps) {
     updateFiles(files);
   }
 
-  function fileDropGetTargetDirectory(files: Chain<FolderIconEntry>, evt: FileSystemItemDragEvent): Result<FileSystemDirectory, Error> {
-    const selectedFiles: Set<number> = new Set();
+  function fileDropGetTargetDirectory(
+    files: Chain<FolderIconEntry>,
+    evt: FileSystemItemDragEvent
+  ): Result<FileSystemDirectory> {
+    const selectedFiles = new Set<number>();
 
-    const first = evt.detail.nodes[0] ?? null;
+    const first = evt.detail.nodes[0];
 
     const dir = fs.getDirectory(currentDirectory.current);
-    if (!dir.ok) { return Err(Error("Unable to lookup currentDirectory")); }
-
-    if (!first) { return Ok(dir.value); }
+    if (!dir.ok) {
+      return Err(Error('Unable to lookup currentDirectory'));
+    }
 
     for (const node of evt.detail.nodes) {
       selectedFiles.add(node.item.id);
     }
 
-    for (let node of files.iterFromTail()) {
+    for (const node of files.iterFromTail()) {
       const file = node.value.entry.node;
-      if (file.kind !== 'directory') { continue; }
-      if (selectedFiles.has(file.id)) { continue; }
+      if (file.kind !== 'directory') {
+        continue;
+      }
+      if (selectedFiles.has(file.id)) {
+        continue;
+      }
 
       const hitBox = FolderIconHitBox(node.value);
 
       const pos = {
         x: first.position.x + first.offset.x,
-        y: first.position.y + first.offset.y
-      }
+        y: first.position.y + first.offset.y,
+      };
 
       const hit = pointInsideAnyRectangles(pos, hitBox);
 
@@ -714,34 +880,39 @@ export function FolderView(props: FolderViewProps) {
         return Ok(file);
       }
     }
-    
+
     return Ok(dir.value);
   }
 
   function onFileDrop(evt: FileSystemItemDragEvent) {
     const files = localFiles.current;
-    let parentsToUpdate: Map<number, FileSystemDirectory> = new Map();
-    
-    if (!ref.current) { return; }
+    const parentsToUpdate = new Map<number, FileSystemDirectory>();
+
+    if (!ref.current) {
+      return;
+    }
     const folder = ref.current;
 
     const dir = fileDropGetTargetDirectory(files, evt);
-    if (!dir.ok) { return };
+    if (!dir.ok) {
+      return;
+    }
 
-    const placingInLocalDirectory = constructPath(dir.value) === currentDirectory.current;
+    const placingInLocalDirectory =
+      constructPath(dir.value) === currentDirectory.current;
     let forceUpdate = !placingInLocalDirectory;
 
     const folderRect = folder.getBoundingClientRect();
-    
+
     const horizontal = {
       min: -IconWidth / 2,
-      max: folderRect.width - (IconWidth / 2)
+      max: folderRect.width - IconWidth / 2,
     };
 
     const vertical = {
       min: -IconHeight / 2,
-      max: folderRect.height - (IconHeight / 2)
-    }
+      max: folderRect.height - IconHeight / 2,
+    };
 
     outer: for (const node of evt.detail.nodes) {
       if (node.item.parent && node.item.parent.id !== dir.value.id) {
@@ -750,10 +921,14 @@ export function FolderView(props: FolderViewProps) {
         forceUpdate = true;
       }
 
-      let others: Point[] = placingInLocalDirectory ? [] : dir.value.children.toArray();
+      const others: Point[] = placingInLocalDirectory
+        ? []
+        : dir.value.children.toArray();
       const result = fs.moveNode(node.item, dir.value);
 
-      if (!result.ok) { continue; }
+      if (!result.ok) {
+        continue;
+      }
       const directoryEntry = result.value;
 
       let positionX: number, positionY: number;
@@ -762,7 +937,11 @@ export function FolderView(props: FolderViewProps) {
         positionX = clamp(node.position.x, horizontal.min, horizontal.max);
         positionY = clamp(node.position.y, vertical.min, vertical.max);
       } else {
-        const pos = calculateNodePosition(dir.value.settings, dir.value.content, others);
+        const pos = calculateNodePosition(
+          dir.value.settings,
+          dir.value.content,
+          others
+        );
         positionX = pos.x;
         positionY = pos.y;
       }
@@ -771,17 +950,17 @@ export function FolderView(props: FolderViewProps) {
         directoryEntry.x = positionX;
         directoryEntry.y = positionY;
       }
-      
+
       const folderIconEntry: FolderIconEntry = {
         entry: directoryEntry,
         x: positionX,
         y: positionY,
         selected: false,
         dragging: false,
-        editing: { active: false, value: node.item.name }
-      }
+        editing: { active: false, value: node.item.name },
+      };
 
-      for (let fileNode of files.iterFromTail()) {
+      for (const fileNode of files.iterFromTail()) {
         if (fileNode.value.entry.node.id === directoryEntry.node.id) {
           fileNode.value = folderIconEntry;
 
@@ -793,13 +972,15 @@ export function FolderView(props: FolderViewProps) {
     }
 
     if (forceUpdate) {
-      parentsToUpdate.forEach(x => fs.propagateNodeEvent(x, {kind: 'update'}));
-      fs.propagateNodeEvent(dir.value, {kind: 'update'});
+      parentsToUpdate.forEach(x => {
+        fs.propagateNodeEvent(x, { kind: 'update' });
+      });
+      fs.propagateNodeEvent(dir.value, { kind: 'update' });
     } else {
       // Local Icon Position (Desktop mode) shouldn't update the rest of the views
       // As it should be isolated from the other views
       if (!useLocalIconPosition) {
-        fs.propagateNodeEvent(dir.value, {kind: 'refresh'});
+        fs.propagateNodeEvent(dir.value, { kind: 'refresh' });
       }
 
       updateFiles(files);
@@ -807,15 +988,23 @@ export function FolderView(props: FolderViewProps) {
   }
 
   function updateDirectoryDimensions() {
-    if (useLocalIconPosition) { return; }
-    if (!iconContainer.current) { return; }
-    if (!currentDirectory.current) { return; }
+    if (useLocalIconPosition) {
+      return;
+    }
+    if (!iconContainer.current) {
+      return;
+    }
+    if (!currentDirectory.current) {
+      return;
+    }
 
     const dir = fs.getDirectory(currentDirectory.current);
-    if (!dir.ok) { return; }
+    if (!dir.ok) {
+      return;
+    }
 
     const container = iconContainer.current;
-    
+
     const folderScrollWidth = container.scrollWidth;
     const folderScrollHeight = container.scrollHeight;
 
@@ -824,60 +1013,78 @@ export function FolderView(props: FolderViewProps) {
   }
 
   useEffect(() => {
-    if (!ref.current) { return; }
+    if (!ref.current) {
+      return;
+    }
     const folder = ref.current;
 
     folder.addEventListener('touchstart', onTouchDown, { passive: false });
     folder.addEventListener('pointerdown', onPointerDown, { passive: false });
-    folder.addEventListener(FileSystemItemDragMove, onFileDropMove as EventListener);
-    folder.addEventListener(FileSystemItemDragDrop, onFileDrop as EventListener);
-    
+    folder.addEventListener(
+      FileSystemItemDragMove,
+      onFileDropMove as EventListener
+    );
+    folder.addEventListener(
+      FileSystemItemDragDrop,
+      onFileDrop as EventListener
+    );
+
     const observer = new ResizeObserver(updateDirectoryDimensions);
     observer.observe(ref.current);
 
     // Set the correct width / height of the just opened window
     updateDirectoryDimensions();
-    
+
     return () => {
       folder.removeEventListener('touchstart', onTouchDown);
       folder.removeEventListener('pointerdown', onPointerDown);
-      folder.removeEventListener(FileSystemItemDragMove, onFileDropMove as EventListener);
-      folder.removeEventListener(FileSystemItemDragDrop, onFileDrop as EventListener);
-      
+      folder.removeEventListener(
+        FileSystemItemDragMove,
+        onFileDropMove as EventListener
+      );
+      folder.removeEventListener(
+        FileSystemItemDragDrop,
+        onFileDrop as EventListener
+      );
+
       observer.disconnect();
     };
   }, []);
 
-  useEffect(() => { 
+  useEffect(() => {
     const unsubscribe = loadFiles(directory);
 
     updateDirectoryDimensions();
 
     return () => {
-      if (unsubscribe) { unsubscribe() };
-    }
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [directory]);
 
   const icons = files.map((entry, index) => {
-    return <FolderIcon key={index} folderIconEntry={entry} index={index} />
+    return <FolderIcon key={index} folderIconEntry={entry} index={index} />;
   });
 
   const selectionBox = SelectionBox(box);
-  
-  return <>
-    <div 
-      ref={ref}
-      className={styles.folder}
-      data-drop-point="true"
-    >
-      <div className={styles['selection-box-container']}>
-        {selectionBox}
+
+  return (
+    <>
+      <div ref={ref} className={styles.folder} data-drop-point="true">
+        <div className={styles['selection-box-container']}>{selectionBox}</div>
+        <div
+          ref={iconContainer}
+          className={[
+            styles['icons-container'],
+            !allowOverflow ? styles['hide-overflow'] : '',
+          ].join(' ')}
+        >
+          {icons}
+        </div>
       </div>
-      <div ref={iconContainer} className={[styles['icons-container'], !allowOverflow ? styles['hide-overflow'] : ''].join(' ')}>
-        {icons}
-      </div>
-    </div>
-  </>
-};
+    </>
+  );
+}
 
 export default FolderView;

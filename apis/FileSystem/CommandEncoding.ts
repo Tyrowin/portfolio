@@ -1,9 +1,13 @@
 export const Slash = '\\';
 export const Space = ' ';
 export const DoubleQuote = '"';
-export const SingleQuote = '\'';
+export const SingleQuote = "'";
 
-function findEndOfQuote(command: string, start: number, type: 'double' | 'single') {
+function findEndOfQuote(
+  command: string,
+  start: number,
+  type: 'double' | 'single'
+) {
   let index = start + 1;
 
   loop: while (index < command.length) {
@@ -11,10 +15,17 @@ function findEndOfQuote(command: string, start: number, type: 'double' | 'single
     index++;
 
     switch (char) {
-      case Slash: { index++; continue loop; }
+      case Slash: {
+        index++;
+        continue loop;
+      }
       case DoubleQuote:
       case SingleQuote: {
-        if (type === 'double' || type === 'single') {
+        // Only terminate if the encountered quote matches the originally opened quote type
+        const isMatchingQuote =
+          (type === 'double' && char === DoubleQuote) ||
+          (type === 'single' && char === SingleQuote);
+        if (isMatchingQuote) {
           return index;
         }
       }
@@ -25,7 +36,7 @@ function findEndOfQuote(command: string, start: number, type: 'double' | 'single
 }
 
 export function parseCommand(command: string): string[] {
-  let parts: string[] = [];
+  const parts: string[] = [];
   let index = 0;
   let chars: string[] = [];
 
@@ -35,7 +46,9 @@ export function parseCommand(command: string): string[] {
     switch (char) {
       case Slash: {
         const escapedChar = command[index + 1];
-        if (escapedChar) { chars.push(escapedChar); }
+        if (escapedChar) {
+          chars.push(escapedChar);
+        }
 
         index += 2;
         continue loop;
@@ -51,7 +64,11 @@ export function parseCommand(command: string): string[] {
       }
       case DoubleQuote:
       case SingleQuote: {
-        const endOfQuote = findEndOfQuote(command, index, char === DoubleQuote ? 'double' : 'single');
+        const endOfQuote = findEndOfQuote(
+          command,
+          index,
+          char === DoubleQuote ? 'double' : 'single'
+        );
 
         // Only get the content between the quotes
         // If nothing is in the chars buffer yet, handle it as an escaped command

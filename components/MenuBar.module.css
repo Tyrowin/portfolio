@@ -4,7 +4,11 @@
   padding: 0 5px;
   flex: 0 1 auto;
   height: 45px;
-  box-shadow: inset -1px -1px #0a0a0a,inset 1px 1px #c8c8c8,inset -2px -2px grey,inset 2px 2px #fff;
+  box-shadow:
+    inset -1px -1px #0a0a0a,
+    inset 1px 1px #c8c8c8,
+    inset -2px -2px grey,
+    inset 2px 2px #fff;
 }
 
 .spacer {
@@ -31,7 +35,7 @@
 }
 
 /* We don't do capitalization on months in Dutch */
-.date[data-locale="en"] .month {
+.date[data-locale='en'] .month {
   text-transform: capitalize;
 }
 
@@ -58,7 +62,11 @@
   top: 100%;
   left: 0;
   padding: 5px;
-  box-shadow: inset -1px -1px #0a0a0a,inset 1px 1px #c8c8c8,inset -2px -2px grey,inset 2px 2px #fff;
+  box-shadow:
+    inset -1px -1px #0a0a0a,
+    inset 1px 1px #c8c8c8,
+    inset -2px -2px grey,
+    inset 2px 2px #fff;
 }
 
 .menuContent button {
