@@ -2,7 +2,7 @@
 import type { SubViewParams } from './AboutView';
 import { SubViewNavigation } from './AboutView';
 import styles from './AboutView.module.css';
-import { getOwner } from '@/config/siteOwner';
+import { getOwner, type ProjectEntry } from '@/config/siteOwner';
 import { groupProjectsByYear, filterProjects } from '@/lib/projects';
 
 interface ProjectDetailProps {
@@ -26,6 +26,15 @@ export function ProjectDetailView({ id, params }: ProjectDetailProps) {
   const project = (getOwner().projects ?? []).find(pr => pr.id === id);
   const backLabel =
     params.language === 'sv' ? 'Tillbaka till projekt' : 'Back to projects';
+
+  // Use localized description if available, fallback to default description
+  const getProjectDescription = (
+    project: ProjectEntry,
+    language: string
+  ): string => {
+    return project.localizedDescriptions?.[language] ?? project.description;
+  };
+
   return (
     <div data-subpage className={styles.subpage}>
       {SubViewNavigation(params)}
@@ -34,7 +43,7 @@ export function ProjectDetailView({ id, params }: ProjectDetailProps) {
         {project ? (
           <>
             <h1>{project.name}</h1>
-            <p>{project.description}</p>
+            <p>{getProjectDescription(project, params.language)}</p>
             {project.stack?.length ? (
               <p>
                 <b>Stack:</b> {project.stack.join(', ')}

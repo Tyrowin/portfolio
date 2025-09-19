@@ -266,16 +266,13 @@ export const siteOwner: SiteOwnerConfig = {
       },
       stack: ['Azure', 'Python', 'API', 'M-Bus', 'Automation'],
       icon: '/icons/project-portfolio-2021.png',
-      links: [
-        { type: 'github', url: 'https://github.com/Tyrowin/sensor-platform' },
-      ],
       status: 'completed',
       featured: true,
     },
     {
       id: 'pyfetch',
       name: 'PyFetch HTTP Client',
-      year: 2023,
+      year: 2024,
       description:
         'Lightweight command-line interface and Python library for making HTTP requests with comprehensive features.',
       localizedDescriptions: {
@@ -331,17 +328,20 @@ export const siteOwner: SiteOwnerConfig = {
     {
       id: 'v2x-thesis',
       name: 'V2X Traffic Safety Research',
-      year: 2022,
+      year: 2024,
       description:
-        'Thesis project analyzing Vehicle-to-Everything communication benefits for traffic safety and environmental impact in Intelligent Transportation Systems.',
+        'Thesis exploring Vehicle-to-Everything communication within Intelligent Transportation Systems to enhance road safety and environmental sustainability.',
       localizedDescriptions: {
-        en: 'Comprehensive research project examining V2X (Vehicle-to-Everything) communication technologies and their potential impact on traffic safety and environmental sustainability. The study analyzes current ITS (Intelligent Transportation Systems) implementations, evaluates communication protocols, and models potential improvements in accident prevention and emissions reduction through connected vehicle technologies.',
-        sv: 'Omfattande forskningsprojekt som undersöker V2X-kommunikationsteknologier (Vehicle-to-Everything) och deras potentiella inverkan på trafiksäkerhet och miljöhållbarhet. Studien analyserar nuvarande ITS-implementationer (Intelligenta Transportsystem), utvärderar kommunikationsprotokoll och modellerar potentiella förbättringar inom olycksförebyggande och utsläppsminskning genom uppkopplade fordonsteknologier.',
+        en: 'Research thesis exploring Vehicle-to-Everything (V2X) communication within Intelligent Transportation Systems to enhance road safety and environmental sustainability. Through literature review, case studies, and simulation analyses, the study demonstrates that V2X communication significantly reduces collision rates and improves intersection safety while contributing to reduced fuel consumption and emissions. The research addresses key implementation challenges including security concerns, infrastructure investments, and standardization needs.',
+        sv: 'Forskningsavhandling som undersöker Vehicle-to-Everything (V2X) kommunikation inom Intelligenta Transportsystem för att förbättra trafiksäkerhet och miljöhållbarhet. Genom litteraturöversikt, fallstudier och simuleringsanalyser visar studien att V2X-kommunikation avsevärt minskar kollisionsfrekvenser och förbättrar korsningssäkerhet samtidigt som den bidrar till minskad bränsleförbrukning och utsläpp. Forskningen behandlar viktiga implementeringsutmaningar inklusive säkerhetsproblem, infrastrukturinvesteringar och standardiseringsbehov.',
       },
-      stack: ['Research', 'ITS', 'V2X', 'Analysis'],
+      stack: ['Research', 'ITS', 'V2X', 'Traffic Safety', 'Environmental Analysis'],
       icon: '/icons/project-j-script.png',
+      links: [
+        { type: 'docs', url: '/files/thesis.pdf' },
+      ],
       status: 'completed',
-      featured: false,
+      featured: true,
     },
   ],
 };
