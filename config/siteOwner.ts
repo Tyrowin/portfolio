@@ -128,7 +128,7 @@ export const siteOwner: SiteOwnerConfig = {
     title: 'CV – Malte Mindedal',
   },
   branding: {
-    siteTitle: 'Malte Mindedal - Fullstack Developer',
+    siteTitle: 'Malte Mindedal - Portfolio',
     description:
       'Portfolio of Malte Mindedal – Fullstack developer with a background in IoT, embedded systems, and cloud/backend engineering.',
     productName: 'M-OS',

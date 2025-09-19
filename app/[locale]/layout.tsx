@@ -29,7 +29,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale}>
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icons/project-portfolio-2024.png" />
       </head>
       <body>
         <Script strategy="beforeInteractive" src="/emulators/emulators.js" />
